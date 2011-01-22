@@ -1,3 +1,2 @@
-- test load
 - test normalized load
 - test parse error

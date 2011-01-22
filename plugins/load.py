@@ -1,10 +1,15 @@
+# Python 3
+
+import io
+
+
 class LoadProbe(object):
 
     def __init__(self, percpu=False):
         pass
 
     def probe(self):
-        return map(float, open('/proc/loadavg').read().split()[:3])
+        return map(float, io.open('/proc/loadavg').read().split()[:3])
 
 
 class LoadEvaluator(object):
