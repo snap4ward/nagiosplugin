@@ -2,7 +2,7 @@
 
 import io
 import unittest
-from load import LoadProbe
+import load
 
 
 class TestLoadProbe(unittest.TestCase):
@@ -34,17 +34,41 @@ cpu MHz		: 2000.000
         io.open = mock_open
 
     def test_probe_should_return_load(self):
-        p = LoadProbe()
-        values = list(p.probe())
+        p = load.LoadProbe()
+        values = list(p())
         self.assertEqual(3, len(values))
         for (expected, actual) in zip(values, [1.24, 0.92, 0.80]):
             self.assertAlmostEqual(expected, actual)
 
     def test_probe_should_return_normalized_load(self):
-        p = LoadProbe(True)
-        values = list(p.probe())
+        p = load.LoadProbe(True)
+        values = list(p())
         for (expected, actual) in zip(values, [0.62, 0.46, 0.40]):
             self.assertAlmostEqual(expected, actual)
+
+
+class FakeLoadProbe(load.LoadProbe):
+
+    def __call__(self):
+        return [0.5, 0.729, 1.256]
+
+
+class TestLoadEvaluator(unittest.TestCase):
+
+    def test_load_should_give_ok(self):
+        e = load.LoadEvaluator(2, 3, FakeLoadProbe())
+        e()
+        self.assertEqual(load.Ok, e.status)
+
+    def test_load_should_give_warning(self):
+        e = load.LoadEvaluator(1, 3, FakeLoadProbe())
+        e()
+        self.assertEqual(load.Warning, e.status)
+
+    def test_load_should_give_critical(self):
+        e = load.LoadEvaluator(1.0, 1.2, FakeLoadProbe())
+        e()
+        self.assertEqual(load.Critical, e.status)
 
 
 if __name__ == '__main__':
