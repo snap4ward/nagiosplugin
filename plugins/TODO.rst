@@ -1,2 +1,0 @@
-- test normalized load
-- test parse error
