@@ -1,10 +1,15 @@
-# Python 3
+#!/usr/bin/python3
 
 import io
 import re
+import optparse
+import sys
+import collections
 
 
 class LoadProbe:
+
+    names = ['load1', 'load5', 'load15']
 
     def __init__(self, percpu=False):
         self.percpu = percpu
@@ -22,7 +27,7 @@ class LoadProbe:
         if self.percpu:
             cpus = self.count_cpus()
             load = [l/cpus for l in load]
-        return load
+        return collections.OrderedDict(zip(self.names, load))
 
 
 class LoadEvaluator:
@@ -37,18 +42,21 @@ class LoadEvaluator:
 
     @property
     def status(self):
-        if any(l >= self.crit for l in self.load):
-            return Critical
-        elif any(l >= self.warn for l in self.load):
-            return Warning
-        else:
-            return Ok
-
-    def get_message(self):
-        return ''
-
-    def get_performance(self):
-        return PerformanceObjects
+        if self.crit:
+            overthreshold = [(k, v) for (k, v) in self.load.items()
+                             if v >= self.crit]
+            if overthreshold:
+                return Critical(
+                    '{} exceeds critical threshold {}'.format(
+                        overthreshold[0][0], overthreshold[0][1]))
+        if self.warn:
+            overthreshold = [(k, v) for (k, v) in self.load.items()
+                             if v >= self.warn]
+            if overthreshold:
+                return Warning(
+                    '{} exceeds warning threshold {}'.format(
+                        overthreshold[0][0], overthreshold[0][1]))
+        return Ok('load averages ' + ', '.join(map(str, self.load.values())))
 
 
 class Status(object):
@@ -63,16 +71,15 @@ class Status(object):
     code = None
     word = None
 
+    def __init__(self, message):
+        self.message = message
+
     def __str__(self):
         """Textual status code."""
-        if self.code is None or self.word is None:
-            raise NotImplementedError
-        return self.word
+        return '{} - {}'.format(self.word, self.message)
 
     def __int__(self):
         """Numeric status code."""
-        if self.code is None or self.word is None:
-            raise NotImplementedError
         return self.code
 
     def __cmp__(self, other):
@@ -84,25 +91,73 @@ class Ok(Status):
     code = 0
     word = 'OK'
 
-Ok = Ok()
-
 
 class Warning(Status):
     code = 1
     word = 'WARNING'
-
-Warning = Warning()
 
 
 class Critical(Status):
     code = 2
     word = 'CRITICAL'
 
-Critical = Critical()
-
 
 class Unknown(Status):
     code = 3
     word = 'UNKNOWN'
 
-Unknown = Unknown()
+
+#------------------------------------------------------------------------
+
+class RawPerformance():
+
+    def __init__(self, label, value, uom=None, min=None, max=None):
+        pass
+
+
+class Performance():
+
+    def __init__(self, rawperformance, warn, crit):
+        pass
+
+
+#------------------------------------------------------------------------
+
+
+class Check():
+
+    def __init__(self, options):
+        p = LoadProbe(options.percpu)
+        self.e = LoadEvaluator(options.warn, options.crit, p)
+
+    def __call__(self):
+        self.e()
+        self.status = self.e.status
+
+
+#------------------------------------------------------------------------
+
+
+def main():
+    o = optparse.OptionParser(prog='check_load',
+                              description='check load average')
+    o.add_option('-w', '--warning', dest='warn', type='float',
+                 help='warning threshold')
+    o.add_option('-c', '--critical', dest='crit', type='float',
+                 help='critical threshold')
+    o.add_option('-r', '--percpu', dest='percpu', action='store_true', 
+                 default=False,
+                 help='divide the load averages by the number of CPUs')
+    options, arguments = o.parse_args()
+    check = Check(options)
+    try:
+        check()
+    except RuntimeError as e:
+        print('LOAD UNKNOWN - ' + str(e))
+        sys.exit(Unkown.code)
+    print('LOAD ' + str(check.status))
+    sys.exit(int(check.status))
+
+
+if __name__ == '__main__':
+    main()

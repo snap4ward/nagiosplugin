@@ -6,3 +6,6 @@ measurement
 
 evaluation
    decide the status of measurements
+
+checks
+   performs a measurement and evaluates it
