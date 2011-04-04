@@ -27,7 +27,10 @@ class LoadProbe:
         if self.percpu:
             cpus = self.count_cpus()
             load = [l/cpus for l in load]
-        return collections.OrderedDict(zip(self.names, load))
+        self.measurement = collections.OrderedDict(zip(self.names, load))
+        self.performance = [MeasuredPerformance(key, val, min=0)
+                            for key, val in self.measurement.items()]
+
 
 
 class LoadEvaluator:
@@ -38,7 +41,8 @@ class LoadEvaluator:
         self.probe = probe
 
     def __call__(self):
-        self.load = self.probe()
+        self.probe()
+        self.load = self.probe.measurement
 
     @property
     def status(self):
@@ -57,6 +61,11 @@ class LoadEvaluator:
                     '{} exceeds warning threshold {}'.format(
                         overthreshold[0][0], overthreshold[0][1]))
         return Ok('load averages ' + ', '.join(map(str, self.load.values())))
+
+    @property
+    def performance(self):
+        return [Performance(p, self.warn, self.crit)
+                for p in self.probe.performance]
 
 
 class Status(object):
@@ -109,16 +118,27 @@ class Unknown(Status):
 
 #------------------------------------------------------------------------
 
-class RawPerformance():
+class MeasuredPerformance():
 
-    def __init__(self, label, value, uom=None, min=None, max=None):
-        pass
+    def __init__(self, label, value, uom='', min='', max=''):
+        self.label = label
+        self.value = value
+        self.uom = uom
+        self.min = min
+        self.max = max
 
 
 class Performance():
 
-    def __init__(self, rawperformance, warn, crit):
-        pass
+    def __init__(self, measuredperformance, warn, crit):
+        self.measured = measuredperformance
+        self.warn = warn
+        self.crit = crit
+
+    def __str__(self):
+        return '{}={}{};{};{};{};{}'.format(
+            self.measured.label, self.measured.value, self.measured.uom,
+            self.warn, self.crit, self.measured.min, self.measured.max)
 
 
 #------------------------------------------------------------------------
@@ -133,6 +153,7 @@ class Check():
     def __call__(self):
         self.e()
         self.status = self.e.status
+        self.performance = self.e.performance
 
 
 #------------------------------------------------------------------------
@@ -155,7 +176,8 @@ def main():
     except RuntimeError as e:
         print('LOAD UNKNOWN - ' + str(e))
         sys.exit(Unkown.code)
-    print('LOAD ' + str(check.status))
+    print('LOAD ' + str(check.status) + ' | ' +
+          ' '.join([str(p) for p in check.performance]))
     sys.exit(int(check.status))
 
 
