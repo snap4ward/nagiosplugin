@@ -1,4 +1,4 @@
-# Copyright (c) 2010 gocept gmbh & co. kg
+# Copyright (c) 2011 gocept gmbh & co. kg
 # See also LICENSE.txt
 
 from setuptools import setup, find_packages
@@ -13,17 +13,18 @@ version = open(os.path.join(here, 'version.txt')).read().strip()
 
 setup(
     name='nagiosplugin',
-    version=file('version.txt').read().strip(),
+    version=open('version.txt').read().strip(),
     description='Class library for writing Nagios (Icinga) plugins',
     long_description=README + '\n\n' + HISTORY,
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 3 - Alpha',
         'Environment :: Plugins',
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
         'License :: OSI Approved :: Zope Public License',
         'Operating System :: POSIX',
         'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: System :: Monitoring',
     ],
