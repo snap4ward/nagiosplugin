@@ -1,11 +1,9 @@
-#!/usr/bin/python2.7
+# Copyright (c) 2011 gocept gmbh & co. kg
+# See also LICENSE.txt
 
-import nagiosplugin.probe
-import nagiosplugin.evaluator
-import nagiosplugin.status
 import nagiosplugin.performance
 import optparse
-import urllib.request
+import urllib2
 import time
 
 
@@ -16,7 +14,7 @@ class HTTPProbe(object):
 
     def __call__(self):
         start = time.time()
-        req = urllib.request.urlopen('http://%s/' % self.hostname)
+        req = urllib2.urlopen('http://%s/' % self.hostname)
         self.response = req.read()
         stop = time.time()
         self.responsetime = stop - start
@@ -77,5 +75,5 @@ class HTTPCheck(nagiosplugin.plugin.Plugin):
         self.performance = self.evaluator.performance
 
 
-if __name__ == '__main__':
-    nagiosplugin.main(HTTPCheck)
+def main():
+    nagiosplugin.main(HTTPCheck())

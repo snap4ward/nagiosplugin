@@ -40,7 +40,7 @@ A Plugin object defines various plugin life cycle methods::
       def __init__(self):
          pass
 
-      def cmdline_options(self, optparse):
+      def cmdline(self, optparse):
          optparse.add_option(...)
 
       def setup(self, options, arguments):
