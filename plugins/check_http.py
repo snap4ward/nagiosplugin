@@ -9,14 +9,14 @@ import urllib.request
 import time
 
 
-class HTTPProbe(nagiosplugin.probe.Probe):
+class HTTPProbe(object):
 
     def __init__(self, hostname):
         self.hostname = hostname
 
     def __call__(self):
         start = time.time()
-        req = urllib.request.urlopen('http://{}/'.format(self.hostname))
+        req = urllib.request.urlopen('http://%s/' % self.hostname)
         self.response = req.read()
         stop = time.time()
         self.responsetime = stop - start
@@ -27,60 +27,55 @@ class HTTPProbe(nagiosplugin.probe.Probe):
             'time', self.responsetime, 's', 0)
 
 
-class HTTPEvaluator(nagiosplugin.evaluator.Evaluator):
+class HTTPEvaluator(object):
 
-    def __init__(self, probe, options):
-        self.probe = probe
-        self.threshold = nagiosplugin.threshold.Threshold(
-            options.warn, options.crit)
-        self.stringmatch = options.stringmatch
+    def __init__(self, warn, crit, stringmatch=False):
+        self.threshold = nagiosplugin.threshold.Threshold(warn, crit)
+        self.stringmatch = stringmatch
 
     def __call__(self, probe):
         self.probe = probe
-        string_status = self.check_string()
-        time_status = self.check_time()
-
-    @property
-    def status(self):
-        return [string_status, time_status]
+        self.status = [self.check_string(), self.check_time()]
+        self.performance = [self.probe.performance[0] + self.threshold]
 
     def check_string(self):
-        if self.stringmatch.encode() in self.probe.response:
-            return status.Ok('{} found in response'.format(self.stringmatch))
+        if self.stringmatch and (
+            self.stringmatch.encode() in self.probe.response):
+            return status.Ok('%s found in response' % self.stringmatch)
         return status.Critical(
-            '{} not found in response'.format(self.stringmatch))
+            '%s not found in response' % self.stringmatch)
 
     def check_time(self):
-        return self.probe.responsetime in self.threshold
-
-    @property
-    def performance(self):
-        return [self.probe.performance[0] + self.threshold]
+        return self.threshold.match(self.probe.responsetime)
 
 
-class HTTPCheck(nagiosplugin.check.Check):
+class HTTPCheck(nagiosplugin.plugin.Plugin):
 
-    def cmdline_options(self, o, default_opts):
-        o.description = 'test http server for response time and output'
-        o.add_option('-s', '--string', dest='stringmatch',
+    name = 'HTTP'
+    description = "Check a HTTP server's response time and output"
+    version = '0.1'
+    default_timeout = 60
+
+    def cmdline_options(self, o):
+        o.add_option('-w', '--warning', metavar='SECONDS', dest='warning',
+                     help='warning if response time more than SECONDS')
+        o.add_option('-c', '--critical', metavar='SECONDS', dest='critical',
+                     help='warning if response time more than SECONDS')
+        o.add_option('-s', '--string', dest='stringmatch', default='',
                      help='string to expect in the content')
-        o.add_option('-C', '--certificate', type='float', default=None,
-                     help='minimum number of days a certificate has to be valid')
-        return default_opts
+        o.add_option('-H', '--hostname', dest='hostname',
+                     help='HTTP host to connect to')
 
-    def setup(self, options, arguments):
-        if options.certificate is not None:
-            self.probe = CertificateProbe(options.hostname)
-            self.evaluator = CertificateEvaluator(
-                self.probe, options.certificate)
-        else:
-            self.probe = HTTPProbe(options.hostname)
-            self.evaluator = HTTPEvaluator(self.probe, options)
+    def setup(self, opts, args):
+        self.probe = HTTPProbe(opts.hostname)
+        self.evaluator = HTTPEvaluator(opts.warning, opts.critical,
+                                       opts.stringmatch)
 
     def __call__(self):
         self.evaluator()
         self.status = self.evaluator.status
         self.performance = self.evaluator.performance
 
+
 if __name__ == '__main__':
-    nagiosplugin.main()
+    nagiosplugin.main(HTTPCheck)

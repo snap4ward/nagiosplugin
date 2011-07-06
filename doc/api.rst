@@ -32,13 +32,16 @@ transforms them into Status and Performance objects::
 A Plugin object defines various plugin life cycle methods::
 
    class Plugin(object):
+      name = 'short name'
+      description = 'plugin description'
+      version = 'plugin version'
+      default_timeout = 15
+
       def __init__(self):
          pass
 
-      def cmdline_options(self, optparse,
-                          default_options=set('-w', '-c', '-t', '-H')):
+      def cmdline_options(self, optparse):
          optparse.add_option(...)
-         return default_options
 
       def setup(self, options, arguments):
          pass
