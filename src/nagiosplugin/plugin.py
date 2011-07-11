@@ -17,13 +17,13 @@ class Plugin(object):
         name - Plugin short name
         description - One paragraph about what this plugin does
         version - Plugin version
-        default_timeout - maximal execution time if nothing else is specified
+        timeout - maximal execution time if nothing else is specified
     """
 
     name = ''
     description = ''
     version = '0.0'
-    default_timeout = 15
+    timeout = 15
 
     def __init__(self):
         """Create plugin instance.

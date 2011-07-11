@@ -1,3 +1,8 @@
+2011-07-11  Christian Kauhaus <kc@gocept.com>
+
+	* Add skeleton Plugin and Controller classes #9266.
+	* Clean up tests #9266.
+
 2010-12-17  Christian Kauhaus <kc@gocept.com>
 
 	* Fix output of large decimal numbers #8440.

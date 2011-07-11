@@ -34,12 +34,14 @@ setup(
     url='http://projects.gocept.com/projects/projects/nagiosplugin/wiki',
     download_url='http://pypi.python.org/pypi/nagiosplugin',
     license='ZPL',
+    install_requires=[
+        'mock==0.7.2',
+    ],
     packages=find_packages('src'),
     package_dir={'': 'src'},
     package_data = {'': ['*.txt', '*.rst']},
     include_package_data=True,
     zip_safe=False,
-    install_requires=[],
     test_suite='nagiosplugin.tests',
     entry_points={
         'console_scripts': [

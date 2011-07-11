@@ -4,6 +4,9 @@
 import nagiosplugin.controller
 import sys
 
+# import commonly accessed classes into main namespace
+from nagiosplugin.plugin import Plugin
+
 
 def main(check):
     controller = nagiosplugin.controller.Controller(check)

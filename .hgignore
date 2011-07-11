@@ -8,7 +8,9 @@ doc/_build
 include/python*
 .installed.cfg
 lib/python*
+mock-*.egg
 *.py[co]
 setuptools_hg*
 *.sw[po]
+tags
 tmp

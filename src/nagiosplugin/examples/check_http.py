@@ -48,14 +48,14 @@ class HTTPEvaluator(object):
         return self.threshold.match(self.probe.responsetime)
 
 
-class HTTPCheck(nagiosplugin.plugin.Plugin):
+class HTTPCheck(nagiosplugin.Plugin):
 
     name = 'HTTP'
     description = "Check a HTTP server's response time and output"
     version = '0.1'
     default_timeout = 60
 
-    def cmdline_options(self, o):
+    def cmdline(self, o):
         o.add_option('-w', '--warning', metavar='SECONDS', dest='warning',
                      help='warning if response time more than SECONDS')
         o.add_option('-c', '--critical', metavar='SECONDS', dest='critical',
