@@ -1,53 +1,54 @@
-# Copyright (c) 2010 gocept gmbh & co. kg
+# Copyright (c) 2011 gocept gmbh & co. kg
 # See also LICENSE.txt
 
 import unittest
-import nagiosplugin.test
-from nagiosplugin import range
+import nagiosplugin.range
+
+from nagiosplugin.range import Range
 
 
 class RangeParseTest(unittest.TestCase):
 
     def test_empty_range_is_zero_to_infinity(self):
-        r = range.Range('')
+        r = Range('')
         self.failIf(r.match(-0.1))
         self.failUnless(r.match(0))
         self.failUnless(r.match(1000000))
 
     def test_none_range(self):
-        self.assertEqual(range.Range(None), range.Range(u''))
+        self.assertEqual(Range(None), Range(u''))
 
     def test_explicit_start_end(self):
-        r = range.Range('0.5:4')
+        r = Range('0.5:4')
         self.failIf(r.match(0.4))
         self.failUnless(r.match(0.5))
         self.failUnless(r.match(4))
         self.failIf(r.match(5))
 
     def test_fail_if_start_gt_end(self):
-        self.assertRaises(ValueError, range.Range, u'4:3')
+        self.assertRaises(ValueError, Range, u'4:3')
 
     def test_omit_start(self):
-        r = range.Range(u'5')
+        r = Range(u'5')
         self.failIf(r.match(-0.1))
         self.failUnless(r.match(0))
         self.failUnless(r.match(5))
         self.failIf(r.match(5.1))
 
     def test_omit_end(self):
-        r = range.Range(u'7.7:')
+        r = Range(u'7.7:')
         self.failIf(r.match(7.6))
         self.failUnless(r.match(7.7))
         self.failUnless(r.match(1000000))
 
     def test_start_is_neg_infinity(self):
-        r = range.Range(u'~:5.5')
+        r = Range(u'~:5.5')
         self.failUnless(r.match(-1000000))
         self.failUnless(r.match(5.5))
         self.failIf(r.match(5.6))
 
     def test_invert(self):
-        r = range.Range(u'@-9.1:2.6')
+        r = Range(u'@-9.1:2.6')
         self.failUnless(r.match(-9.2))
         self.failIf(r.match(-9.1))
         self.failIf(r.match(2.6))
@@ -55,22 +56,22 @@ class RangeParseTest(unittest.TestCase):
 
     def test_compare_invert(self):
         (a, b) = (u'', u'@')
-        self.failIf(range.Range(a) == range.Range(b))
-        self.failUnless(range.Range(a) != range.Range(b))
+        self.failIf(Range(a) == Range(b))
+        self.failUnless(Range(a) != Range(b))
 
     def test_compare_start(self):
         (a, b) = (u'2.2:', u'4:')
-        self.failIf(range.Range(a) == range.Range(b))
-        self.failUnless(range.Range(a) != range.Range(b))
+        self.failIf(Range(a) == Range(b))
+        self.failUnless(Range(a) != Range(b))
 
     def test_compare_end(self):
         (a, b) = (u'9.7', u'4.2')
-        self.failIf(range.Range(a) == range.Range(b))
-        self.failUnless(range.Range(a) != range.Range(b))
+        self.failIf(Range(a) == Range(b))
+        self.failUnless(Range(a) != Range(b))
 
     def test_range_from_range(self):
-        orig = range.Range('@3:5')
-        copy = range.Range(orig)
+        orig = Range('@3:5')
+        copy = Range(orig)
         self.assertEqual(copy, orig)
         self.assertNotEqual(hash(copy), hash(orig))
 
@@ -78,7 +79,7 @@ class RangeParseTest(unittest.TestCase):
 class RangeStrTest(unittest.TestCase):
 
     def setUp(self):
-        self.r = range.Range()
+        self.r = Range()
 
     def test_empty(self):
         self.assertEqual(u'', str(self.r))
