@@ -40,7 +40,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[],
-    test_suite='nagiosplugin.test',
+    test_suite='nagiosplugin.tests',
     entry_points={
         'console_scripts': [
             'check_http = nagiosplugin.examples.check_http:main'
