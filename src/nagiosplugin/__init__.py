@@ -1,9 +1,10 @@
-# Nagiosplug python package
+# Copyright (c) 2011 gocept gmbh & co. kg
+# See also LICENSE.txt
 
-# abbreviate commonly used classes
-from check import Check
-from controller import Controller
-from measure import Measure
-from range import Range
-from state import State
-from cookie import Cookie, store
+import nagiosplugin.controller
+import sys
+
+
+def main(check):
+    controller = nagiosplugin.controller.Controller(check)
+    controller(sys.argv)

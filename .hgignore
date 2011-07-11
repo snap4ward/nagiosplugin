@@ -3,9 +3,12 @@ bin
 build
 develop-eggs
 dist
+doc/_build
 *.egg-info
+include/python*
 .installed.cfg
-*.pyc
-*.pyo
+lib/python*
+*.py[co]
 setuptools_hg*
+*.sw[po]
 tmp

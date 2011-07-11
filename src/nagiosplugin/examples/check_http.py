@@ -2,6 +2,7 @@
 # See also LICENSE.txt
 
 import nagiosplugin.performance
+import nagiosplugin.plugin
 import optparse
 import urllib2
 import time
