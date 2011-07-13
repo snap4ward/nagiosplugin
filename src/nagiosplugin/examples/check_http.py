@@ -60,7 +60,7 @@ class HTTPCheck(nagiosplugin.Plugin):
                      help='warning if response time more than SECONDS')
         o.add_option('-c', '--critical', metavar='SECONDS', dest='critical',
                      help='critical if response time more than SECONDS')
-        o.add_option('-s', '--stringmatch', metavar='STRING', 
+        o.add_option('-s', '--stringmatch', metavar='STRING',
                      dest='stringmatch', default='',
                      help='HTTP response must contain STRING')
         o.add_option('-H', '--hostname', dest='hostname',

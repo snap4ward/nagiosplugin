@@ -56,8 +56,8 @@ class Plugin(object):
     def message(self, states, performances=None):
         """Synthesize status messages into main message.
 
-        If there are several status objects returned, this method can be used to
-        provide a more helpful textual output. The default implementation
+        If there are several status objects returned, this method can be used
+        to provide a more helpful textual output. The default implementation
         concats the message lines from all state objects passed. The return
         value should be a list of strings.
         """

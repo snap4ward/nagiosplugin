@@ -68,7 +68,6 @@ class State(object):
         return other
 
 
-
 class Ok(State):
     code = 0
     word = u'OK'
