@@ -1,19 +1,7 @@
-# Copyright (c) 2010 gocept gmbh & co. kg
+# Copyright (c) 2011 gocept gmbh & co. kg
 # See also LICENSE.txt
 
-
-def reduce(state1, state2):
-    """Prune non-dominant states and concat messages of dominant states.
-
-    The set of dominant states is constructed from all states which share the
-    highest status code.
-    """
-    if state1 == state2:
-        state1.messages.extend(state2.messages)
-        return state1
-    elif state1 > state2:
-        return state1
-    return state2
+"""Define state types that represent the check outcomes defined by Nagios."""
 
 
 class State(object):
@@ -63,6 +51,22 @@ class State(object):
 
     def __repr__(self):
         return u'%s(%r)' % (self.__class__.__name__, self.messages)
+
+    def __add__(self, other):
+        """Combine two states.
+
+        The result has the type of the dominant state and the messages are
+        concatenated both arguments are of the dominant state.
+        """
+        if not isinstance(other, State):
+            raise TypeError("cannot add '%s' and '%s' objects" % (
+                            self.__class__, other.__class__))
+        if self == other:
+            return self.__class__(self.messages + other.messages)
+        elif self > other:
+            return self
+        return other
+
 
 
 class Ok(State):

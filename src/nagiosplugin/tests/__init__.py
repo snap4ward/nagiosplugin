@@ -19,9 +19,17 @@ class TestCase(unittest.TestCase):
             self.assertIsInstance
         except AttributeError:
             self.assertIsInstance = self._assertIsInstance
+        try:
+            self.assertListEqual
+        except AttributeError:
+            self.assertListEqual = self._assertListEqual
 
     def _assertIsInstance(self, obj, cls, message=None):
         """Test that obj is (or is not) an instance of cls."""
         self.assert_(isinstance(obj, cls),
                      message or '%r is not an instance of %r' % (
                          obj, cls))
+
+    def _assertListEqual(self, list1, list2, message=None):
+        """Tests that two lists are equal."""
+        self.assertEqual(list1, list2, message)

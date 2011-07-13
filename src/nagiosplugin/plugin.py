@@ -5,6 +5,7 @@
 
 import nagiosplugin.probe
 import nagiosplugin.evaluator
+import operator
 
 
 class Plugin(object):
@@ -49,5 +50,15 @@ class Plugin(object):
         Custom plugins should evaluate the options and generate the probe and
         evaluator objects according to the argument passed in here.
         """
-        self.probe = nagiosplugin.probe.Probe()
-        self.evaluator = nagiosplugin.evaluator.Evaluator()
+        self.probe = nagiosplugin.Probe()
+        self.evaluator = nagiosplugin.Evaluator()
+
+    def message(self, states, performances=None):
+        """Synthesize status messages into main message.
+
+        If there are several status objects returned, this method can be used to
+        provide a more helpful textual output. The default implementation
+        concats the message lines from all state objects passed. The return
+        value should be a list of strings.
+        """
+        return reduce(operator.add, states).messages

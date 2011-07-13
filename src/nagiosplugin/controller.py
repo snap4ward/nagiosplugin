@@ -17,9 +17,9 @@ class Controller(object):
         self.optp = optparse.OptionParser(
             description=self.plugin.description, version=self.plugin.version)
         self.optp.add_option(
-            '-t', '--timeout', metavar='T', dest='timeout',
+            '-t', '--timeout', metavar='SECONDS', dest='timeout',
             default=self.plugin.timeout,
-            help='terminate plugin execution after T seconds')
+            help='terminate plugin execution after SECONDS (default: %default)')
         self.plugin.cmdline(self.optp)
         self.options, self.arguments = self.optp.parse_args(argv)
 
