@@ -4,11 +4,12 @@
 import optparse
 import unittest
 import nagiosplugin.controller
+import nagiosplugin.tests
 
 from nagiosplugin.controller import Controller
 
 
-class ControllerTest(unittest.TestCase):
+class ControllerTest(nagiosplugin.tests.TestCase):
 
     def test_init_should_fail_without_plugin_instance(self):
         self.assertRaises(ValueError, Controller, 'foo')
