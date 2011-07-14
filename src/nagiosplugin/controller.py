@@ -22,7 +22,8 @@ class Controller(object):
             help='terminate plugin execution after SECONDS '
             '(default: %default)')
         self.plugin.cmdline(self.optp)
-        self.options, self.arguments = self.optp.parse_args(argv)
+        options, arguments = self.optp.parse_args(argv)
+        self.plugin.setup(options, arguments)
 
     def __call__(self, argv=None):
         """Main plugin life cycle."""

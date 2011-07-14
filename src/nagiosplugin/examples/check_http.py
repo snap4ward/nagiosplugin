@@ -3,6 +3,7 @@
 
 import nagiosplugin.performance
 import nagiosplugin.plugin
+import nagiosplugin
 import optparse
 import urllib2
 import time
@@ -29,7 +30,7 @@ class HTTPProbe(object):
 class HTTPEvaluator(object):
 
     def __init__(self, warn, crit, stringmatch=False):
-        self.threshold = nagiosplugin.threshold.Threshold(warn, crit)
+        self.threshold = nagiosplugin.Threshold(warn, crit)
         self.stringmatch = stringmatch
 
     def __call__(self, probe):
@@ -50,21 +51,21 @@ class HTTPEvaluator(object):
 
 class HTTPCheck(nagiosplugin.Plugin):
 
-    name = 'HTTP'
-    description = "Check a HTTP server's response time and output"
-    version = '0.1'
+    name = u'HTTP'
+    description = u"Check a HTTP server's response time and output"
+    version = u'0.1'
     timeout = 60
 
     def cmdline(self, o):
         o.add_option('-w', '--warning', metavar='SECONDS', dest='warning',
-                     help='warning if response time more than SECONDS')
+                     help=u'warning if response time more than SECONDS')
         o.add_option('-c', '--critical', metavar='SECONDS', dest='critical',
-                     help='critical if response time more than SECONDS')
+                     help=u'critical if response time more than SECONDS')
         o.add_option('-s', '--stringmatch', metavar='STRING',
                      dest='stringmatch', default='',
-                     help='HTTP response must contain STRING')
+                     help=u'HTTP response must contain STRING')
         o.add_option('-H', '--hostname', dest='hostname',
-                     help='HTTP host to connect to')
+                     help=u'HTTP host to connect to')
 
     def setup(self, opts, args):
         self.probe = HTTPProbe(opts.hostname)

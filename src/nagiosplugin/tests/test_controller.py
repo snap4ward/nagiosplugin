@@ -23,3 +23,12 @@ class ControllerTest(nagiosplugin.tests.TestCase):
         c = Controller(plugin)
         c()
         self.assert_(plugin.called)
+
+    def test_controller_calls_setup(self):
+        class SetupCheck(nagiosplugin.Plugin):
+            def setup(plugin, opts, args):
+                plugin.called = True
+        plugin = SetupCheck()
+        c = Controller(plugin)
+        c()
+        self.assert_(plugin.called)

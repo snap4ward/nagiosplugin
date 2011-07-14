@@ -8,6 +8,8 @@ import sys
 from nagiosplugin.evaluator import Evaluator
 from nagiosplugin.plugin import Plugin
 from nagiosplugin.probe import Probe
+from nagiosplugin.range import Range
+from nagiosplugin.threshold import Threshold
 
 
 def main(check):

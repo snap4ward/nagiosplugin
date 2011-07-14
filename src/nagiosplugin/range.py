@@ -12,7 +12,8 @@ class Range(object):
     infinity is assumed. To invert the match condition, prefix the range
     expression with `@`.
 
-    See http://nagiosplug.sourceforge.net/developer-guidelines.html#THRESHOLDFORMAT
+    See
+    http://nagiosplug.sourceforge.net/developer-guidelines.html#THRESHOLDFORMAT
     for details.
     """
 
@@ -59,7 +60,7 @@ class Range(object):
                              self.start, self.end))
 
     def match(self, value):
-        """Decide if `value` is inside/outside the bounds."""
+        """Return True if `value` is inside the bounds (~ inversion)."""
         if self.start is not None and value < self.start:
             return False ^ self.invert
         if self.end is not None and value > self.end:
