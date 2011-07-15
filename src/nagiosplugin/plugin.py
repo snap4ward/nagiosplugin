@@ -50,8 +50,8 @@ class Plugin(object):
         Custom plugins should evaluate the options and generate the probe and
         evaluator objects according to the argument passed in here.
         """
-        self.probe = nagiosplugin.Probe()
-        self.evaluator = nagiosplugin.Evaluator()
+        self.probe = nagiosplugin.probe.Probe()
+        self.evaluator = nagiosplugin.evaluator.Evaluator()
 
     def message(self, states, performances=None):
         """Synthesize status messages into main message.

@@ -4,6 +4,7 @@
 """Test MeasuredPerformance and Performance classes."""
 
 import nagiosplugin
+import nagiosplugin.tests
 import unittest
 
 from nagiosplugin.performance import MeasuredPerformance, Performance
@@ -28,7 +29,7 @@ class MeasuredPerformanceTest(unittest.TestCase):
                             MeasuredPerformance(1, 's'))
 
 
-class PerformanceTest(unittest.TestCase):
+class PerformanceTest(nagiosplugin.tests.TestCase):
 
     def test_eq(self):
         self.assertEqual(Performance(10, 'B', 0, critical='1:'),

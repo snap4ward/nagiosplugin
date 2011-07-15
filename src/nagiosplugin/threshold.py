@@ -3,8 +3,8 @@
 
 """Define Threshold class."""
 
+import nagiosplugin.range
 import nagiosplugin.state
-import nagiosplugin
 
 
 class Threshold(object):
@@ -15,8 +15,8 @@ class Threshold(object):
         if warning is None and critical is None:
             raise ValueError(u'Threshold needs at least one of warning and '
                              u'critical')
-        self.warning = nagiosplugin.Range(warning)
-        self.critical = nagiosplugin.Range(critical)
+        self.warning = nagiosplugin.range.Range(warning)
+        self.critical = nagiosplugin.range.Range(critical)
 
     def __add__(self, measuredperformance):
         """Combine this with a MeasuredPerformance to a Performance."""
