@@ -21,9 +21,10 @@ class Plugin(object):
         timeout - maximal execution time if nothing else is specified
     """
 
-    name = ''
-    description = ''
-    version = '0.0'
+    name = u''
+    description = u''
+    version = u'0.0'
+    usage = u''
     timeout = 15
 
     def __init__(self):

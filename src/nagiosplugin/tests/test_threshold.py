@@ -12,9 +12,6 @@ from nagiosplugin.threshold import Threshold
 
 class ThresholdTests(nagiosplugin.tests.TestCase):
 
-    def test_init_should_fail_if_neither_range_given(self):
-        self.assertRaises(ValueError, Threshold)
-
     def test_threshold_should_build_range_objects(self):
         t = Threshold('0', '20')
         self.assertIsInstance(t.warning, nagiosplugin.Range)

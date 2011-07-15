@@ -6,9 +6,6 @@
     <note priority="medium" time="1310662498" done="1310732755">
         Review Range class and tests
     </note>
-    <note priority="medium" time="1310662937" done="1310738074">
-        Review MeasuredPerformance
-    </note>
     <note priority="medium" time="1310662933" done="1310738949">
         Review Performance
         <note priority="medium" time="1310662969" done="1310738946">
@@ -18,7 +15,13 @@
             Threshold.__add__(performance)
         </note>
     </note>
-    <note priority="low" time="1310662613">
+    <note priority="medium" time="1310662937" done="1310738074">
+        Review MeasuredPerformance
+    </note>
+    <note priority="medium" time="1310740217">
+        rename cmdline to commandline
+    </note>
+    <note priority="low" time="1310662613" done="1310740690">
         check_http should fail if there is no host given
     </note>
     <note priority="low" time="1310662686">

@@ -12,9 +12,6 @@ class Threshold(object):
 
     def __init__(self, warning=None, critical=None):
         """Create Threshold object with `warning` and `critical` ranges."""
-        if warning is None and critical is None:
-            raise ValueError(u'Threshold needs at least one of warning and '
-                             u'critical')
         self.warning = nagiosplugin.range.Range(warning)
         self.critical = nagiosplugin.range.Range(critical)
 

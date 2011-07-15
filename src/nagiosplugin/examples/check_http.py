@@ -53,14 +53,15 @@ class HTTPCheck(nagiosplugin.Plugin):
 
     name = u'HTTP'
     description = u"Check a HTTP server's response time and output"
+    usage = u'%prog -H HOSTNAME [options]'
     version = u'0.1'
     timeout = 60
 
     def cmdline(self, o):
         o.add_option('-w', '--warning', metavar='SECONDS', dest='warning',
-                     help=u'warning if response time more than SECONDS')
+                     help=u'warning if response time is more than SECONDS')
         o.add_option('-c', '--critical', metavar='SECONDS', dest='critical',
-                     help=u'critical if response time more than SECONDS')
+                     help=u'critical if response time is more than SECONDS')
         o.add_option('-s', '--stringmatch', metavar='STRING',
                      dest='stringmatch', default='',
                      help=u'HTTP response must contain STRING')
@@ -68,6 +69,8 @@ class HTTPCheck(nagiosplugin.Plugin):
                      help=u'HTTP host to connect to')
 
     def setup(self, opts, args):
+        if not opts.hostname:
+            raise RuntimeError(u'need at least a hostname')
         self.probe = HTTPProbe(opts.hostname)
         self.evaluator = HTTPEvaluator(opts.warning, opts.critical,
                                        opts.stringmatch)

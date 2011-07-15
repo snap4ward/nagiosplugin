@@ -15,7 +15,8 @@ class Controller(object):
     def options(self, argv):
         """Set up and parse command line options."""
         self.optp = optparse.OptionParser(
-            description=self.plugin.description, version=self.plugin.version)
+            description=self.plugin.description, usage=self.plugin.usage,
+            version=self.plugin.version)
         self.optp.add_option(
             '-t', '--timeout', metavar='SECONDS', dest='timeout',
             default=self.plugin.timeout,
