@@ -19,8 +19,8 @@ class Threshold(object):
         self.critical = nagiosplugin.range.Range(critical)
 
     def __add__(self, measuredperformance):
-        """Combine this with a MeasuredPerformance to a Performance."""
-        pass
+        """Combine this with `measuredperformance` to a Performance object."""
+        return measuredperformance.__add__(self)
 
     def match(self, value, crit_msg=None, warn_msg=None, ok_msg=None):
         """Return State object depending on value and ranges.

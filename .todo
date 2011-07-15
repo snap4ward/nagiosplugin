@@ -6,17 +6,17 @@
     <note priority="medium" time="1310662498" done="1310732755">
         Review Range class and tests
     </note>
-    <note priority="medium" time="1310662933">
-        Review Performance
-        <note priority="medium" time="1310662969">
-            Performance.__add__(threshold)
-        </note>
-        <note priority="medium" time="1310732437">
-            Threshold.__add__(performance)
-        </note>
-    </note>
     <note priority="medium" time="1310662937" done="1310738074">
         Review MeasuredPerformance
+    </note>
+    <note priority="medium" time="1310662933" done="1310738949">
+        Review Performance
+        <note priority="medium" time="1310662969" done="1310738946">
+            Performance.__add__(threshold)
+        </note>
+        <note priority="medium" time="1310732437" done="1310738948">
+            Threshold.__add__(performance)
+        </note>
     </note>
     <note priority="low" time="1310662613">
         check_http should fail if there is no host given

@@ -75,3 +75,14 @@ class PerformanceTest(nagiosplugin.tests.TestCase):
         self.assertRaises(ValueError, Performance, 51,
                           warning='3', critical='23',
                           threshold=nagiosplugin.Threshold('45:', '5:'))
+
+    def test_measuredperformance_plus_threshold_gives_performance(self):
+        mp = MeasuredPerformance(48, 'B/s', 0, 1000000)
+        t = nagiosplugin.Threshold('100:600000', '800000')
+        self.assertEqual(mp + t, Performance(
+            48, 'B/s', 0, 1000000, '100:600000', '800000'))
+
+    def test_threshold_plus_measuredperformance_gives_performance(self):
+        mp = MeasuredPerformance(48, 'B/s', 0, 1000000)
+        t = nagiosplugin.Threshold('100:600000', '800000')
+        self.assertEqual(mp + t, t + mp)

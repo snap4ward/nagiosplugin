@@ -29,6 +29,7 @@ class MeasuredPerformance(object):
         self.check()
 
     def __eq__(self, other):
+        """Return True if this object's values equal `other`'s values."""
         if isinstance(other, MeasuredPerformance):
             return self.__dict__ == other.__dict__
         raise TypeError('cannot compare %r to %r' % (
@@ -38,9 +39,14 @@ class MeasuredPerformance(object):
         return not self.__eq__(other)
 
     def __repr__(self):
+        """Return parseable string representation."""
         return '%s(%g, %r, %r, %r)' % (
             self.__class__.__name__, self.value, self.uom, self.minimum,
             self.maximum)
+
+    def __add__(self, threshold):
+        """Combine this object with `threshold` to a Performance object."""
+        return Performance(self, threshold=threshold)
 
     def check(self):
         """Check values for consistency."""
