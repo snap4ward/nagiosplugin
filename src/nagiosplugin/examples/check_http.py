@@ -57,7 +57,7 @@ class HTTPCheck(nagiosplugin.Plugin):
     version = u'0.1'
     timeout = 60
 
-    def cmdline(self, o):
+    def commandline(self, o):
         o.add_option('-w', '--warning', metavar='SECONDS', dest='warning',
                      help=u'warning if response time is more than SECONDS')
         o.add_option('-c', '--critical', metavar='SECONDS', dest='critical',

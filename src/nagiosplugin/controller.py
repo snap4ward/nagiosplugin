@@ -22,7 +22,7 @@ class Controller(object):
             default=self.plugin.timeout,
             help='terminate plugin execution after SECONDS '
             '(default: %default)')
-        self.plugin.cmdline(self.optp)
+        self.plugin.commandline(self.optp)
         options, arguments = self.optp.parse_args(argv)
         self.plugin.setup(options, arguments)
 

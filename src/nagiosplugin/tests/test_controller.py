@@ -14,9 +14,9 @@ class ControllerTest(nagiosplugin.tests.TestCase):
     def test_init_should_fail_without_plugin_instance(self):
         self.assertRaises(ValueError, Controller, 'foo')
 
-    def test_controller_calls_cmdline(self):
+    def test_controller_calls_commandline(self):
         class CmdlineCheck(nagiosplugin.Plugin):
-            def cmdline(plugin, o):
+            def commandline(plugin, o):
                 self.assertIsInstance(o, optparse.OptionParser)
                 plugin.called = True
         plugin = CmdlineCheck()

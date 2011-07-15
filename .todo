@@ -18,11 +18,11 @@
     <note priority="medium" time="1310662937" done="1310738074">
         Review MeasuredPerformance
     </note>
-    <note priority="medium" time="1310740217">
-        rename cmdline to commandline
-    </note>
     <note priority="low" time="1310662613" done="1310740690">
         check_http should fail if there is no host given
+    </note>
+    <note priority="medium" time="1310740217" done="1310740861">
+        rename cmdline to commandline
     </note>
     <note priority="low" time="1310662686">
         Logging

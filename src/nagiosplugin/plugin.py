@@ -35,7 +35,7 @@ class Plugin(object):
         """
         pass
 
-    def cmdline(self, optparse):
+    def commandline(self, optparse):
         """Define command line parameters for this plugin.
 
         An standard optparse.OptionParser object is passed and should be
