@@ -40,9 +40,9 @@ class MeasuredPerformance(object):
 
     def __repr__(self):
         """Return parseable string representation."""
-        return '%s(%g, %r, %r, %r)' % (
-            self.__class__.__name__, self.value, self.uom, self.minimum,
-            self.maximum)
+        return '%s(%s, %r, %r, %r)' % (
+            self.__class__.__name__, self.value, self.uom,
+            self.minimum, self.maximum)
 
     def __add__(self, threshold):
         """Combine this object with `threshold` to a Performance object."""
@@ -51,7 +51,7 @@ class MeasuredPerformance(object):
     def check(self):
         """Check values for consistency."""
         if self.minimum is not None and self.value < self.minimum:
-            raise ValueError(u'values %s is less than minimum %s' % (
+            raise ValueError(u'value %s is less than minimum %s' % (
                 self.value, self.minimum))
         if self.maximum is not None and self.value > self.maximum:
             raise ValueError(u'values %s is greater than maximum %s' % (
@@ -113,6 +113,16 @@ class Performance(MeasuredPerformance):
 
     def __repr__(self):
         """Return parseable string representation."""
-        return "%s(%g, %r, %r, %r, '%s', '%s')" % (
+        return "%s(%s, %r, %r, %r, '%s', '%s')" % (
             self.__class__.__name__, self.value, self.uom, self.minimum,
             self.maximum, self.warning, self.critical)
+
+    def __str__(self):
+        """Return string representation conforming to the plugin API.
+
+        The format is VALUE[OUM[;WARNING[;CRITICAL[;MIN[;MAX]]]]].
+        """
+        words = [(str(e) if e is not None else '') for e in [
+                 self.uom, self.warning, self.critical,
+                 self.minimum, self.maximum]]
+        return '%s%s' % (self.value, ';'.join(words).rstrip(';'))

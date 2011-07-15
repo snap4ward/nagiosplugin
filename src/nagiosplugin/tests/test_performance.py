@@ -13,10 +13,12 @@ from nagiosplugin.performance import MeasuredPerformance, Performance
 class MeasuredPerformanceTest(unittest.TestCase):
 
     def test_should_raise_if_greater_than_maximum(self):
-        self.assertRaises(ValueError, MeasuredPerformance, 11, maximum=10)
+        self.assertRaises(ValueError, MeasuredPerformance, 11,
+                          maximum=10)
 
     def test_should_raise_if_less_than_minimum(self):
-        self.assertRaises(ValueError, MeasuredPerformance, -0.5, minimum=0)
+        self.assertRaises(ValueError, MeasuredPerformance,
+                          -0.5, minimum=0)
 
     def test_repr(self):
         self.assertEqual("MeasuredPerformance(3, 'B', 0, None)",
@@ -86,3 +88,14 @@ class PerformanceTest(nagiosplugin.tests.TestCase):
         mp = MeasuredPerformance(48, 'B/s', 0, 1000000)
         t = nagiosplugin.Threshold('100:600000', '800000')
         self.assertEqual(mp + t, t + mp)
+
+    def test_str_naked_value(self):
+        self.assertEqual('26', str(Performance(26)))
+
+    def test_str_value_uom_warn_crit(self):
+        self.assertEqual(
+            '42bps;10:100;500',
+            str(Performance(42, 'bps', warning='10:100', critical='500')))
+
+    def test_str_value_minimum(self):
+        self.assertEqual('-35;;;;0', str(Performance(-35, maximum=0)))

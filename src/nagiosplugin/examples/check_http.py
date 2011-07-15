@@ -23,8 +23,8 @@ class HTTPProbe(object):
 
     @property
     def performance(self):
-        return performance.MeasuredPerformance(
-            'time', self.responsetime, 's', 0)
+        return nagiosplugin.MeasuredPerformance(
+            self.responsetime, 's', 0)
 
 
 class HTTPEvaluator(object):
@@ -35,14 +35,15 @@ class HTTPEvaluator(object):
 
     def __call__(self, probe):
         self.probe = probe
-        self.status = [self.check_string(), self.check_time()]
-        self.performance = [self.probe.performance[0] + self.threshold]
+        self.state = [self.check_string(), self.check_time()]
+        self.performance = [self.probe.performance + self.threshold]
 
     def check_string(self):
         if self.stringmatch and (
             self.stringmatch.encode() in self.probe.response):
-            return status.Ok('%s found in response' % self.stringmatch)
-        return status.Critical(
+            return nagiosplugin.state.Ok('%s found in response' %
+                                         self.stringmatch)
+        return nagiosplugin.state.Critical(
             '%s not found in response' % self.stringmatch)
 
     def check_time(self):
