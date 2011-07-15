@@ -74,6 +74,10 @@ class RangeParseTest(unittest.TestCase):
         self.assertEqual(copy, orig)
         self.assertNotEqual(hash(copy), hash(orig))
 
+    def test_eq(self):
+        self.assertEqual(Range('@5:'), Range('@5:'))
+        self.assertNotEqual(Range('5:'), Range('@5:'))
+
 
 class RangeStrTest(unittest.TestCase):
 

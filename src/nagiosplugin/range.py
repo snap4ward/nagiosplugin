@@ -86,10 +86,11 @@ class Range(object):
 
     def __eq__(self, other):
         """True if both objects represent the same value range."""
-        return all(map(lambda a: getattr(self, a) == getattr(other, a),
-                       self.__dict__.keys()))
+        if isinstance(other, Range):
+            return self.__dict__ == other.__dict__
+        return TypeError('cannot compare %r to %r' % (
+            self.__class__, other.__class__))
 
     def __ne__(self, other):
         """True if the value ranges of both objects differ."""
-        return any(map(lambda a: getattr(self, a) != getattr(other, a),
-                       self.__dict__.keys()))
+        return not self.__eq__(other)

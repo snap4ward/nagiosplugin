@@ -15,6 +15,11 @@ class ThresholdTests(nagiosplugin.tests.TestCase):
     def test_init_should_fail_if_neither_range_given(self):
         self.assertRaises(ValueError, Threshold)
 
+    def test_threshold_should_build_range_objects(self):
+        t = Threshold('0', '20')
+        self.assertIsInstance(t.warning, nagiosplugin.Range)
+        self.assertIsInstance(t.critical, nagiosplugin.Range)
+
     def test_in_both_ranges_should_return_ok(self):
         t = Threshold(nagiosplugin.Range('5'), nagiosplugin.Range('6'))
         self.assertIsInstance(t.match(3), nagiosplugin.state.Ok)

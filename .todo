@@ -15,7 +15,7 @@
             Threshold.__add__(performance)
         </note>
     </note>
-    <note priority="medium" time="1310662937">
+    <note priority="medium" time="1310662937" done="1310738074">
         Review MeasuredPerformance
     </note>
     <note priority="low" time="1310662613">
