@@ -1,22 +1,25 @@
 <?xml version="1.0"?>
 <todo version="0.1.20">
-    <note priority="high" time="1310662474">
+    <note priority="high" time="1310662474" done="1310732440">
         Threshold class with checks
     </note>
-    <note priority="medium" time="1310662498">
+    <note priority="medium" time="1310662498" done="1310732755">
         Review Range class and tests
-    </note>
-    <note priority="medium" time="1310662613">
-        check_http should fail if there is no host given
     </note>
     <note priority="medium" time="1310662933">
         Review Performance
         <note priority="medium" time="1310662969">
             Performance.__add__(threshold)
         </note>
+        <note priority="medium" time="1310732437">
+            Threshold.__add__(performance)
+        </note>
     </note>
     <note priority="medium" time="1310662937">
         Review MeasuredPerformance
+    </note>
+    <note priority="low" time="1310662613">
+        check_http should fail if there is no host given
     </note>
     <note priority="low" time="1310662686">
         Logging
