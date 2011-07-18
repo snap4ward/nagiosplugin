@@ -10,63 +10,68 @@ class RangeParseTest(unittest.TestCase):
 
     def test_empty_range_is_zero_to_infinity(self):
         r = Range('')
-        self.failIf(r.match(-0.1))
-        self.failUnless(r.match(0))
-        self.failUnless(r.match(1000000))
+        self.assertFalse(r.match(-0.1))
+        self.assertTrue(r.match(0))
+        self.assertTrue(r.match(1000000))
 
     def test_none_range(self):
         self.assertEqual(Range(None), Range(''))
 
     def test_explicit_start_end(self):
         r = Range('0.5:4')
-        self.failIf(r.match(0.4))
-        self.failUnless(r.match(0.5))
-        self.failUnless(r.match(4))
-        self.failIf(r.match(5))
+        self.assertFalse(r.match(0.4))
+        self.assertTrue(r.match(0.5))
+        self.assertTrue(r.match(4))
+        self.assertFalse(r.match(5))
 
     def test_fail_if_start_gt_end(self):
         self.assertRaises(ValueError, Range, '4:3')
 
     def test_omit_start(self):
         r = Range('5')
-        self.failIf(r.match(-0.1))
-        self.failUnless(r.match(0))
-        self.failUnless(r.match(5))
-        self.failIf(r.match(5.1))
+        self.assertFalse(r.match(-0.1))
+        self.assertTrue(r.match(0))
+        self.assertTrue(r.match(5))
+        self.assertFalse(r.match(5.1))
 
     def test_omit_end(self):
         r = Range('7.7:')
-        self.failIf(r.match(7.6))
-        self.failUnless(r.match(7.7))
-        self.failUnless(r.match(1000000))
+        self.assertFalse(r.match(7.6))
+        self.assertTrue(r.match(7.7))
+        self.assertTrue(r.match(1000000))
 
     def test_start_is_neg_infinity(self):
         r = Range('~:5.5')
-        self.failUnless(r.match(-1000000))
-        self.failUnless(r.match(5.5))
-        self.failIf(r.match(5.6))
+        self.assertTrue(r.match(-1000000))
+        self.assertTrue(r.match(5.5))
+        self.assertFalse(r.match(5.6))
 
     def test_invert(self):
         r = Range('@-9.1:2.6')
-        self.failUnless(r.match(-9.2))
-        self.failIf(r.match(-9.1))
-        self.failIf(r.match(2.6))
-        self.failUnless(r.match(2.7))
+        self.assertTrue(r.match(-9.2))
+        self.assertFalse(r.match(-9.1))
+        self.assertFalse(r.match(2.6))
+        self.assertTrue(r.match(2.7))
+
+    def test_in(self):
+        r = Range('-0.5:0.5')
+        self.assertTrue(0 in r)
+        self.assertTrue(1 not in r)
 
     def test_compare_invert(self):
         (a, b) = ('', '@')
-        self.failIf(Range(a) == Range(b))
-        self.failUnless(Range(a) != Range(b))
+        self.assertFalse(Range(a) == Range(b))
+        self.assertTrue(Range(a) != Range(b))
 
     def test_compare_start(self):
         (a, b) = ('2.2:', '4:')
-        self.failIf(Range(a) == Range(b))
-        self.failUnless(Range(a) != Range(b))
+        self.assertFalse(Range(a) == Range(b))
+        self.assertTrue(Range(a) != Range(b))
 
     def test_compare_end(self):
         (a, b) = ('9.7', '4.2')
-        self.failIf(Range(a) == Range(b))
-        self.failUnless(Range(a) != Range(b))
+        self.assertFalse(Range(a) == Range(b))
+        self.assertTrue(Range(a) != Range(b))
 
     def test_range_from_range(self):
         orig = Range('@3:5')

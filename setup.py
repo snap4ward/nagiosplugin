@@ -35,7 +35,6 @@ setup(
     download_url='http://pypi.python.org/pypi/nagiosplugin',
     license='ZPL',
     install_requires=[
-        'mock==0.7.2',
     ],
     packages=find_packages('src'),
     package_dir={'': 'src'},

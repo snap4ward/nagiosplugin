@@ -67,6 +67,9 @@ class Range(object):
             return False ^ self.invert
         return True ^ self.invert
 
+    def __contains__(self, value):
+        return self.match(value)
+
     def __str__(self):
         """Return a human-readable range specification."""
         result = []

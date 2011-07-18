@@ -36,3 +36,13 @@ class ThresholdTests(nagiosplugin.tests.TestCase):
     def test_omit_critical(self):
         t = Threshold(warning=nagiosplugin.Range('1:3'))
         self.assertIsInstance(t.match(2), nagiosplugin.state.Ok)
+
+    def test_specific_message(self):
+        t = Threshold(warning='1:5')
+        state = t.match(6, warning_msg='warning message')
+        self.assertEqual(['warning message'], state.messages)
+
+    def test_default_message(self):
+        t = Threshold(critical='3')
+        state = t.match(-1, default_msg='default message')
+        self.assertEqual(['default message'], state.messages)
