@@ -1,8 +1,8 @@
-nagiosplugin
-============
+The nagiosplugin library
+========================
 
-Features
---------
+About
+-----
 
 `nagiosplugin` is a class library which helps writing Nagios (or Icinga)
 compatible plugins easily in Python. It cares for much of the boilerplate code
@@ -17,16 +17,6 @@ and default logic commonly found in Nagios checks, including:
 - Timeout handling
 - Default options
 - Persistent "cookies" to retain state information between check runs.
-
-
-Documentation
--------------
-
-To get started writing Nagios plugins, see the examples in the `examples`
-subdirectory.
-
-More documentation on using this package can be found in the `doc` directory.
-There is also an `online copy`_ of the docs available.
 
 
 Feedback and Suggestions
@@ -45,6 +35,16 @@ License
 
 The `nagiosplugin` package is released the Zope Public License (ZPL), a BSD-style Open Source license.
 
+
+Documentation
+-------------
+
+To get started writing Nagios plugins, see the examples in the `examples`
+subdirectory.
+
+More documentation on using this package can be found in the `doc`
+directory.  There is also an `online copy`_ of the docs available.
+
 .. _online copy: http://packages.python.org/nagiosplugin/
 
-.. vim: set ft=rst sw=3 sts=3 et:
+.. vim: set ft=rst:

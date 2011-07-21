@@ -2,6 +2,12 @@
 
 	* Add skeleton Plugin and Controller classes #9266.
 	* Clean up tests #9266.
+	* Improve MANIFEST.in to include doc and examples (#8555).
+
+2011-07-04  Christian Kauhaus <kc@gocept.com>
+
+	* Replace unicode strings through ASCII strings on all optparse
+	invocations (#8755).
 
 2010-12-17  Christian Kauhaus <kc@gocept.com>
 

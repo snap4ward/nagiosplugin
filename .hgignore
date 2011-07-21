@@ -7,8 +7,8 @@ doc/_build
 *.egg-info
 include/python*
 .installed.cfg
-lib/python*
 lib64
+lib/python*
 mock-*.egg
 *.py[co]
 setuptools_hg*

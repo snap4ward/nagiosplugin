@@ -38,7 +38,7 @@ setup(
     ],
     packages=find_packages('src'),
     package_dir={'': 'src'},
-    package_data = {'': ['*.txt', '*.rst']},
+    package_data={'': ['*.txt', '*.rst']},
     include_package_data=True,
     zip_safe=False,
     test_suite='nagiosplugin.tests',
@@ -47,4 +47,5 @@ setup(
             'check_http = nagiosplugin.examples.check_http:main'
         ]
     }
+    install_requires=[],
 )
