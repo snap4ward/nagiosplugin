@@ -17,7 +17,7 @@ class HTTPProbe(object):
 
     def __call__(self):
         start = time.time()
-        req = urllib2.urlopen('http://%s/' % self.hostname)
+        req = urllib2.urlopen('http://{0}/'.format(self.hostname))
         self.response = req.read()
         stop = time.time()
         self.responsetime = stop - start
@@ -30,7 +30,7 @@ class HTTPProbe(object):
 
 class HTTPEvaluator(object):
 
-    def __init__(self, warn, crit, stringmatch=False):
+    def __init__(self, warn, crit, stringmatch=None):
         self.threshold = nagiosplugin.Threshold(warn, crit)
         self.stringmatch = stringmatch
 
@@ -40,15 +40,18 @@ class HTTPEvaluator(object):
         self.performance = [self.probe.performance + self.threshold]
 
     def check_string(self):
-        if self.stringmatch and (
-            self.stringmatch.encode() in self.probe.response):
-            return nagiosplugin.state.Ok('%s found in response' %
-                                         self.stringmatch)
+        if not self.stringmatch:
+            return nagiosplugin.state.Ok()
+        if self.stringmatch.encode() in self.probe.response:
+            return nagiosplugin.state.Ok('"{0}" found in response'.format(
+                                         self.stringmatch))
         return nagiosplugin.state.Critical(
-            '%s not found in response' % self.stringmatch)
+            '"{0}" not found in response'.format(self.stringmatch))
 
     def check_time(self):
-        return self.threshold.match(self.probe.responsetime)
+        return self.threshold.match(
+            self.probe.responsetime, u'{0} B in {1:.3g} s'.format(
+            len(self.probe.response), self.probe.responsetime))
 
 
 def main():
@@ -57,14 +60,14 @@ def main():
         usage=u'%prog -H HOSTNAME [options]',
         version=u'0.1')
     op.add_option('-t', '--timeout', metavar='SECONDS', dest='timeout',
-                  default=60,
+                  type='int', default=60,
                   help=u'abort execution after SECONDS (default: %default)')
     op.add_option('-w', '--warning', metavar='SECONDS', dest='warning',
                   help=u'warning if response time is more than SECONDS')
     op.add_option('-c', '--critical', metavar='SECONDS', dest='critical',
                   help=u'critical if response time is more than SECONDS')
     op.add_option('-s', '--stringmatch', metavar='STRING',
-                  dest='stringmatch', default='',
+                  dest='stringmatch', default=None,
                   help=u'HTTP response must contain STRING')
     op.add_option('-H', '--hostname', dest='hostname',
                   help=u'HTTP host to connect to')

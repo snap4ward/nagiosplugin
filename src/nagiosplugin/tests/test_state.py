@@ -51,3 +51,8 @@ class StateTest(unittest.TestCase):
         s2 = Warning([u'msg 3', u'msg 4'])
         self.assertEqual([u'msg 1', u'msg 2', u'msg 3', u'msg 4'],
                          (s1 + s2).messages)
+
+    def test_add_none_skip_null_messages(self):
+        s1 = Unknown()
+        s2 = Unknown('message')
+        self.assertEqual(['message'], (s1 + s2).messages)

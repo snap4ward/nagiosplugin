@@ -19,8 +19,8 @@ class Threshold(object):
         """Combine this with `measuredperformance` to a Performance object."""
         return measuredperformance.__add__(self)
 
-    def match(self, value, critical_msg=None, warning_msg=None, ok_msg=None,
-              default_msg=None):
+    def match(self, value, default_msg=None, critical_msg=None,
+              warning_msg=None, ok_msg=None):
         """Return State object depending on value and ranges.
 
         If `value` is outside the critical or warning ranges, the returned

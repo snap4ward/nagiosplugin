@@ -38,3 +38,27 @@ class ControllerTest(nagiosplugin.tests.TestCase):
                 os.kill(os.getpid(), signal.SIGALRM)
         c = Controller('TEST', TimeoutProbe(), self.evaluator)
         self.assertRaises(RuntimeError, c._process, 60)
+
+    def test_call_catches_exceptions(self):
+        class FaultyProbe(nagiosplugin.probe.Probe):
+            def __call__(self):
+                raise RuntimeError(u'exception message')
+        c = Controller('TEST', FaultyProbe(), self.evaluator)
+        c()
+        self.assertEqual(
+            c.state, nagiosplugin.state.Unknown(u'exception message'))
+
+    def test_normalize_scalar_state(self):
+        self.evaluator.state = nagiosplugin.state.Ok(u'looks good')
+        c = Controller('Test', self.probe, self.evaluator)
+        c._process()
+        self.assertListEqual(c.normalized_state,
+                             [nagiosplugin.state.Ok(u'looks good')])
+
+    def test_processe_valuator_state_list(self):
+        self.evaluator.state = [
+            nagiosplugin.state.Ok(u's1'), nagiosplugin.state.Ok(u's2')]
+        c = Controller('Test', self.probe, self.evaluator)
+        c._process()
+        self.assertListEqual(c.normalized_state, [
+            nagiosplugin.state.Ok(u's1'), nagiosplugin.state.Ok(u's2')])
