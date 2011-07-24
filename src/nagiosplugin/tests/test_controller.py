@@ -1,61 +1,40 @@
 # Copyright (c) 2011 gocept gmbh & co. kg
 # See also LICENSE.txt
 
-import nagiosplugin.controller
+import mock
+import nagiosplugin.evaluator
+import nagiosplugin.probe
 import nagiosplugin.tests
 import optparse
 import os
 import signal
 
-from nagiosplugin.controller import Controller
+from nagiosplugin import Controller
 
 
 class ControllerTest(nagiosplugin.tests.TestCase):
 
-    def test_init_should_fail_without_plugin_instance(self):
-        self.assertRaises(ValueError, Controller, 'foo')
+    def setUp(self):
+        self.probe = nagiosplugin.probe.Probe()
+        self.evaluator = nagiosplugin.evaluator.Evaluator()
 
-    def test_controller_calls_commandline(self):
-        class CmdlineCheck(nagiosplugin.Plugin):
-            def commandline(plugin, o):
-                self.assertIsInstance(o, optparse.OptionParser)
-                plugin.called = True
-        plugin = CmdlineCheck()
-        c = Controller(plugin)
+    @mock.patch('nagiosplugin.probe.Probe')
+    def test_controller_calls_probe(self, probe_cls):
+        mock_probe = probe_cls.return_value
+        c = Controller('TEST', mock_probe, self.evaluator)
         c()
-        self.assert_(plugin.called)
+        mock_probe.assert_called_with()
 
-    def test_controller_calls_setup(self):
-        class SetupCheck(nagiosplugin.Plugin):
-            def setup(plugin, opts, args):
-                super(SetupCheck, plugin).setup(opts, args)
-                plugin.called = True
-        plugin = SetupCheck()
-        c = Controller(plugin)
+    @mock.patch('nagiosplugin.evaluator.Evaluator')
+    def test_controller_calls_evaluator(self, evaluator_cls):
+        mock_evaluator = evaluator_cls.return_value
+        c = Controller('TEST', self.probe, mock_evaluator)
         c()
-        self.assert_(plugin.called)
-
-    def test_controller_calls_probe(self):
-        class ProbeCheck(nagiosplugin.Plugin):
-            def probe(plugin):
-                plugin.called = True
-        plugin = ProbeCheck()
-        c = Controller(plugin)
-        c()
-        self.assert_(plugin.called)
-
-    def test_controller_calls_evaluator(self):
-        class EvaluatorCheck(nagiosplugin.Plugin):
-            def evaluator(plugin, probe):
-                plugin.called = True
-        plugin = EvaluatorCheck()
-        c = Controller(plugin)
-        c()
-        self.assert_(plugin.called)
+        mock_evaluator.assert_called_with(self.probe)
 
     def test_timeout_should_raise_exception(self):
-        class TimeoutCheck(nagiosplugin.Plugin):
-            def probe(self):
+        class TimeoutProbe(nagiosplugin.probe.Probe):
+            def __call__(self):
                 os.kill(os.getpid(), signal.SIGALRM)
-        c = Controller(TimeoutCheck())
-        self.assertRaises(RuntimeError, c)
+        c = Controller('TEST', TimeoutProbe(), self.evaluator)
+        self.assertRaises(RuntimeError, c._process, 60)

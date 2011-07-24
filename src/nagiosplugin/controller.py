@@ -1,43 +1,52 @@
 # Copyright (c) 2011 gocept gmbh & co. kg
 # See also LICENSE.txt
 
-import nagiosplugin.plugin
+import logging
+import nagiosplugin
+import nagiosplugin.state
+import operator
 import optparse
 import signal
 
 
 class Controller(object):
 
-    def __init__(self, plugin_instance):
-        if not isinstance(plugin_instance, nagiosplugin.plugin.Plugin):
-            raise ValueError('%r is not a Plugin instance' % plugin_instance)
-        self.plugin = plugin_instance
+    def __init__(self, name, probe, evaluator, verbosity=0,
+                 initial=nagiosplugin.state.Ok('')):
+        self.name = name
+        self.probe = probe
+        self.evaluator = evaluator
+        self.initial = initial
+        self.state = None
+        self.performance = None
 
-    def default_options(self):
-        """Set up command line options required by the plugin API."""
-        self.optp = optparse.OptionParser(
-            description=self.plugin.description, usage=self.plugin.usage,
-            version=self.plugin.version)
-        # --help and --version come for free
-        self.optp.add_option(
-            '-t', '--timeout', metavar='SECONDS', dest='timeout',
-            default=self.plugin.timeout, type='int',
-            help='terminate plugin execution after SECONDS '
-            '(default: %default)')
+    def __call__(self, timeout=None):
+        try:
+            self._process(timeout)
+        except StandardError as e:
+            self.state = nagiosplugin.state.Unknown(
+                'plugin error: {}'.format(e))
+            logging.exception(e)
 
-    def probe_with_timeout(self):
+    def _process(self, timeout):
         def handle_timeout(signum, stackframe):
-            raise RuntimeError('timeout %is exceeded' % self.options.timeout)
+            raise RuntimeError(u'timeout {0}s exceeded'.format(timeout))
         signal.signal(signal.SIGALRM, handle_timeout)
-        signal.alarm(self.options.timeout)
-        self.plugin.probe()
+        if timeout:
+            signal.alarm(timeout)
+        self.probe()
         signal.signal(signal.SIGALRM, signal.SIG_DFL)
+        self.evaluator(self.probe)
+        self.state = reduce(operator.add, self.evaluator.state, self.initial)
+        self.performance = self.evaluator.performance
 
-    def __call__(self, argv=None):
-        """Main plugin life cycle."""
-        self.default_options()
-        self.plugin.commandline(self.optp)
-        self.options, self.arguments = self.optp.parse_args(argv)
-        self.plugin.setup(self.options, self.arguments)
-        self.probe_with_timeout()
-        self.plugin.evaluator(self.plugin.probe)
+    def __str__(self):
+        return self.output
+
+    @property
+    def output(self):
+        return u''
+
+    @property
+    def exitcode(self):
+        return 0

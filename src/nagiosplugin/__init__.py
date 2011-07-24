@@ -5,10 +5,8 @@ import nagiosplugin.controller
 import sys
 
 # import commonly accessed classes into main namespace
-from nagiosplugin.evaluator import Evaluator
+from nagiosplugin.controller import Controller
 from nagiosplugin.performance import Performance, MeasuredPerformance
-from nagiosplugin.plugin import Plugin
-from nagiosplugin.probe import Probe
 from nagiosplugin.range import Range
 from nagiosplugin.threshold import Threshold
 

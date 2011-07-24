@@ -35,6 +35,7 @@ setup(
     download_url='http://pypi.python.org/pypi/nagiosplugin',
     license='ZPL',
     install_requires=[
+        'mock',
     ],
     packages=find_packages('src'),
     package_dir={'': 'src'},
@@ -44,8 +45,7 @@ setup(
     test_suite='nagiosplugin.tests',
     entry_points={
         'console_scripts': [
-            'check_http = nagiosplugin.examples.check_http:main'
-        ]
-    }
-    install_requires=[],
+            'check_http = nagiosplugin.examples.check_http:main',
+        ],
+    },
 )

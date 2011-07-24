@@ -21,10 +21,13 @@ class Evaluator(object):
     class as long as they define the same interface.
     """
 
+    state = []
+    performance = {}
+
     def __init__(self, *args, **kwargs):
         """Configure the evaluator with criteria to evaluate the probe."""
-        self.state = []
-        self.performance = {}
+        pass
 
     def __call__(self, probe):
         """Process probe and update status and performance."""
+        pass

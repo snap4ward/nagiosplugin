@@ -1,12 +1,13 @@
 # Copyright (c) 2011 gocept gmbh & co. kg
 # See also LICENSE.txt
 
-import nagiosplugin.performance
-import nagiosplugin.plugin
+from __future__ import print_function
+
 import nagiosplugin
 import optparse
 import urllib2
 import time
+import sys
 
 
 class HTTPProbe(object):
@@ -50,32 +51,31 @@ class HTTPEvaluator(object):
         return self.threshold.match(self.probe.responsetime)
 
 
-class HTTPCheck(nagiosplugin.Plugin):
-
-    name = u'HTTP'
-    description = u"Check a HTTP server's response time and output"
-    usage = u'%prog -H HOSTNAME [options]'
-    version = u'0.1'
-    timeout = 60
-
-    def commandline(self, o):
-        o.add_option('-w', '--warning', metavar='SECONDS', dest='warning',
-                     help=u'warning if response time is more than SECONDS')
-        o.add_option('-c', '--critical', metavar='SECONDS', dest='critical',
-                     help=u'critical if response time is more than SECONDS')
-        o.add_option('-s', '--stringmatch', metavar='STRING',
-                     dest='stringmatch', default='',
-                     help=u'HTTP response must contain STRING')
-        o.add_option('-H', '--hostname', dest='hostname',
-                     help=u'HTTP host to connect to')
-
-    def setup(self, opts, args):
-        if not opts.hostname:
-            raise RuntimeError(u'need at least a hostname')
-        self.probe = HTTPProbe(opts.hostname)
-        self.evaluator = HTTPEvaluator(opts.warning, opts.critical,
-                                       opts.stringmatch)
-
-
 def main():
-    nagiosplugin.main(HTTPCheck())
+    op = optparse.OptionParser(
+        description=u"Check a HTTP server's response time and output",
+        usage=u'%prog -H HOSTNAME [options]',
+        version=u'0.1')
+    op.add_option('-t', '--timeout', metavar='SECONDS', dest='timeout',
+                  default=60,
+                  help=u'abort execution after SECONDS (default: %default)')
+    op.add_option('-w', '--warning', metavar='SECONDS', dest='warning',
+                  help=u'warning if response time is more than SECONDS')
+    op.add_option('-c', '--critical', metavar='SECONDS', dest='critical',
+                  help=u'critical if response time is more than SECONDS')
+    op.add_option('-s', '--stringmatch', metavar='STRING',
+                  dest='stringmatch', default='',
+                  help=u'HTTP response must contain STRING')
+    op.add_option('-H', '--hostname', dest='hostname',
+                  help=u'HTTP host to connect to')
+    opts, args = op.parse_args()
+    if not opts.hostname:
+        op.error(u'need at least a hostname')
+    if args:
+        op.error(u'superfluous arguments: {0!r}'.format(args))
+    probe = HTTPProbe(opts.hostname)
+    evaluator = HTTPEvaluator(opts.warning, opts.critical, opts.stringmatch)
+    controller = nagiosplugin.Controller('HTTP', probe, evaluator)
+    controller(opts.timeout)
+    print(controller)
+    sys.exit(controller.exitcode)
