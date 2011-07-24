@@ -1,8 +1,10 @@
 # Copyright (c) 2011 gocept gmbh & co. kg
 # See also LICENSE.txt
 
-import unittest
-import nagiosplugin.state
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 
 from nagiosplugin.state import State, Ok, Warning, Critical, Unknown
 
@@ -49,10 +51,13 @@ class StateTest(unittest.TestCase):
     def test_add_should_concat_messages_of_equal_states(self):
         s1 = Warning([u'msg 1', u'msg 2'])
         s2 = Warning([u'msg 3', u'msg 4'])
-        self.assertEqual([u'msg 1', u'msg 2', u'msg 3', u'msg 4'],
-                         (s1 + s2).messages)
+        self.assertListEqual([u'msg 1', u'msg 2', u'msg 3', u'msg 4'],
+                             (s1 + s2).messages)
 
     def test_add_none_skip_null_messages(self):
         s1 = Unknown()
         s2 = Unknown('message')
         self.assertEqual(['message'], (s1 + s2).messages)
+
+    def test_cmp_should_return_false_if_incompatible_type(self):
+        self.assertFalse(Ok() == 'string')

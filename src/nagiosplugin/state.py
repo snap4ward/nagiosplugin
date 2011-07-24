@@ -36,9 +36,22 @@ class State(object):
             raise NotImplementedError
         return self.code
 
+    def __eq__(self, other):
+        """Compare for equality."""
+        if not hasattr(other, 'code') or not hasattr(other, 'messages'):
+            return False
+        return self.code == other.code and self.messages == other.messages
+
+    def __ne__(self, other):
+        """Compare for non-equality."""
+        return not self.__eq__(other)
+
     def __cmp__(self, other):
-        """Numerical status code comparision."""
-        return self.code.__cmp__(other.code)
+        """Numerical code comparision.
+
+        This comparision is only meaningful for states with different codes.
+        """
+        return self.code.__cmp__(other.code) 
 
     def headline(self):
         """Main status message (the only one supported with Nagios 1 and 2)."""
@@ -56,12 +69,13 @@ class State(object):
         """Combine two states.
 
         The result has the type of the dominant state and the messages are
-        concatenated both arguments are of the dominant state.
+        concatenated both arguments are of the dominant state. Otherwise the
+        non-dominant state is discarded and the dominant state remains.
         """
         if not isinstance(other, State):
             raise TypeError("cannot add '%s' and '%s' objects" % (
                             self.__class__, other.__class__))
-        if self == other:
+        if type(self) == type(other):
             return self.__class__(self.messages + other.messages)
         elif self > other:
             return self

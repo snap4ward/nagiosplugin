@@ -42,7 +42,7 @@
     <note priority="low" time="1310662613" done="1310740690">
         check_http should fail if there is no host given
     </note>
-    <note priority="high" time="1310740955">
+    <note priority="high" time="1310740955" done="1311535798">
         basic output formatting
     </note>
     <note priority="medium" time="1310740965">

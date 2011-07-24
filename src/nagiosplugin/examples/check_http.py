@@ -41,11 +41,11 @@ class HTTPEvaluator(object):
 
     def check_string(self):
         if not self.stringmatch:
-            return nagiosplugin.state.Ok()
+            return nagiosplugin.Ok()
         if self.stringmatch.encode() in self.probe.response:
-            return nagiosplugin.state.Ok('"{0}" found in response'.format(
+            return nagiosplugin.Ok('"{0}" found in response'.format(
                                          self.stringmatch))
-        return nagiosplugin.state.Critical(
+        return nagiosplugin.Critical(
             '"{0}" not found in response'.format(self.stringmatch))
 
     def check_time(self):
@@ -60,7 +60,7 @@ def main():
         usage=u'%prog -H HOSTNAME [options]',
         version=u'0.1')
     op.add_option('-t', '--timeout', metavar='SECONDS', dest='timeout',
-                  type='int', default=60,
+                  type='int', default=120,
                   help=u'abort execution after SECONDS (default: %default)')
     op.add_option('-w', '--warning', metavar='SECONDS', dest='warning',
                   help=u'warning if response time is more than SECONDS')

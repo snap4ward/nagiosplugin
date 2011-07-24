@@ -8,6 +8,7 @@ import sys
 from nagiosplugin.controller import Controller
 from nagiosplugin.performance import Performance, MeasuredPerformance
 from nagiosplugin.range import Range
+from nagiosplugin.state import State, Ok, Warning, Critical, Unknown
 from nagiosplugin.threshold import Threshold
 
 
