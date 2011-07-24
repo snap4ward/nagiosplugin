@@ -1,6 +1,7 @@
 # Copyright (c) 2011 gocept gmbh & co. kg
 # See also LICENSE.txt
 
+import logging
 import mock
 import nagiosplugin.evaluator
 import nagiosplugin.probe
@@ -37,7 +38,7 @@ class ControllerTest(nagiosplugin.tests.TestCase):
             def __call__(self):
                 os.kill(os.getpid(), signal.SIGALRM)
         c = Controller('TEST', TimeoutProbe(), self.evaluator)
-        self.assertRaises(RuntimeError, c._process, 60)
+        self.assertRaises(RuntimeError, c._process, 5)
 
     def test_call_catches_exceptions(self):
         class FaultyProbe(nagiosplugin.probe.Probe):
@@ -58,7 +59,22 @@ class ControllerTest(nagiosplugin.tests.TestCase):
     def test_processe_valuator_state_list(self):
         self.evaluator.state = [
             nagiosplugin.state.Ok(u's1'), nagiosplugin.state.Ok(u's2')]
-        c = Controller('Test', self.probe, self.evaluator)
+        c = Controller('TEST', self.probe, self.evaluator)
         c._process()
         self.assertListEqual(c.normalized_state, [
             nagiosplugin.state.Ok(u's1'), nagiosplugin.state.Ok(u's2')])
+
+    def test_exitcode(self):
+        self.evaluator.state = nagiosplugin.state.Critical()
+        c = Controller('TEST', self.probe, self.evaluator)
+        c()
+        self.assertEqual(c.exitcode, self.evaluator.state.code)
+
+    def test_add_logoutput(self):
+        class LoggingEvaluator(nagiosplugin.evaluator.Evaluator):
+            def __call__(self, probe):
+                logging.info('log message')
+        c = Controller('TEST', self.probe, LoggingEvaluator(), 3)
+        c()
+        self.assertTrue(u'log message' in c.output,
+                        u'log message not found in {0}'.format(c.output))

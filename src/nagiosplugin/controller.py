@@ -8,6 +8,10 @@ import nagiosplugin.formatter
 import operator
 import optparse
 import signal
+try:
+    import cStringIO as StringIO
+except ImportError:
+    import StringIO
 
 
 class Controller(object):
@@ -17,6 +21,16 @@ class Controller(object):
         self.name = name
         self.probe = probe
         self.evaluator = evaluator
+        self.logoutput = StringIO.StringIO()
+        if verbosity >= 2:
+            loglevel = logging.DEBUG
+        elif verbosity >= 1:
+            loglevel = logging.CRITICAL
+        elif verbosity > 0:
+            loglevel = logging.WARNING
+        else:
+            loglevel = logging.ERROR
+        logging.basicConfig(level=loglevel, stream=self.logoutput)
         self.initial = initial
         self.state = None
         self.performance = None
@@ -38,6 +52,7 @@ class Controller(object):
             signal.alarm(timeout)
         self.probe()
         signal.signal(signal.SIGALRM, signal.SIG_DFL)
+        signal.alarm(0)
         self.evaluator(self.probe)
         self.state = reduce(operator.add, self.normalized_state, self.initial)
         self.performance = self.evaluator.performance
@@ -53,8 +68,9 @@ class Controller(object):
     def output(self):
         f = nagiosplugin.formatter.Formatter(self.name)
         f.addstate(self.state)
+        f.addlongoutput(self.logoutput.getvalue())
         return f.render()
 
     @property
     def exitcode(self):
-        return 0
+        return self.state.code

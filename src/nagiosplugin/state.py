@@ -51,16 +51,7 @@ class State(object):
 
         This comparision is only meaningful for states with different codes.
         """
-        return self.code.__cmp__(other.code) 
-
-    def headline(self):
-        """Main status message (the only one supported with Nagios 1 and 2)."""
-        if self.messages:
-            return self.messages[0]
-
-    def longoutput(self):
-        """Additional status messages."""
-        return self.messages[1:]
+        return self.code.__cmp__(other.code)
 
     def __repr__(self):
         return u'%s(%r)' % (self.__class__.__name__, self.messages)
@@ -80,6 +71,17 @@ class State(object):
         elif self > other:
             return self
         return other
+
+    @property
+    def headline(self):
+        """Main status message (the only one supported with Nagios 1 and 2)."""
+        if self.messages:
+            return self.messages[0]
+
+    @property
+    def longoutput(self):
+        """Additional status messages."""
+        return self.messages[1:]
 
 
 class Ok(State):

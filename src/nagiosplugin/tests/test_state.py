@@ -29,14 +29,14 @@ class StateTest(unittest.TestCase):
     def test_cmp_greater(self):
         self.assertEqual(1, cmp(Warning(), Ok()))
 
-    def test_firstline(self):
+    def test_headline(self):
         s = Ok([u'first line', u'more lines 1', u'more lines 2'])
-        self.assertEqual(u'first line', s.headline())
+        self.assertEqual(u'first line', s.headline)
 
     def test_longoutput(self):
         s = Ok([u'first line', u'more lines 1', u'more lines 2'])
-        self.assertEqual([u'more lines 1', u'more lines 2'],
-                         s.longoutput())
+        self.assertListEqual([u'more lines 1', u'more lines 2'],
+                             s.longoutput)
 
     def test_add_should_discard_minor_status(self):
         s_crit = Critical(u'problem')

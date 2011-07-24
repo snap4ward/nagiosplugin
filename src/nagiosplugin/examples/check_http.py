@@ -3,11 +3,12 @@
 
 from __future__ import print_function
 
+import logging
 import nagiosplugin
 import optparse
-import urllib2
-import time
 import sys
+import time
+import urllib2
 
 
 class HTTPProbe(object):
@@ -19,8 +20,10 @@ class HTTPProbe(object):
         start = time.time()
         req = urllib2.urlopen('http://{0}/'.format(self.hostname))
         self.response = req.read()
+        logging.info(self.response.decode())
         stop = time.time()
         self.responsetime = stop - start
+        logging.debug(u'start: {0}, stop: {1}'.format(start, stop))
 
     @property
     def performance(self):
@@ -50,7 +53,7 @@ class HTTPEvaluator(object):
 
     def check_time(self):
         return self.threshold.match(
-            self.probe.responsetime, u'{0} B in {1:.3g} s'.format(
+            self.probe.responsetime, u'{0} Bytes in {1:.3g} s'.format(
             len(self.probe.response), self.probe.responsetime))
 
 
@@ -71,6 +74,8 @@ def main():
                   help=u'HTTP response must contain STRING')
     op.add_option('-H', '--hostname', dest='hostname',
                   help=u'HTTP host to connect to')
+    op.add_option('-v', '--verbose', dest='verbose', action='count', default=0,
+                  help=u'increase verbosity')
     opts, args = op.parse_args()
     if not opts.hostname:
         op.error(u'need at least a hostname')
@@ -78,7 +83,8 @@ def main():
         op.error(u'superfluous arguments: {0!r}'.format(args))
     probe = HTTPProbe(opts.hostname)
     evaluator = HTTPEvaluator(opts.warning, opts.critical, opts.stringmatch)
-    controller = nagiosplugin.Controller('HTTP', probe, evaluator)
+    controller = nagiosplugin.Controller(
+        'HTTP', probe, evaluator, verbosity=opts.verbose)
     controller(opts.timeout)
     print(controller)
     sys.exit(controller.exitcode)

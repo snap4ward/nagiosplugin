@@ -3,14 +3,23 @@
     <note priority="high" time="1310662474" done="1310732440">
         Threshold class with checks
     </note>
+    <note priority="high" time="1310740955" done="1311535798">
+        basic output formatting
+    </note>
     <note priority="high" time="1310743082" done="1310926986">
         Performance and MeasuredPerformance need 'name' attribute
     </note>
     <note priority="high" time="1310926982" done="1311524719">
         messages should go into Threshold.match and not into Threshold.__init__
     </note>
+    <note priority="high" time="1311521294" done="1311536220">
+        exit code
+    </note>
     <note priority="high" time="1311522736" done="1311523149">
         State.reduce mit None sollte noop sein
+    </note>
+    <note priority="high" time="1311535920" done="1311535929">
+        18
     </note>
     <note priority="medium" time="1310662498" done="1310732755">
         Review Range class and tests
@@ -42,8 +51,11 @@
     <note priority="low" time="1310662613" done="1310740690">
         check_http should fail if there is no host given
     </note>
-    <note priority="high" time="1310740955" done="1311535798">
-        basic output formatting
+    <note priority="high" time="1310662686" done="1311539900">
+        Logging
+    </note>
+    <note priority="high" time="1311539842">
+        add traceback to log output in case of exceptions
     </note>
     <note priority="medium" time="1310740965">
         performance data output
@@ -51,16 +63,13 @@
     <note priority="medium" time="1310740975">
         error message output
     </note>
-    <note priority="medium" time="1311521294">
-        exit code
-    </note>
     <note priority="medium" time="1311522551">
         Performance.set_threshold und MeasuredPerformance löschen
     </note>
     <note priority="medium" time="1311525764">
         long output
     </note>
-    <note priority="low" time="1310662686">
-        Logging
+    <note priority="medium" time="1311539824">
+        check_http should decode response according to HTTP headers
     </note>
 </todo>
