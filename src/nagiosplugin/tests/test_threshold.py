@@ -5,12 +5,15 @@
 
 import nagiosplugin
 import nagiosplugin.state
-import nagiosplugin.tests
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 
 from nagiosplugin.threshold import Threshold
 
 
-class ThresholdTests(nagiosplugin.tests.TestCase):
+class ThresholdTests(unittest.TestCase):
 
     def test_threshold_should_build_range_objects(self):
         t = Threshold('0', '20')

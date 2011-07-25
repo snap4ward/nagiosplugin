@@ -5,15 +5,18 @@ import logging
 import mock
 import nagiosplugin.evaluator
 import nagiosplugin.probe
-import nagiosplugin.tests
 import optparse
 import os
 import signal
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 
 from nagiosplugin import Controller
 
 
-class ControllerTest(nagiosplugin.tests.TestCase):
+class ControllerTest(unittest.TestCase):
 
     def setUp(self):
         self.probe = nagiosplugin.probe.Probe()
@@ -40,7 +43,7 @@ class ControllerTest(nagiosplugin.tests.TestCase):
         c = Controller('TEST', TimeoutProbe(), self.evaluator)
         self.assertRaises(RuntimeError, c._process, 5)
 
-    def test_call_catches_exceptions(self):
+    def test_call_should_catch_exceptions(self):
         class FaultyProbe(nagiosplugin.probe.Probe):
             def __call__(self):
                 raise RuntimeError(u'exception message')
@@ -49,9 +52,18 @@ class ControllerTest(nagiosplugin.tests.TestCase):
         self.assertEqual(
             c.state, nagiosplugin.state.Unknown(u'exception message'))
 
+    def test_call_should_log_catched_exceptions(self):
+        class FaultyProbe(nagiosplugin.probe.Probe):
+            def __call__(self):
+                raise RuntimeError(u'exception message')
+        c = Controller('TEST', FaultyProbe(), self.evaluator)
+        c()
+        self.assertRegexpMatches(c.output, r'Traceback')
+        self.assertRegexpMatches(c.output, r'RuntimeError: exception message')
+
     def test_normalize_scalar_state(self):
         self.evaluator.state = nagiosplugin.state.Ok(u'looks good')
-        c = Controller('Test', self.probe, self.evaluator)
+        c = Controller('TEST', self.probe, self.evaluator)
         c._process()
         self.assertListEqual(c.normalized_state,
                              [nagiosplugin.state.Ok(u'looks good')])

@@ -14,10 +14,15 @@ except ImportError:
 class Formatter(object):
     """Class responsible for Nagios plugin API compliant output formatting."""
 
-    def __init__(self, pluginname, maxlength=80):
-        """Create new Formatter which identifies itself with `pluginname`."""
+    def __init__(self, pluginname, linelength=80):
+        """Create new Formatter.
+
+        `pluginname` as a preferably short uppercase string to identify the
+        plugin in the output.
+        `linelength` sets the maximum line length.
+        """
         self.pluginname = pluginname.upper()
-        self.maxlength = maxlength
+        self.linelength = linelength
         self.text = ''
         self.longoutput = []
         self.perfdata = []
@@ -33,10 +38,10 @@ class Formatter(object):
         return self
 
     def addlongoutput(self, text):
-        if isinstance(text, str) or isinstance(text, unicode):
-            self.addlongoutput(text.strip(u'\n').split(u'\n'))
+        if isinstance(text, list):
+            self.longoutput.extend([line.strip('\n') for line in text])
         else:
-            self.longoutput.extend([l.strip(u'\n') for l in text])
+            self.longoutput.append(text.strip('\n'))
 
     def addperformance(self, performance):
         pass
@@ -46,6 +51,6 @@ class Formatter(object):
         out = StringIO.StringIO()
         out.write(u'{0} {1}'.format(self.pluginname, self.text))
         if self.longoutput:
-            out.write(u'\n')
-            out.write(u'\n'.join(self.longoutput))
+            out.write('\n')
+            out.write('\n'.join(self.longoutput))
         return out.getvalue()

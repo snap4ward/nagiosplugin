@@ -21,17 +21,8 @@ class Controller(object):
         self.name = name
         self.probe = probe
         self.evaluator = evaluator
-        self.logoutput = StringIO.StringIO()
-        if verbosity >= 2:
-            loglevel = logging.DEBUG
-        elif verbosity >= 1:
-            loglevel = logging.CRITICAL
-        elif verbosity > 0:
-            loglevel = logging.WARNING
-        else:
-            loglevel = logging.ERROR
-        logging.basicConfig(level=loglevel, stream=self.logoutput)
         self.initial = initial
+        self._setup_logger(verbosity)
         self.state = None
         self.performance = None
 
@@ -43,6 +34,23 @@ class Controller(object):
             self._process(timeout)
         except StandardError as e:
             self.state = nagiosplugin.state.Unknown(str(e))
+            self.logger.exception(e)
+
+    def _setup_logger(self, verbosity):
+        self.logoutput = StringIO.StringIO()
+        self.logger = logging.getLogger()
+        self.logger.setLevel(logging.DEBUG)
+        handler = logging.StreamHandler(self.logoutput)
+        if verbosity >= 2:
+            handler.setLevel(logging.DEBUG)
+        elif verbosity >= 1:
+            handler.setLevel(logging.INFO)
+        elif verbosity > 0:
+            handler.setLevel(logging.WARNING)
+        else:
+            handler.setLevel(logging.ERROR)
+        handler.setFormatter(logging.Formatter('%(levelname)s: %(message)s'))
+        self.logger.addHandler(handler)
 
     def _process(self, timeout=None):
         def handle_timeout(signum, stackframe):

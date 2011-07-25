@@ -32,10 +32,10 @@ class FormatterTest(unittest.TestCase):
         f.addlongoutput([u'first line\n', u'second line\n'])
         self.assertListEqual(f.longoutput, [u'first line', u'second line'])
 
-    def test_addlongout_should_split_string(self):
+    def test_addlongout_add_multiline_string(self):
         f = Formatter('')
         f.addlongoutput(u'multi line\nstring\n')
-        self.assertListEqual(f.longoutput, [u'multi line', u'string'])
+        self.assertListEqual(f.longoutput, [u'multi line\nstring'])
 
     def test_render(self):
         f = Formatter('PLUGIN')

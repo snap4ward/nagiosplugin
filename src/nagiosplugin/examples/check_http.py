@@ -18,12 +18,20 @@ class HTTPProbe(object):
 
     def __call__(self):
         start = time.time()
-        req = urllib2.urlopen('http://{0}/'.format(self.hostname))
+        url = 'http://{0}/'.format(self.hostname)
+        logging.info('opening URL %s', url)
+        req = urllib2.urlopen(url)
         self.response = req.read()
-        logging.info(self.response.decode())
+        try:
+            charset = [param for param in req.headers.getplist()
+                       if param.startswith('charset=')][0]
+            charset = charset.lstrip('charset=')
+        except IndexError:
+            charset = 'UTF-8'
         stop = time.time()
         self.responsetime = stop - start
-        logging.debug(u'start: {0}, stop: {1}'.format(start, stop))
+        logging.debug(u'start: %s, stop: %s', start, stop)
+        logging.debug(self.response)
 
     @property
     def performance(self):
