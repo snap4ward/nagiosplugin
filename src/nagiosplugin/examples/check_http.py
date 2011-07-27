@@ -15,12 +15,18 @@ class HTTPProbe(object):
 
     def __init__(self, hostname):
         self.hostname = hostname
+        self.log = logging.getLogger('nagiosplugin')
 
     def __call__(self):
-        start = time.time()
-        url = 'http://{0}/'.format(self.hostname)
-        logging.info('opening URL %s', url)
-        req = urllib2.urlopen(url)
+        self.url = 'http://{0}/'.format(self.hostname)
+        self.log.info('opening URL %s', self.url)
+        self.fetch_url()
+        self.log.debug(u'start: %s, stop: %s', self.start, self.stop)
+        self.log.debug(self.response)
+
+    def fetch_url(self):
+        self.start = time.time()
+        req = urllib2.urlopen(self.url)
         self.response = req.read()
         try:
             charset = [param for param in req.headers.getplist()
@@ -28,15 +34,8 @@ class HTTPProbe(object):
             charset = charset.lstrip('charset=')
         except IndexError:
             charset = 'UTF-8'
-        stop = time.time()
-        self.responsetime = stop - start
-        logging.debug(u'start: %s, stop: %s', start, stop)
-        logging.debug(self.response)
-
-    @property
-    def performance(self):
-        return nagiosplugin.MeasuredPerformance(
-            self.responsetime, 's', 0)
+        self.stop = time.time()
+        self.responsetime = self.stop - self.start
 
 
 class HTTPEvaluator(object):
@@ -48,21 +47,23 @@ class HTTPEvaluator(object):
     def __call__(self, probe):
         self.probe = probe
         self.state = [self.check_string(), self.check_time()]
-        self.performance = [self.probe.performance + self.threshold]
+        self.performance = {'time': nagiosplugin.Performance(
+            self.probe.responsetime, 's', 0, threshold=self.threshold))
 
     def check_string(self):
         if not self.stringmatch:
-            return nagiosplugin.Ok()
+            return None
         if self.stringmatch.encode() in self.probe.response:
             return nagiosplugin.Ok('"{0}" found in response'.format(
-                                         self.stringmatch))
+                self.stringmatch))
         return nagiosplugin.Critical(
             '"{0}" not found in response'.format(self.stringmatch))
 
     def check_time(self):
         return self.threshold.match(
-            self.probe.responsetime, u'{0} Bytes in {1:.3g} s'.format(
-            len(self.probe.response), self.probe.responsetime))
+            self.probe.responsetime,
+            default_msg=u'{0} Bytes in {1:.3g} s'.format(
+                len(self.probe.response), self.probe.responsetime))
 
 
 def main():
@@ -93,6 +94,8 @@ def main():
     evaluator = HTTPEvaluator(opts.warning, opts.critical, opts.stringmatch)
     controller = nagiosplugin.Controller(
         'HTTP', probe, evaluator, verbosity=opts.verbose)
-    controller(opts.timeout)
-    print(controller)
-    sys.exit(controller.exitcode)
+    nagiosplugin.run('HTTP', probe, evaluator, verbosity=opts.verbose,
+                     timeout=opts.timeout)
+    #controller(opts.timeout)
+    #print(controller)
+    #sys.exit(controller.exitcode)

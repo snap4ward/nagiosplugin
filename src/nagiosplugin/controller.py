@@ -38,7 +38,7 @@ class Controller(object):
 
     def _setup_logger(self, verbosity):
         self.logoutput = StringIO.StringIO()
-        self.logger = logging.getLogger()
+        self.logger = logging.getLogger('nagiosplugin')
         self.logger.setLevel(logging.DEBUG)
         handler = logging.StreamHandler(self.logoutput)
         if verbosity >= 2:
@@ -67,6 +67,7 @@ class Controller(object):
 
     @property
     def normalized_state(self):
+        # XXX filter none
         if isinstance(self.evaluator.state, list):
             return self.evaluator.state
         else:
