@@ -17,7 +17,7 @@ except ImportError:
 class Controller(object):
 
     def __init__(self, name, probe, evaluator, verbosity=0,
-                 initial=nagiosplugin.state.Ok('')):
+                 initial=nagiosplugin.state.Ok()):
         self.name = name
         self.probe = probe
         self.evaluator = evaluator

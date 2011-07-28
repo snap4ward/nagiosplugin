@@ -10,19 +10,20 @@ import sys
 import time
 import urllib2
 
+logger = logging.getLogger('nagiosplugin')
+
 
 class HTTPProbe(object):
 
     def __init__(self, hostname):
         self.hostname = hostname
-        self.log = logging.getLogger('nagiosplugin')
 
     def __call__(self):
         self.url = 'http://{0}/'.format(self.hostname)
-        self.log.info('opening URL %s', self.url)
+        logger.info('opening URL %s', self.url)
         self.fetch_url()
-        self.log.debug(u'start: %s, stop: %s', self.start, self.stop)
-        self.log.debug(self.response)
+        logger.debug(u'start: %s, stop: %s', self.start, self.stop)
+        logger.debug(self.response)
 
     def fetch_url(self):
         self.start = time.time()
@@ -92,10 +93,5 @@ def main():
         op.error(u'superfluous arguments: {0!r}'.format(args))
     probe = HTTPProbe(opts.hostname)
     evaluator = HTTPEvaluator(opts.warning, opts.critical, opts.stringmatch)
-    controller = nagiosplugin.Controller(
-        'HTTP', probe, evaluator, verbosity=opts.verbose)
     nagiosplugin.run('HTTP', probe, evaluator, verbosity=opts.verbose,
                      timeout=opts.timeout)
-    #controller(opts.timeout)
-    #print(controller)
-    #sys.exit(controller.exitcode)

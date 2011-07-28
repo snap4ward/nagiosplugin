@@ -1,36 +1,13 @@
 # Copyright (c) 2011 gocept gmbh & co. kg
 # See also LICENSE.txt
 
-"""Test MeasuredPerformance and Performance classes."""
+from nagiosplugin.performance import Performance
 
 import nagiosplugin
 try:
     import unittest2 as unittest
 except ImportError:
     import unittest
-
-from nagiosplugin.performance import MeasuredPerformance, Performance
-
-
-class MeasuredPerformanceTest(unittest.TestCase):
-
-    def test_should_raise_if_greater_than_maximum(self):
-        self.assertRaises(ValueError, MeasuredPerformance, 11,
-                          maximum=10)
-
-    def test_should_raise_if_less_than_minimum(self):
-        self.assertRaises(ValueError, MeasuredPerformance,
-                          -0.5, minimum=0)
-
-    def test_repr(self):
-        self.assertEqual("MeasuredPerformance(3, 'B', 0, None)",
-                         repr(MeasuredPerformance(3, 'B', 0)))
-
-    def test_eq(self):
-        self.assertEqual(MeasuredPerformance(1, 's', 0, 100),
-                         MeasuredPerformance(1, 's', 0, 100))
-        self.assertNotEqual(MeasuredPerformance(1, 's', 0, 100),
-                            MeasuredPerformance(1, 's'))
 
 
 class PerformanceTest(unittest.TestCase):
@@ -41,24 +18,11 @@ class PerformanceTest(unittest.TestCase):
         self.assertNotEqual(Performance(10, 'B', 0, critical='1:'),
                             Performance(11, 'B', 0, critical='1:'))
 
-    def test_eq_measuredperformance(self):
-        self.assertEqual(Performance(10, 'B', 0, 1024),
-                         MeasuredPerformance(10, 'B', 0, 1024))
-        self.assertNotEqual(Performance(-5, critical='1:'),
-                            MeasuredPerformance(-5))
-
     def test_repr(self):
-        self.assertEqual("Performance(3, 'B', 0, None, '1:3', '5')",
+        self.assertEqual("Performance(minimum=0, maximum=None, value=3, "
+                         "critical=Range('5'), warning=Range('1:3'), uom='B')",
                          repr(Performance(3, 'B', 0, warning='1:3',
                               critical='5')))
-
-    def test_init_should_accept_measuredperformance_object(self):
-        mp = MeasuredPerformance(5, 's', -100, 100)
-        p = Performance(mp)
-        self.assertEqual(p.value, mp.value)
-        self.assertEqual(p.uom, mp.uom)
-        self.assertEqual(p.minimum, mp.minimum)
-        self.assertEqual(p.maximum, mp.maximum)
 
     def test_init_should_accept_performance_object(self):
         p1 = Performance(100, minimum=0, critical='200')
@@ -80,16 +44,13 @@ class PerformanceTest(unittest.TestCase):
                           warning='3', critical='23',
                           threshold=nagiosplugin.Threshold('45:', '5:'))
 
-    def test_measuredperformance_plus_threshold_gives_performance(self):
-        mp = MeasuredPerformance(48, 'B/s', 0, 1000000)
-        t = nagiosplugin.Threshold('100:600000', '800000')
-        self.assertEqual(mp + t, Performance(
-            48, 'B/s', 0, 1000000, '100:600000', '800000'))
+    def test_should_raise_if_less_than_minimum(self):
+        self.assertRaises(ValueError, Performance,
+                          -0.5, minimum=0)
 
-    def test_threshold_plus_measuredperformance_gives_performance(self):
-        mp = MeasuredPerformance(48, 'B/s', 0, 1000000)
-        t = nagiosplugin.Threshold('100:600000', '800000')
-        self.assertEqual(mp + t, t + mp)
+    def test_should_raise_if_greater_than_maximum(self):
+        self.assertRaises(ValueError, Performance, 11,
+                          maximum=10)
 
     def test_str_naked_value(self):
         self.assertEqual('26', str(Performance(26)))
@@ -101,3 +62,13 @@ class PerformanceTest(unittest.TestCase):
 
     def test_str_value_minimum(self):
         self.assertEqual('-35;;;;0', str(Performance(-35, maximum=0)))
+
+    def test_with_threshold(self):
+        p = Performance(3, 's', 0, 100)
+        self.assertEqual(p.with_threshold('1:3', '5'),
+                         Performance(3, 's', 0, 100, '1:3', '5'))
+
+    def test_performance_should_be_immutable(self):
+        p = Performance(1024, 'B')
+        with self.assertRaises(NotImplementedError):
+            p.minimum = 0

@@ -85,7 +85,8 @@ class ControllerTest(unittest.TestCase):
     def test_add_logoutput(self):
         class LoggingEvaluator(nagiosplugin.evaluator.Evaluator):
             def __call__(self, probe):
-                logging.info('log message')
+                log = logging.getLogger('nagiosplugin')
+                log.info('log message')
         c = Controller('TEST', self.probe, LoggingEvaluator(), 3)
         c()
         self.assertTrue(u'log message' in c.output,
