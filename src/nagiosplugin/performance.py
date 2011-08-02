@@ -3,7 +3,7 @@
 
 """Define Performance class."""
 
-import nagiosplugin.range
+import nagiosplugin
 
 
 class Performance(object):
@@ -40,8 +40,8 @@ class Performance(object):
             self.warning = threshold.warning
             self.critical = threshold.critical
         else:
-            self.warning = nagiosplugin.range.Range(warning)
-            self.critical = nagiosplugin.range.Range(critical)
+            self.warning = nagiosplugin.Range(warning)
+            self.critical = nagiosplugin.Range(critical)
         self._check()
         self._frozen = True
 

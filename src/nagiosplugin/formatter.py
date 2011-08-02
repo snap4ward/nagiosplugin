@@ -125,11 +125,11 @@ class Formatter(object):
         return (u'\n'.join([self._render_firstline()] + self._render_tail()) +
                 u'\n')
 
-    def render(self, file):
+    def render(self, fileobj):
         """Write complete output into file object.
 
         To get a string output, see the `renders` method.
         """
-        print(self._render_firstline(), file=file)
+        print(self._render_firstline(), file=fileobj)
         for line in self._render_tail():
-            print(line, file=file)
+            print(line, file=fileobj)

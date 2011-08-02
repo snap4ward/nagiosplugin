@@ -3,8 +3,7 @@
 
 """Define Threshold class."""
 
-import nagiosplugin.range
-import nagiosplugin.state
+import nagiosplugin
 
 
 class Threshold(object):
@@ -29,7 +28,7 @@ class Threshold(object):
         `default_msg` is used as fallback message.
         """
         if self.critical and not value in self.critical:
-            return nagiosplugin.state.Critical(critical_msg or default_msg)
+            return nagiosplugin.Critical(critical_msg or default_msg)
         if self.warning and not value in self.warning:
-            return nagiosplugin.state.Warning(warning_msg or default_msg)
-        return nagiosplugin.state.Ok(ok_msg or default_msg)
+            return nagiosplugin.Warning(warning_msg or default_msg)
+        return nagiosplugin.Ok(ok_msg or default_msg)

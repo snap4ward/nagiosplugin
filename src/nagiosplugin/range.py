@@ -1,6 +1,8 @@
 # Copyright (c) 2011 gocept gmbh & co. kg
 # See also LICENSE.txt
 
+"""Range objects that define scalar matching rules"""
+
 import copy
 
 
@@ -8,9 +10,9 @@ class Range(object):
     """Represents a check range.
 
     The general format is `[@][start:][end]`. `start:` may be omitted if
-    start==0. `~:` means that start is negative infinity. If `end` is omitted,
-    infinity is assumed. To invert the match condition, prefix the range
-    expression with `@`.
+    start==0. `~:` means that start is negative infinity. If `end` is
+    omitted, infinity is assumed. To invert the match condition, prefix
+    the range expression with `@`.
 
     See
     http://nagiosplug.sourceforge.net/developer-guidelines.html#THRESHOLDFORMAT
@@ -32,6 +34,7 @@ class Range(object):
         self.verify()
 
     def _parse(self, spec):
+        """Crack up string representation."""
         spec = (spec or '')
         if spec.startswith('@'):
             self.invert = True
@@ -68,6 +71,7 @@ class Range(object):
         return True ^ self.invert
 
     def __contains__(self, value):
+        """Alias for `match`."""
         return self.match(value)
 
     def __str__(self):

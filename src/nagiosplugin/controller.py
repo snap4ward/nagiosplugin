@@ -5,14 +5,16 @@
 
 import logging
 import nagiosplugin
-import nagiosplugin.state
 import nagiosplugin.formatter
+import nagiosplugin.state
 import operator
 import signal
 try:
     import cStringIO as StringIO
 except ImportError:
     import StringIO
+
+LOG = logging.getLogger('nagiosplugin')
 
 
 class Controller(object):
@@ -26,8 +28,7 @@ class Controller(object):
         - evaluator object
     """
 
-    def __init__(self, name, probe, evaluator, verbosity=0,
-                 initial=nagiosplugin.state.Ok()):
+    def __init__(self, name, probe, evaluator, verbosity=0):
         """Create Controller object.
 
         `name` is the short plugin name that appears first in the
@@ -36,16 +37,14 @@ class Controller(object):
         `evaluator` is an object which supports the Evaluator protocol.
         `verbosity` is an integer which controls the amount of logging
         output to be included in the plugin's long outout.
-        `initial` is the initial plugin state if the Evaluator does not
-        specify something else.
         """
         self.name = name
         self.probe = probe
         self.evaluator = evaluator
-        self._setup_logger(verbosity)
-        self.state = initial
-        self.initial = initial
+        self.state = nagiosplugin.Ok()
         self.performance = None
+        self.logoutput = StringIO.StringIO()
+        self._setup_logger(verbosity)
 
     def __str__(self):
         """Complete plugin output as string."""
@@ -61,14 +60,17 @@ class Controller(object):
         """
         try:
             self._process(timeout)
-        except StandardError as e:
-            self.state = nagiosplugin.state.Unknown(str(e))
-            self.logger.exception(e)
+        except StandardError as exc:
+            self.state = nagiosplugin.state.Unknown(str(exc))
+            LOG.exception(exc)
 
     def _setup_logger(self, verbosity):
-        self.logoutput = StringIO.StringIO()
-        self.logger = logging.getLogger('nagiosplugin')
-        self.logger.setLevel(logging.DEBUG)
+        """Configure global logger for long output.
+
+        Messages logged to the "nagiosplugin" logger will be included in
+        the long output according to the `verbosity` level (0-3).
+        """
+        LOG.setLevel(logging.DEBUG)
         handler = logging.StreamHandler(self.logoutput)
         if verbosity > 2:
             handler.setLevel(logging.DEBUG)
@@ -79,9 +81,10 @@ class Controller(object):
         else:
             handler.setLevel(logging.ERROR)
         handler.setFormatter(logging.Formatter('%(levelname)s: %(message)s'))
-        self.logger.addHandler(handler)
+        LOG.addHandler(handler)
 
     def _process(self, timeout=None):
+        """Perform probe and evaluator calls in controlled environment."""
         def handle_timeout(signum, stackframe):
             signal.alarm(0)
             raise RuntimeError(u'timeout {0} s exceeded'.format(timeout))
@@ -92,27 +95,28 @@ class Controller(object):
         signal.signal(signal.SIGALRM, signal.SIG_DFL)
         signal.alarm(0)
         self.evaluator(self.probe)
-        self.state = reduce(operator.add, self.normalized_state, self.initial)
+        self.state = reduce(operator.add, self.normalized_state,
+                            nagiosplugin.Ok())
         self.performance = self.normalized_performance
 
-    def output(self, file=None):
+    def output(self, fileobj=None):
         """Create plugin output.
 
         Output generation is delegated to a Formatter object. The name
         attribute is used to define the uppercased plugin name in the
-        first line. If `file` is given, the output is written to the
+        first line. If `fileobj` is given, the output is written to the
         specified file object. Otherwise, it is returned as string.
         """
-        f = nagiosplugin.formatter.Formatter(self.name)
-        f.addstate(self.state)
+        fmt = nagiosplugin.formatter.Formatter(self.name)
+        fmt.addstate(self.state)
         if self.performance:
-            f.addperformance(self.performance)
+            fmt.addperformance(self.performance)
         if self.logoutput.getvalue():
-            f.addlongoutput(self.logoutput.getvalue())
-        if file:
-            f.render(file)
+            fmt.addlongoutput(self.logoutput.getvalue())
+        if fileobj:
+            fmt.render(fileobj)
         else:
-            return f.renders()
+            return fmt.renders()
 
     @property
     def normalized_state(self):

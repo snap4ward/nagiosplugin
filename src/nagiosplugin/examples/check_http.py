@@ -1,6 +1,12 @@
 # Copyright (c) 2011 gocept gmbh & co. kg
 # See also LICENSE.txt
 
+"""Partial re-implementation of check_http.
+
+This examples illustrates basic nagiosplugin API features via a partial
+re-implemetation of the original check_http plugin.
+"""
+
 from __future__ import print_function
 
 import logging
@@ -14,6 +20,7 @@ LOG = logging.getLogger('nagiosplugin')
 
 
 class HTTPProbe(object):
+    """Retrieve a HTTP object and examine it."""
 
     def __init__(self, hostname):
         self.hostname = hostname

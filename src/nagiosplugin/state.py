@@ -85,20 +85,24 @@ class State(object):
 
 
 class Ok(State):
+    """Check result is inside all limits."""
     code = 0
     word = u'OK'
 
 
 class Warning(State):
+    """Check result is outside the warning range."""
     code = 1
     word = u'WARNING'
 
 
 class Critical(State):
+    """Check result is outside the critical range."""
     code = 2
     word = u'CRITICAL'
 
 
 class Unknown(State):
+    """Could not determine check result."""
     code = 3
     word = u'UNKNOWN'
