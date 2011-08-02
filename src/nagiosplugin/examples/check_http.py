@@ -10,7 +10,7 @@ import sys
 import time
 import urllib2
 
-logger = logging.getLogger('nagiosplugin')
+LOG = logging.getLogger('nagiosplugin')
 
 
 class HTTPProbe(object):
@@ -20,10 +20,10 @@ class HTTPProbe(object):
 
     def __call__(self):
         self.url = 'http://{0}/'.format(self.hostname)
-        logger.info('opening URL %s', self.url)
+        LOG.info('opening URL %s', self.url)
         self.fetch_url()
-        logger.debug(u'start: %s, stop: %s', self.start, self.stop)
-        logger.debug(self.response)
+        LOG.debug(u'start: %s, stop: %s', self.start, self.stop)
+        LOG.debug(self.response)
 
     def fetch_url(self):
         self.start = time.time()
@@ -47,18 +47,20 @@ class HTTPEvaluator(object):
 
     def __call__(self, probe):
         self.probe = probe
-        self.state = [self.check_string(), self.check_time()]
+        self.state = [self.check_time(), self.check_string()]
         self.performance = {'time': nagiosplugin.Performance(
-            self.probe.responsetime, 's', 0, threshold=self.threshold))
+            self.probe.responsetime, 's', 0, threshold=self.threshold)}
 
     def check_string(self):
         if not self.stringmatch:
             return None
         if self.stringmatch.encode() in self.probe.response:
-            return nagiosplugin.Ok('"{0}" found in response'.format(
+            return nagiosplugin.Ok('{0!r} found in response'.format(
                 self.stringmatch))
+        LOG.warning('stringmatch {0!r} failed'.format(
+            self.stringmatch))
         return nagiosplugin.Critical(
-            '"{0}" not found in response'.format(self.stringmatch))
+            '{0!r} not found in response'.format(self.stringmatch))
 
     def check_time(self):
         return self.threshold.match(

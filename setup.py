@@ -3,7 +3,6 @@
 
 from setuptools import setup, find_packages
 import os
-import sys
 
 here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.txt')).read()

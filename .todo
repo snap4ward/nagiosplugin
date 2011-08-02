@@ -54,22 +54,28 @@
     <note priority="medium" time="1310740950" done="1310742399">
         call evaluator
     </note>
+    <note priority="medium" time="1310740965" done="1312276279">
+        performance data output
+    </note>
     <note priority="medium" time="1310740975" done="1311576087">
         error message output
-    </note>
-    <note priority="medium" time="1311539824" done="1311576092">
-        check_http should decode response according to HTTP headers
-    </note>
-    <note priority="low" time="1310662613" done="1310740690">
-        check_http should fail if there is no host given
-    </note>
-    <note priority="medium" time="1310740965">
-        performance data output
     </note>
     <note priority="medium" time="1311522551" done="1311836243">
         Performance.set_threshold und MeasuredPerformance löschen
     </note>
-    <note priority="medium" time="1311525764">
+    <note priority="medium" time="1311525764" done="1312276280">
         long output
+    </note>
+    <note priority="medium" time="1311539824" done="1311576092">
+        check_http should decode response according to HTTP headers
+    </note>
+    <note priority="medium" time="1312175248" done="1312279448">
+        normalized_performance
+    </note>
+    <note priority="low" time="1310662613" done="1310740690">
+        check_http should fail if there is no host given
+    </note>
+    <note priority="medium" time="1312277842" done="1312279449">
+        Controller: performance
     </note>
 </todo>
