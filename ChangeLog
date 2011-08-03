@@ -1,3 +1,8 @@
+2011-08-02  Christian Kauhaus <kc@gocept.com>
+
+	* Add Controller class and provide enough code to get the check_http
+	example plugin running (#9266).
+
 2011-07-11  Christian Kauhaus <kc@gocept.com>
 
 	* Add skeleton Plugin and Controller classes #9266.
