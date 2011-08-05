@@ -23,6 +23,15 @@ class State(object):
             self.messages = [messages]
         else:
             self.messages = messages
+        self._frozen = True
+
+    def __setattr__(self, name, value):
+        """Inhibit attribute changes after object initialization."""
+        if hasattr(self, '_frozen'):
+            raise AttributeError(
+                'cannot set {0!r} to {1!r} on frozen {2} instance'.format(
+                    name, value, self.__class__.__name__))
+        super(State, self).__setattr__(name, value)
 
     def __str__(self):
         """Numeric status code."""
@@ -52,6 +61,13 @@ class State(object):
         This comparision is only meaningful for states with different codes.
         """
         return self.code.__cmp__(other.code)
+
+    def __hash__(self):
+        """Return the same value for States that are equal."""
+        val = hash(self.code)
+        for msg in self.messages:
+            val ^= hash(msg)
+        return val
 
     def __repr__(self):
         return u'%s(%r)' % (self.__class__.__name__, self.messages)

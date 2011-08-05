@@ -84,7 +84,6 @@ class FormatterTest(unittest.TestCase):
         f.addlongoutput(u'0123456789')
         f.addperformance({'performance1': nagiosplugin.Performance(1, u's'),
                           'performance2': nagiosplugin.Performance(2, u's')})
-        print(f.perfdata)
         self.assertListEqual(f._render_tail(), [
             u'0123456789 | performance1=1s', u'performance2=2s'])
 

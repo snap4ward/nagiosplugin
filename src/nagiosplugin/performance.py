@@ -46,11 +46,11 @@ class Performance(object):
         self._frozen = True
 
     def __setattr__(self, name, value):
-        """Raise exception if attributes are tried to be changed."""
+        """Inhibit attribute changes after object initialization."""
         if hasattr(self, '_frozen'):
-            raise NotImplementedError(
-                '{0} is a value object and should not be modified'.format(
-                    self.__class__.__name__))
+            raise AttributeError(
+                'cannot set {0!r} to {1!r} on frozen {2} instance'.format(
+                    name, value, self.__class__.__name__))
         super(self.__class__, self).__setattr__(name, value)
 
     def with_threshold(self, warning=None, critical=None, threshold=None):
@@ -67,6 +67,11 @@ class Performance(object):
     def __neq__(self, other):
         """Return True if this object's values do not match `other`'s."""
         return not self.__eq__(other)
+
+    def __hash__(self):
+        """Return the same value for objects that are equal."""
+        return (hash(self.value) ^ hash(self.uom) ^ hash(self.minimum) ^
+                hash(self.maximum) ^ hash(self.warning) ^ hash(self.critical))
 
     def __repr__(self):
         """Return parseable string representation."""

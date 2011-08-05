@@ -68,7 +68,11 @@ class PerformanceTest(unittest.TestCase):
         self.assertEqual(p.with_threshold('1:3', '5'),
                          Performance(3, 's', 0, 100, '1:3', '5'))
 
+    def test_hash(self):
+        self.assertEqual(hash(Performance(1)), hash(Performance(1)))
+        self.assertNotEqual(hash(Performance(2)), hash(Performance(1)))
+
     def test_performance_should_be_immutable(self):
         p = Performance(1024, 'B')
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(AttributeError):
             p.minimum = 0

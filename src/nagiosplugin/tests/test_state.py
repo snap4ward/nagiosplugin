@@ -6,7 +6,7 @@ try:
 except ImportError:
     import unittest
 
-from nagiosplugin.state import State, Ok, Warning, Critical, Unknown
+from nagiosplugin.state import Ok, Warning, Critical, Unknown
 
 
 class StateTest(unittest.TestCase):
@@ -61,3 +61,12 @@ class StateTest(unittest.TestCase):
 
     def test_cmp_should_return_false_if_incompatible_type(self):
         self.assertFalse(Ok() == 'string')
+
+    def test_hash(self):
+        self.assertEqual(hash(Ok(['m1', 'm2'])), hash(Ok(['m1', 'm2'])))
+        self.assertNotEqual(hash(Ok(['m1', 'm3'])), hash(Ok(['m1', 'm2'])))
+
+    def test_state_should_be_immutable(self):
+        s = Critical()
+        with self.assertRaises(AttributeError):
+            s.messages = ['new message']
