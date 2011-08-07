@@ -20,6 +20,7 @@ class State(nagiosplugin.valueobj.ValueObject):
     remaining lines go into Nagios' long output (introduced with Nagios
     3).
     """
+    # pylint: disable-msg=E1101
 
     __slots__ = ['messages']
 
@@ -99,6 +100,7 @@ class Ok(State):
 
 class Warning(State):
     """Expresses that check result is outside the warning range."""
+    # pylint: disable-msg=W0622
 
     code = 1
     word = u'WARNING'

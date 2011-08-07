@@ -86,7 +86,8 @@ class Controller(object):
 
     def _process(self, timeout=None):
         """Perform probe and evaluator calls in controlled environment."""
-        def handle_timeout(signum, stackframe):
+        def handle_timeout(_signum, _stackframe):
+            """Abort plugin evaluation."""
             signal.alarm(0)
             raise RuntimeError(u'timeout {0} s exceeded'.format(timeout))
         signal.signal(signal.SIGALRM, handle_timeout)
@@ -95,10 +96,37 @@ class Controller(object):
         self.probe()
         signal.signal(signal.SIGALRM, signal.SIG_DFL)
         signal.alarm(0)
-        self.evaluator(self.probe)
-        self.state = functools.reduce(operator.add, self.normalized_state,
-                                      nagiosplugin.Ok())
-        self.performance = self.normalized_performance
+        self.evaluator.evaluate(self.probe)
+        self.state = self._normalized_state()
+        self.performance = self._normalized_performance()
+
+    def _normalized_state(self):
+        """The evaluator's state property in normalized form.
+
+        The state is forced to be a list and None elements are filtered
+        out.
+        """
+        state = self.evaluator.state()
+        if not state:
+            return nagiosplugin.Ok()
+        if isinstance(state, nagiosplugin.State):
+            return state
+        return functools.reduce(operator.add, (s for s in state if s),
+                                nagiosplugin.Ok())
+
+    def _normalized_performance(self):
+        """The evaluator's performance property in normalized form.
+
+        The performance is forced to be a dict. If it is a single
+        Performance object, add a key with the check's name.
+        """
+        performance = self.evaluator.performance()
+        if not performance:
+            return {}
+        if isinstance(performance, nagiosplugin.Performance):
+            return {self.name.lower(): performance}
+        return dict(((key, performance[key])
+                     for key in performance if performance[key]))
 
     def output(self, fileobj=None):
         """Create plugin output.
@@ -118,36 +146,6 @@ class Controller(object):
             fmt.render(fileobj)
         else:
             return fmt.renders()
-
-    @property
-    def normalized_state(self):
-        """The evaluator's state property in normalized form.
-
-        The state is forced to be a list and None elements are filtered
-        out.
-        """
-        state = self.evaluator.state
-        if isinstance(state, list):
-            return [s for s in state if s]
-        elif state:
-            return [state]
-        else:
-            return None
-
-    @property
-    def normalized_performance(self):
-        """The evaluator's performance property in normalized form.
-
-        The performance is forced to be a dict. If it is a single
-        Performance object, add a key with the check's name.
-        """
-        performance = self.evaluator.performance
-        if isinstance(performance, dict):
-            return performance
-        elif performance:
-            return {self.name.lower(): performance}
-        else:
-            return {}
 
     @property
     def exitcode(self):

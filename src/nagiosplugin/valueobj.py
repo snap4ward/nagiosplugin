@@ -18,6 +18,7 @@ class ValueObject(object):
     Concrete classes are expected to override the __slots__
     class-variable with a list of expected attributes.
     """
+    # pylint: disable-msg=E1101
 
     def __init__(self, **kwargs):
         assert hasattr(self, '__slots__'), '__slots__ must be defined'
@@ -39,14 +40,14 @@ class ValueObject(object):
     def __repr__(self):
         """Return parseable string representation."""
         attrs = ', '.join(('{0}={1!r}'.format(key, value)
-                           for key, value in self._dict.iteritems()))
+                           for key, value in self.publicitems()))
         return '{0}({1})'.format(self.__class__.__name__, attrs)
 
     def __eq__(self, other):
         """Return True if other has the same type and dict."""
         if not type(self) == type(other):
             return False
-        return self._dict == other._dict
+        return dict(self.publicitems()) == dict(other.publicitems())
 
     def __ne__(self, other):
         """Return True if other is not equal to self."""
@@ -63,16 +64,15 @@ class ValueObject(object):
             # use slower string representation
             return hash(repr(self))
 
-    @property
-    def _dict(self):
-        """Return public attributes and values as dict."""
+    def publicitems(self):
+        """Iterate over (key, value) pairs of public attributes."""
         unknown = object()
-        return dict((attr, getattr(self, attr)) for attr in self.__slots__
-                    if getattr(self, attr, unknown) is not unknown
-                    and not attr.startswith('_'))
+        return ((attr, getattr(self, attr)) for attr in self.__slots__
+                if getattr(self, attr, unknown) is not unknown
+                and not attr.startswith('_'))
 
     def replace(self, **kwargs):
         """Return new instance with selectively overridden attributes."""
-        newdict = self._dict
+        newdict = dict(self.publicitems())
         newdict.update(kwargs)
         return self.__class__(**newdict)

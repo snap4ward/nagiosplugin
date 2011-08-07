@@ -18,6 +18,7 @@ class Range(nagiosplugin.valueobj.ValueObject):
     http://nagiosplug.sourceforge.net/developer-guidelines.html#THRESHOLDFORMAT
     for details.
     """
+    # pylint: disable-msg=E1101
 
     __slots__ = ['start', 'end', 'invert']
 
@@ -48,16 +49,16 @@ class Range(nagiosplugin.valueobj.ValueObject):
                 end = int(end_str)
         return start, end, invert
 
-    def __init__(self, spec=None):
+    def __init__(self, spec=None, invert=False, start=0, end=None):
         """Create a Range object according to `spec`.
 
         `spec` may be either a string or another Range object.
         """
         if isinstance(spec, Range):
-            start = spec.start
-            end = spec.end
-            invert = spec.invert
-        else:
+            super(Range, self).__init__(
+                start=spec.start, end=spec.end, invert=spec.invert)
+            return
+        elif isinstance(spec, str) or isinstance(spec, unicode):
             start, end, invert = self._parse(spec)
         super(Range, self).__init__(start=start, end=end, invert=invert)
         self.verify()

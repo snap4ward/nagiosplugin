@@ -1,7 +1,7 @@
 # Copyright (c) 2011 gocept gmbh & co. kg
 # See also LICENSE.txt
 
-"""Class library to help writing Nagios/Icinga plugins.
+"""Class library to help writing Nagios/Icinga plugins
 
 nagiosplugin helps writing plugins that comply to the Nagios 3.0 API
 specification. To do this, it defines various helper classes and a
@@ -19,6 +19,7 @@ examples.
 """
 
 # import commonly accessed classes into main namespace
+# pylint: disable-msg=W0622
 from nagiosplugin.controller import Controller
 from nagiosplugin.performance import Performance
 from nagiosplugin.range import Range

@@ -12,22 +12,23 @@ class Evaluator(object):
     decide if they are OK. It is responsible for generating Status and
     Performance objects.
 
-    Properties:
-        `state` -- a list of State objects computed from the probe's contents
-        `performance` -- a dict of Performance objects indexed by name computed
-            from the probe's contents
-
     Custom evaluator classes don't need to be necessarily descendands of this
     class as long as they define the same interface.
     """
 
-    state = []
-    performance = {}
-
     def __init__(self, *args, **kwargs):
         """Configure the evaluator with criteria to evaluate the probe."""
+        self._state = []
+        self._performance = {}
+
+    def evaluate(self, probe):
+        """Get interesting information out or `probe` for evaluation."""
         pass
 
-    def __call__(self, probe):
-        """Process probe and update status and performance."""
-        pass
+    def state(self):
+        """Return list of states."""
+        return self._state
+
+    def performance(self):
+        """Return dict of performance values."""
+        return self._performance

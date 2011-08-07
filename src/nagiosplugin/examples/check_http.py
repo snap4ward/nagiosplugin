@@ -46,28 +46,26 @@ class HTTPProbe(object):
             charset = 'UTF-8'
         self.stop = time.time()
 
-    @property
-    def responsetime(self):
-        return self.stop - self.start
-
 
 class HTTPEvaluator(object):
 
     def __init__(self, warn, crit, stringmatch=None):
         self.threshold = nagiosplugin.Threshold(warn, crit)
         self.stringmatch = stringmatch
-        self.state = None
-        self.performance = None
+        self.response = None
+        self.responsetime = None
 
-    def __call__(self, probe):
-        self.state = [self.check_time(probe), self.check_string(probe)]
-        self.performance = {'time': nagiosplugin.Performance(
-            probe.responsetime, 's', 0, threshold=self.threshold)}
+    def evaluate(self, probe):
+        self.response = probe.response
+        self.responsetime = probe.stop - probe.start
 
-    def check_string(self, probe):
+    def state(self):
+        return [self.check_time(), self.check_string()]
+
+    def check_string(self):
         if not self.stringmatch:
             return None
-        if self.stringmatch.encode() in probe.response:
+        if self.stringmatch.encode() in self.response:
             return nagiosplugin.Ok('{0!r} found in response'.format(
                 self.stringmatch))
         LOG.warning('stringmatch {0!r} failed'.format(
@@ -75,11 +73,15 @@ class HTTPEvaluator(object):
         return nagiosplugin.Critical(
             '{0!r} not found in response'.format(self.stringmatch))
 
-    def check_time(self, probe):
+    def check_time(self):
         return self.threshold.match(
-            probe.responsetime,
+            self.responsetime,
             default_msg=u'{0} Bytes in {1:.3g} s'.format(
-                len(probe.response), probe.responsetime))
+                len(self.response), self.responsetime))
+
+    def performance(self):
+        return {'time': nagiosplugin.Performance(
+            self.responsetime, 's', 0, threshold=self.threshold)}
 
 
 def main():

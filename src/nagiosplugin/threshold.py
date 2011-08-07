@@ -9,6 +9,7 @@ import nagiosplugin.valueobj
 
 class Threshold(nagiosplugin.valueobj.ValueObject):
     """Convenience class to combine warning and critical ranges."""
+    # pylint: disable-msg=E1101
 
     __slots__ = ['warning', 'critical']
 

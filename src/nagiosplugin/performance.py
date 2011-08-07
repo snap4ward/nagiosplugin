@@ -14,6 +14,7 @@ class Performance(nagiosplugin.valueobj.ValueObject):
     This value is augmented with contextual information like thresholds
     and value range.
     """
+    # pylint: disable-msg=E1101
 
     __slots__ = ['value', 'uom', 'minimum', 'maximum', 'warning', 'critical']
 
@@ -28,7 +29,8 @@ class Performance(nagiosplugin.valueobj.ValueObject):
         `critical`.
         """
         if isinstance(value, Performance):
-            super(Performance, self).__init__(**value._dict)
+            kwargs = dict(value.publicitems())
+            super(Performance, self).__init__(**kwargs)
             return
         if threshold and (warning or critical):
             raise ValueError(u'cannot initialize with both warning/'
