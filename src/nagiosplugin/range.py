@@ -33,6 +33,38 @@ class Range(object):
             self._parse(spec)
         self.verify()
 
+    def __contains__(self, value):
+        """Alias for `match`."""
+        return self.match(value)
+
+    def __str__(self):
+        """Return a human-readable range specification."""
+        result = []
+        if self.invert:
+            result.append('@')
+        if self.start is None:
+            result.append('~:')
+        elif self.start != 0:
+            result.append(('%s:' % self.start))
+        if self.end is not None:
+            result.append(('%s' % self.end))
+        return ''.join(result)
+
+    def __repr__(self):
+        """Return a parseable range specification."""
+        return 'Range(%r)' % str(self)
+
+    def __eq__(self, other):
+        """True if both objects represent the same value range."""
+        if isinstance(other, Range):
+            return self.__dict__ == other.__dict__
+        return TypeError('cannot compare %r to %r' % (
+            self.__class__, other.__class__))
+
+    def __ne__(self, other):
+        """True if the value ranges of both objects differ."""
+        return not self.__eq__(other)
+
     def _parse(self, spec):
         """Crack up string representation."""
         spec = (spec or '')
@@ -69,35 +101,3 @@ class Range(object):
         if self.end is not None and value > self.end:
             return False ^ self.invert
         return True ^ self.invert
-
-    def __contains__(self, value):
-        """Alias for `match`."""
-        return self.match(value)
-
-    def __str__(self):
-        """Return a human-readable range specification."""
-        result = []
-        if self.invert:
-            result.append('@')
-        if self.start is None:
-            result.append('~:')
-        elif self.start != 0:
-            result.append(('%s:' % self.start))
-        if self.end is not None:
-            result.append(('%s' % self.end))
-        return ''.join(result)
-
-    def __repr__(self):
-        """Return a parseable range specification."""
-        return 'Range(%r)' % str(self)
-
-    def __eq__(self, other):
-        """True if both objects represent the same value range."""
-        if isinstance(other, Range):
-            return self.__dict__ == other.__dict__
-        return TypeError('cannot compare %r to %r' % (
-            self.__class__, other.__class__))
-
-    def __ne__(self, other):
-        """True if the value ranges of both objects differ."""
-        return not self.__eq__(other)
