@@ -1,85 +1,56 @@
 # Copyright (c) 2011 gocept gmbh & co. kg
 # See also LICENSE.txt
 
-"""Define Performance class."""
+"""Define Performance class"""
 
 import nagiosplugin
+import nagiosplugin.valueobj
 
 
-class Performance(object):
+class Performance(nagiosplugin.valueobj.ValueObject):
     """Value object for performance data records.
 
-    A Performance object contains a scalar values and a unit of measure. This
-    value is augmented with contextual information like thresholds and value
-    range.
+    A Performance object contains a scalar values and a unit of measure.
+    This value is augmented with contextual information like thresholds
+    and value range.
     """
+
+    __slots__ = ['value', 'uom', 'minimum', 'maximum', 'warning', 'critical']
 
     def __init__(self, value, uom='', minimum=None, maximum=None,
                  warning=None, critical=None, threshold=None):
         """Initialize Performance object from scalars or other objects.
 
         `value` can either be a float, or a Performance object `uom`,
-        `minimum`, and `maximum` specify the value's bounds.  `warning` and
-        `critical` define the check ranges. Alternatively, a `threshold` value
-        can be given instead of `warning` or `critical`.
+        `minimum`, and `maximum` specify the value's bounds.  `warning`
+        and `critical` define the check ranges. Alternatively, a
+        `threshold` value can be given instead of `warning` or
+        `critical`.
         """
         if isinstance(value, Performance):
-            self.__dict__.update(dict((k, v) for k, v in value.__dict__.items()
-                                      if not k.startswith('_')))
-            self._frozen = True
+            super(Performance, self).__init__(**value._dict)
             return
-        else:
-            self.value = value
-            self.uom = uom
-            self.minimum = minimum
-            self.maximum = maximum
-        if threshold and (warning is not None or critical is not None):
+        if threshold and (warning or critical):
+            print('DEBUG: threshold={0!r} warning={1!r} critical={2!r}'.format(
+                threshold, warning, critical))
             raise ValueError(u'cannot initialize with both warning/'
                              u'critical and threshold')
         elif threshold:
-            self.warning = threshold.warning
-            self.critical = threshold.critical
-        else:
-            self.warning = nagiosplugin.Range(warning)
-            self.critical = nagiosplugin.Range(critical)
+            warning = threshold.warning
+            critical = threshold.critical
+        if warning:
+            warning = nagiosplugin.Range(warning)
+        if critical:
+            critical = nagiosplugin.Range(critical)
+        super(Performance, self).__init__(
+            value=value, uom=uom, minimum=minimum, maximum=maximum,
+            warning=warning, critical=critical)
         self._check()
-        self._frozen = True
-
-    def __setattr__(self, name, value):
-        """Inhibit attribute changes after object initialization."""
-        if hasattr(self, '_frozen'):
-            raise AttributeError(
-                'cannot set {0!r} to {1!r} on frozen {2} instance'.format(
-                    name, value, self.__class__.__name__))
-        super(self.__class__, self).__setattr__(name, value)
 
     def with_threshold(self, warning=None, critical=None, threshold=None):
         """Return copy of myself with modified threshold values."""
         return self.__class__(self.value, self.uom, self.minimum, self.maximum,
                               warning, critical, threshold)
-
-    def __eq__(self, other):
-        """Return True if this objects's values matche `other`'s."""
-        if isinstance(other, Performance):
-            return self.__dict__ == other.__dict__
-        return False
-
-    def __neq__(self, other):
-        """Return True if this object's values do not match `other`'s."""
-        return not self.__eq__(other)
-
-    def __hash__(self):
-        """Return the same value for objects that are equal."""
-        return (hash(self.value) ^ hash(self.uom) ^ hash(self.minimum) ^
-                hash(self.maximum) ^ hash(self.warning) ^ hash(self.critical))
-
-    def __repr__(self):
-        """Return parseable string representation."""
-        return '{0}({1})'.format(
-            self.__class__.__name__,
-            ', '.join(['{0}={1!r}'.format(k, v)
-                       for k, v in self.__dict__.iteritems()
-                       if not k.startswith('_')]))
 
     def __str__(self):
         """Return string representation conforming to the plugin API.

@@ -1,7 +1,7 @@
 # Copyright (c) 2011 gocept gmbh & co. kg
 # See also LICENSE.txt
 
-"""Range objects that define scalar matching rules"""
+"""Define scalar matching rules"""
 
 import nagiosplugin.valueobj
 
@@ -33,19 +33,19 @@ class Range(nagiosplugin.valueobj.ValueObject):
             spec = spec[1:]
         if not ':' in spec:
             spec = ':' + spec
-        (str_start, str_end) = spec.split(':')
-        if str_start == '~':
+        (start_str, end_str) = spec.split(':')
+        if start_str == '~':
             start = None
-        elif str_start:
-            if str_start.find('.') >= 0:
-                start = float(str_start)
+        elif start_str:
+            if '.' in start_str:
+                start = float(start_str)
             else:
-                start = int(str_start)
-        if len(str_end):
-            if str_end.find('.') >= 0:
-                end = float(str_end)
+                start = int(start_str)
+        if len(end_str):
+            if '.' in end_str:
+                end = float(end_str)
             else:
-                end = int(str_end)
+                end = int(end_str)
         return start, end, invert
 
     def __init__(self, spec=None):

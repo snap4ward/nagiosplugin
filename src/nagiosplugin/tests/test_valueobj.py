@@ -72,3 +72,7 @@ class ValueObjectTest(unittest.TestCase):
         v1 = MyVal(integer=1, string='foo', _private=True)
         v2 = v1.replace(l=[1, 2, 3])
         self.assertEqual(v2, MyVal(integer=1, string='foo', l=[1, 2, 3]))
+
+    def test_dict(self):
+        self.assertDictEqual(MyVal(integer=1, string=None, _private=2)._dict,
+                             {'integer': 1, 'string': None})

@@ -12,18 +12,6 @@ except ImportError:
 
 class PerformanceTest(unittest.TestCase):
 
-    def test_eq(self):
-        self.assertEqual(Performance(10, 'B', 0, critical='1:'),
-                         Performance(10, 'B', 0, critical='1:'))
-        self.assertNotEqual(Performance(10, 'B', 0, critical='1:'),
-                            Performance(11, 'B', 0, critical='1:'))
-
-    def test_repr(self):
-        self.assertEqual("Performance(minimum=0, maximum=None, value=3, "
-                         "critical=Range('5'), warning=Range('1:3'), uom='B')",
-                         repr(Performance(3, 'B', 0, warning='1:3',
-                              critical='5')))
-
     def test_init_should_accept_performance_object(self):
         p1 = Performance(100, minimum=0, critical='200')
         p2 = Performance(p1)
@@ -63,16 +51,12 @@ class PerformanceTest(unittest.TestCase):
     def test_str_value_minimum(self):
         self.assertEqual('-35;;;;0', str(Performance(-35, maximum=0)))
 
-    def test_with_threshold(self):
+    def test_replace_warning_critical(self):
         p = Performance(3, 's', 0, 100)
-        self.assertEqual(p.with_threshold('1:3', '5'),
-                         Performance(3, 's', 0, 100, '1:3', '5'))
+        self.assertEqual(p.replace(warning='1:3', critical='~:5'),
+                         Performance(3, 's', 0, 100, '1:3', '~:5'))
 
-    def test_hash(self):
-        self.assertEqual(hash(Performance(1)), hash(Performance(1)))
-        self.assertNotEqual(hash(Performance(2)), hash(Performance(1)))
-
-    def test_performance_should_be_immutable(self):
-        p = Performance(1024, 'B')
-        with self.assertRaises(AttributeError):
-            p.minimum = 0
+    def test_replace_threshold(self):
+        p = Performance(3, 's', 0, 100)
+        self.assertEqual(p.replace(threshold=nagiosplugin.Threshold('3', '5')),
+                         Performance(3, 's', 0, 100, '3', '5'))
