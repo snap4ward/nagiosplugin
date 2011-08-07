@@ -77,41 +77,42 @@ class RangeParseTest(unittest.TestCase):
         orig = Range('@3:5')
         copy = Range(orig)
         self.assertEqual(copy, orig)
-        self.assertNotEqual(hash(copy), hash(orig))
 
     def test_eq(self):
         self.assertEqual(Range('@5:'), Range('@5:'))
         self.assertNotEqual(Range('5:'), Range('@5:'))
 
+    def test_repr(self):
+        r = Range('2:6')
+        self.assertEqual(repr(r), "Range('2:6')")
+
 
 class RangeStrTest(unittest.TestCase):
 
-    def setUp(self):
-        self.r = Range()
-
     def test_empty(self):
-        self.assertEqual('', str(self.r))
+        r = Range()
+        self.assertEqual('', str(r))
 
     def test_explicit_start_stop(self):
-        (self.r.start, self.r.end) = (1.5, 5)
-        self.assertEqual('1.5:5', str(self.r))
+        r = Range('1.5:5')
+        self.assertEqual('1.5:5', str(r))
 
     def test_omit_start(self):
-        self.r.end = 6.7
-        self.assertEqual('6.7', str(self.r))
+        r = Range('6.7')
+        self.assertEqual('6.7', str(r))
 
     def test_omit_end(self):
-        self.r.start = -6.5
-        self.assertEqual('-6.5:', str(self.r))
+        r = Range('-6.5:')
+        self.assertEqual('-6.5:', str(r))
 
     def test_neg_infinity(self):
-        (self.r.start, self.r.end) = (None, -3.0)
-        self.assertEqual('~:-3.0', str(self.r))
+        r = Range('~:-3.0')
+        self.assertEqual('~:-3.0', str(r))
 
     def test_invert(self):
-        (self.r.invert, self.r.start, self.r.end) = (True, 3, 7)
-        self.assertEqual('@3:7', str(self.r))
+        r = Range('@3:7')
+        self.assertEqual('@3:7', str(r))
 
     def test_large_number(self):
-        self.r.end = 2800000000
-        self.assertEqual('2800000000', str(self.r))
+        r = Range('2800000000')
+        self.assertEqual('2800000000', str(r))

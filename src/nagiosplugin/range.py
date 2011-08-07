@@ -3,10 +3,10 @@
 
 """Range objects that define scalar matching rules"""
 
-import copy
+import nagiosplugin.valueobj
 
 
-class Range(object):
+class Range(nagiosplugin.valueobj.ValueObject):
     """Represents a check range.
 
     The general format is `[@][start:][end]`. `start:` may be omitted if
@@ -19,18 +19,47 @@ class Range(object):
     for details.
     """
 
+    __slots__ = ['start', 'end', 'invert']
+
+    @classmethod
+    def _parse(cls, spec):
+        """Crack up string representation into start, end, invert."""
+        spec = (spec or '')
+        start = 0
+        end = None
+        invert = False
+        if spec.startswith('@'):
+            invert = True
+            spec = spec[1:]
+        if not ':' in spec:
+            spec = ':' + spec
+        (str_start, str_end) = spec.split(':')
+        if str_start == '~':
+            start = None
+        elif str_start:
+            if str_start.find('.') >= 0:
+                start = float(str_start)
+            else:
+                start = int(str_start)
+        if len(str_end):
+            if str_end.find('.') >= 0:
+                end = float(str_end)
+            else:
+                end = int(str_end)
+        return start, end, invert
+
     def __init__(self, spec=None):
         """Create a Range object according to `spec`.
 
         `spec` may be either a string or another Range object.
         """
-        self.invert = False
-        self.start = 0
-        self.end = None
         if isinstance(spec, Range):
-            self.__dict__ = copy.copy(spec.__dict__)
+            start = spec.start
+            end = spec.end
+            invert = spec.invert
         else:
-            self._parse(spec)
+            start, end, invert = self._parse(spec)
+        super(Range, self).__init__(start=start, end=end, invert=invert)
         self.verify()
 
     def __contains__(self, value):
@@ -51,41 +80,8 @@ class Range(object):
         return ''.join(result)
 
     def __repr__(self):
-        """Return a parseable range specification."""
-        return 'Range(%r)' % str(self)
-
-    def __eq__(self, other):
-        """True if both objects represent the same value range."""
-        if isinstance(other, Range):
-            return self.__dict__ == other.__dict__
-        return TypeError('cannot compare %r to %r' % (
-            self.__class__, other.__class__))
-
-    def __ne__(self, other):
-        """True if the value ranges of both objects differ."""
-        return not self.__eq__(other)
-
-    def _parse(self, spec):
-        """Crack up string representation."""
-        spec = (spec or '')
-        if spec.startswith('@'):
-            self.invert = True
-            spec = spec[1:]
-        if spec.find(':') < 0:
-            spec = ':' + spec
-        (start, end) = spec.split(':')
-        if start == '~':
-            self.start = None
-        elif start:
-            if start.find('.') >= 0:
-                self.start = float(start)
-            else:
-                self.start = int(start)
-        if len(end):
-            if end.find('.') >= 0:
-                self.end = float(end)
-            else:
-                self.end = int(end)
+        """Return a parseable string representation."""
+        return '{0}({1!r})'.format(self.__class__.__name__, str(self))
 
     def verify(self):
         """Throw ValueError if the range is not consistent."""
