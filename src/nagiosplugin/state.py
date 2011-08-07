@@ -1,37 +1,45 @@
 # Copyright (c) 2011 gocept gmbh & co. kg
 # See also LICENSE.txt
 
-"""Define state types that represent the check outcomes defined by Nagios."""
+"""State types that represent check outcomes
+
+This module defines the four state types Ok, Warning, Critical, and
+Unknown. These represent the possible check outcomes defined by the
+Nagios plugin API.
+"""
+
+import nagiosplugin.valueobj
 
 
-class State(object):
+class State(nagiosplugin.valueobj.ValueObject):
     """Represents the logical outcome of checks.
 
-    A State has a numeric state code and a status word denoting the result. In
-    addition a state carries one or more message lines. The first message line
-    goes into Nagios' main status message and the remaining lines go into
-    Nagios' long output (introduced with Nagios 3).
+    A State has a numeric state code and a status word denoting the
+    result. In addition a state carries one or more message lines. The
+    first message line goes into Nagios' main status message and the
+    remaining lines go into Nagios' long output (introduced with Nagios
+    3).
     """
+
+    __slots__ = ['messages']
 
     code = None
     word = None
 
     def __init__(self, messages=None):
-        if not messages:
-            self.messages = []
-        elif not isinstance(messages, list):
-            self.messages = [messages]
-        else:
-            self.messages = messages
-        self._frozen = True
+        """Initialize State value.
 
-    def __setattr__(self, name, value):
-        """Inhibit attribute changes after object initialization."""
-        if hasattr(self, '_frozen'):
-            raise AttributeError(
-                'cannot set {0!r} to {1!r} on frozen {2} instance'.format(
-                    name, value, self.__class__.__name__))
-        super(State, self).__setattr__(name, value)
+        `messages` can be given as single string or as list of strings.
+        In the first case, the string defines a headline and no long
+        output is defined. In the second case, the first string of the
+        list is the headline and the subsequent strings are the long
+        output.
+        """
+        if not messages:
+            messages = []
+        elif not isinstance(messages, list):
+            messages = [messages]
+        super(State, self).__init__(messages=messages)
 
     def __str__(self):
         """Numeric status code."""
@@ -45,39 +53,21 @@ class State(object):
             raise NotImplementedError
         return self.code
 
-    def __eq__(self, other):
-        """Compare for equality."""
-        if not hasattr(other, 'code') or not hasattr(other, 'messages'):
-            return False
-        return self.code == other.code and self.messages == other.messages
-
-    def __ne__(self, other):
-        """Compare for non-equality."""
-        return not self.__eq__(other)
-
     def __cmp__(self, other):
         """Numerical code comparision.
 
-        This comparision is only meaningful for states with different codes.
+        This comparision is only meaningful for states with different
+        codes.
         """
         return self.code.__cmp__(other.code)
-
-    def __hash__(self):
-        """Return the same value for States that are equal."""
-        val = hash(self.code)
-        for msg in self.messages:
-            val ^= hash(msg)
-        return val
-
-    def __repr__(self):
-        return u'%s(%r)' % (self.__class__.__name__, self.messages)
 
     def __add__(self, other):
         """Combine two states.
 
-        The result has the type of the dominant state and the messages are
-        concatenated both arguments are of the dominant state. Otherwise the
-        non-dominant state is discarded and the dominant state remains.
+        The result has the type of the dominant state and the messages
+        are concatenated both arguments are of the dominant state.
+        Otherwise the non-dominant state is discarded and the dominant
+        state remains.
         """
         if not isinstance(other, State):
             raise TypeError("cannot add '%s' and '%s' objects" % (
@@ -101,24 +91,28 @@ class State(object):
 
 
 class Ok(State):
-    """Check result is inside all limits."""
+    """Expresses that check result is inside all limits."""
+
     code = 0
     word = u'OK'
 
 
 class Warning(State):
-    """Check result is outside the warning range."""
+    """Expresses that check result is outside the warning range."""
+
     code = 1
     word = u'WARNING'
 
 
 class Critical(State):
-    """Check result is outside the critical range."""
+    """Expresses that check result is outside the critical range."""
+
     code = 2
     word = u'CRITICAL'
 
 
 class Unknown(State):
-    """Could not determine check result."""
+    """Expresses that it was impossible to determine check outcome."""
+
     code = 3
     word = u'UNKNOWN'
