@@ -12,7 +12,6 @@ from __future__ import print_function
 import logging
 import nagiosplugin
 import optparse
-import sys
 import time
 import urllib2
 
@@ -24,9 +23,12 @@ class HTTPProbe(object):
 
     def __init__(self, hostname):
         self.hostname = hostname
+        self.start = None
+        self.stop = None
+        self.response = None
+        self.url = 'http://{0}/'.format(self.hostname)
 
     def __call__(self):
-        self.url = 'http://{0}/'.format(self.hostname)
         LOG.info('opening URL %s', self.url)
         self.fetch_url()
         LOG.debug(u'start: %s, stop: %s', self.start, self.stop)
@@ -43,7 +45,10 @@ class HTTPProbe(object):
         except IndexError:
             charset = 'UTF-8'
         self.stop = time.time()
-        self.responsetime = self.stop - self.start
+
+    @property
+    def responsetime(self):
+        return self.stop - self.start
 
 
 class HTTPEvaluator(object):
@@ -51,17 +56,18 @@ class HTTPEvaluator(object):
     def __init__(self, warn, crit, stringmatch=None):
         self.threshold = nagiosplugin.Threshold(warn, crit)
         self.stringmatch = stringmatch
+        self.state = None
+        self.performance = None
 
     def __call__(self, probe):
-        self.probe = probe
-        self.state = [self.check_time(), self.check_string()]
+        self.state = [self.check_time(probe), self.check_string(probe)]
         self.performance = {'time': nagiosplugin.Performance(
-            self.probe.responsetime, 's', 0, threshold=self.threshold)}
+            probe.responsetime, 's', 0, threshold=self.threshold)}
 
-    def check_string(self):
+    def check_string(self, probe):
         if not self.stringmatch:
             return None
-        if self.stringmatch.encode() in self.probe.response:
+        if self.stringmatch.encode() in probe.response:
             return nagiosplugin.Ok('{0!r} found in response'.format(
                 self.stringmatch))
         LOG.warning('stringmatch {0!r} failed'.format(
@@ -69,37 +75,37 @@ class HTTPEvaluator(object):
         return nagiosplugin.Critical(
             '{0!r} not found in response'.format(self.stringmatch))
 
-    def check_time(self):
+    def check_time(self, probe):
         return self.threshold.match(
-            self.probe.responsetime,
+            probe.responsetime,
             default_msg=u'{0} Bytes in {1:.3g} s'.format(
-                len(self.probe.response), self.probe.responsetime))
+                len(probe.response), probe.responsetime))
 
 
 def main():
-    op = optparse.OptionParser(
+    optp = optparse.OptionParser(
         description=u"Check a HTTP server's response time and output",
         usage=u'%prog -H HOSTNAME [options]',
         version=u'0.1')
-    op.add_option('-t', '--timeout', metavar='SECONDS', dest='timeout',
-                  type='int', default=120,
-                  help=u'abort execution after SECONDS (default: %default)')
-    op.add_option('-w', '--warning', metavar='SECONDS', dest='warning',
-                  help=u'warning if response time is more than SECONDS')
-    op.add_option('-c', '--critical', metavar='SECONDS', dest='critical',
-                  help=u'critical if response time is more than SECONDS')
-    op.add_option('-s', '--stringmatch', metavar='STRING',
-                  dest='stringmatch', default=None,
-                  help=u'HTTP response must contain STRING')
-    op.add_option('-H', '--hostname', dest='hostname',
-                  help=u'HTTP host to connect to')
-    op.add_option('-v', '--verbose', dest='verbose', action='count', default=0,
-                  help=u'increase verbosity')
-    opts, args = op.parse_args()
+    optp.add_option('-t', '--timeout', metavar='SECONDS', dest='timeout',
+                    type='int', default=120,
+                    help=u'abort execution after SECONDS (default: %default)')
+    optp.add_option('-w', '--warning', metavar='SECONDS', dest='warning',
+                    help=u'warning if response time is more than SECONDS')
+    optp.add_option('-c', '--critical', metavar='SECONDS', dest='critical',
+                    help=u'critical if response time is more than SECONDS')
+    optp.add_option('-s', '--stringmatch', metavar='STRING',
+                    dest='stringmatch', default=None,
+                    help=u'HTTP response must contain STRING')
+    optp.add_option('-H', '--hostname', dest='hostname',
+                    help=u'HTTP host to connect to')
+    optp.add_option('-v', '--verbose', dest='verbose', action='count',
+                    default=0, help=u'increase verbosity')
+    opts, args = optp.parse_args()
     if not opts.hostname:
-        op.error(u'need at least a hostname')
+        optp.error(u'need at least a hostname')
     if args:
-        op.error(u'superfluous arguments: {0!r}'.format(args))
+        optp.error(u'superfluous arguments: {0!r}'.format(args))
     probe = HTTPProbe(opts.hostname)
     evaluator = HTTPEvaluator(opts.warning, opts.critical, opts.stringmatch)
     nagiosplugin.run('HTTP', probe, evaluator, verbosity=opts.verbose,

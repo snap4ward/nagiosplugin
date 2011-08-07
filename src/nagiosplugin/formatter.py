@@ -6,6 +6,7 @@
 from __future__ import print_function
 
 import collections
+import functools
 import operator
 import logging
 
@@ -76,8 +77,8 @@ class Formatter(object):
         while self.perfdata:
             perf = self.perfdata.popleft()
             line.append(perf)
-            if reduce(operator.add, [len(e) + 1 for e in line],
-                      0) > maxlength:
+            if functools.reduce(operator.add, [len(e) + 1 for e in line],
+                                0) > maxlength:
                 self.perfdata.appendleft(line.pop())
                 break
         return u' '.join(line)

@@ -46,8 +46,7 @@ class ValueObject(object):
         """Return True if other has the same type and dict."""
         if not type(self) == type(other):
             return False
-        return all(getattr(self, attr, None) == getattr(other, attr, None)
-                   for attr in self.__slots__)
+        return self._dict == other._dict
 
     def __ne__(self, other):
         """Return True if other is not equal to self."""

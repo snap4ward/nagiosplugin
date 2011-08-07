@@ -3,6 +3,7 @@
 
 """Overall plugin execution logic"""
 
+import functools
 import logging
 import nagiosplugin
 import nagiosplugin.formatter
@@ -95,8 +96,8 @@ class Controller(object):
         signal.signal(signal.SIGALRM, signal.SIG_DFL)
         signal.alarm(0)
         self.evaluator(self.probe)
-        self.state = reduce(operator.add, self.normalized_state,
-                            nagiosplugin.Ok())
+        self.state = functools.reduce(operator.add, self.normalized_state,
+                                      nagiosplugin.Ok())
         self.performance = self.normalized_performance
 
     def output(self, fileobj=None):

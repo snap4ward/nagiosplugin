@@ -31,8 +31,6 @@ class Performance(nagiosplugin.valueobj.ValueObject):
             super(Performance, self).__init__(**value._dict)
             return
         if threshold and (warning or critical):
-            print('DEBUG: threshold={0!r} warning={1!r} critical={2!r}'.format(
-                threshold, warning, critical))
             raise ValueError(u'cannot initialize with both warning/'
                              u'critical and threshold')
         elif threshold:
@@ -46,11 +44,6 @@ class Performance(nagiosplugin.valueobj.ValueObject):
             value=value, uom=uom, minimum=minimum, maximum=maximum,
             warning=warning, critical=critical)
         self._check()
-
-    def with_threshold(self, warning=None, critical=None, threshold=None):
-        """Return copy of myself with modified threshold values."""
-        return self.__class__(self.value, self.uom, self.minimum, self.maximum,
-                              warning, critical, threshold)
 
     def __str__(self):
         """Return string representation conforming to the plugin API.
