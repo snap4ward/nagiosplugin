@@ -1,0 +1,17 @@
+syntax: glob
+bin
+build
+develop-eggs
+dist
+doc/_build
+*.egg-info
+include/python*
+.installed.cfg
+lib64
+lib/python*
+mock-*.egg
+*.py[co]
+setuptools_hg*
+*.sw[po]
+tags
+tmp

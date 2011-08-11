@@ -1,0 +1,54 @@
+# Copyright (c) 2011 gocept gmbh & co. kg
+# See also LICENSE.txt
+
+"""Define tests for Threshold objects."""
+
+import nagiosplugin
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
+
+from nagiosplugin.threshold import Threshold
+
+
+class ThresholdTests(unittest.TestCase):
+
+    def test_threshold_should_build_range_objects(self):
+        t = Threshold('0', '20')
+        self.assertIsInstance(t.warning, nagiosplugin.Range)
+        self.assertIsInstance(t.critical, nagiosplugin.Range)
+
+    def test_in_both_ranges_should_return_ok(self):
+        t = Threshold(nagiosplugin.Range('5'), nagiosplugin.Range('6'))
+        self.assertIsInstance(t.match(3), nagiosplugin.Ok)
+
+    def test_in_crit_range_should_return_warning(self):
+        t = Threshold(nagiosplugin.Range('1'), nagiosplugin.Range('3'))
+        self.assertIsInstance(t.match(2), nagiosplugin.Warning)
+
+    def test_outside_both_ranges_should_return_critical(self):
+        t = Threshold(nagiosplugin.Range('1'), nagiosplugin.Range('2'))
+        self.assertIsInstance(t.match(3), nagiosplugin.Critical)
+
+    def test_omit_warning(self):
+        t = Threshold(critical=nagiosplugin.Range('1:3'))
+        self.assertIsInstance(t.match(2), nagiosplugin.Ok)
+
+    def test_omit_critical(self):
+        t = Threshold(warning=nagiosplugin.Range('1:3'))
+        self.assertIsInstance(t.match(2), nagiosplugin.Ok)
+
+    def test_match_should_return_unknown_on_invalid_value(self):
+        t = Threshold(critical=nagiosplugin.Range('3'))
+        self.assertIsInstance(t.match(None), nagiosplugin.Unknown)
+
+    def test_specific_message(self):
+        t = Threshold(warning='1:5')
+        state = t.match(6, {'WARNING': 'warning message'})
+        self.assertEqual(['warning message'], state.messages)
+
+    def test_default_message(self):
+        t = Threshold(critical='3')
+        state = t.match(-1, {'DEFAULT': 'default message'})
+        self.assertEqual(['default message'], state.messages)

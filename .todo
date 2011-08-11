@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<todo version="0.1.20">
+    <note priority="high" time="1310662474" done="1310732440">
+        Threshold class with checks
+    </note>
+    <note priority="high" time="1310662686" done="1311539900">
+        Logging
+    </note>
+    <note priority="high" time="1310740955" done="1311535798">
+        basic output formatting
+    </note>
+    <note priority="high" time="1310743082" done="1310926986">
+        Performance and MeasuredPerformance need 'name' attribute
+    </note>
+    <note priority="high" time="1310926982" done="1311524719">
+        messages should go into Threshold.match and not into Threshold.__init__
+    </note>
+    <note priority="high" time="1311521294" done="1311536220">
+        exit code
+    </note>
+    <note priority="high" time="1311522736" done="1311523149">
+        State.reduce mit None sollte noop sein
+    </note>
+    <note priority="high" time="1311535920" done="1311535929">
+        18
+    </note>
+    <note priority="high" time="1311539842" done="1311576076">
+        add traceback to log output in case of exceptions
+    </note>
+    <note priority="medium" time="1310662498" done="1310732755">
+        Review Range class and tests
+    </note>
+    <note priority="medium" time="1310662933" done="1310738949">
+        Review Performance
+        <note priority="medium" time="1310662969" done="1310738946">
+            Performance.__add__(threshold)
+        </note>
+        <note priority="medium" time="1310732437" done="1310738948">
+            Threshold.__add__(performance)
+        </note>
+    </note>
+    <note priority="medium" time="1310662937" done="1310738074">
+        Review MeasuredPerformance
+    </note>
+    <note priority="medium" time="1310740217" done="1310740861">
+        rename cmdline to commandline
+    </note>
+    <note priority="medium" time="1310740946" done="1310742397">
+        call probe
+        <note priority="medium" time="1310741118" done="1310742393">
+            timeout
+        </note>
+    </note>
+    <note priority="medium" time="1310740950" done="1310742399">
+        call evaluator
+    </note>
+    <note priority="medium" time="1310740965" done="1312276279">
+        performance data output
+    </note>
+    <note priority="medium" time="1310740975" done="1311576087">
+        error message output
+    </note>
+    <note priority="medium" time="1311522551" done="1311836243">
+        Performance.set_threshold und MeasuredPerformance löschen
+    </note>
+    <note priority="medium" time="1311525764" done="1312276280">
+        long output
+    </note>
+    <note priority="medium" time="1311539824" done="1311576092">
+        check_http should decode response according to HTTP headers
+    </note>
+    <note priority="medium" time="1312175248" done="1312279448">
+        normalized_performance
+    </note>
+    <note priority="medium" time="1312277842" done="1312279449">
+        Controller: performance
+    </note>
+    <note priority="low" time="1310662613" done="1310740690">
+        check_http should fail if there is no host given
+    </note>
+    <note priority="medium" time="1312958148" done="1313040572">
+        use vars() in ValueObject
+    </note>
+</todo>

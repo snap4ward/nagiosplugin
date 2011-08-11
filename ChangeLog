@@ -1,0 +1,37 @@
+2011-08-02  Christian Kauhaus <kc@gocept.com>
+
+	* Add Controller class and provide enough code to get the check_http
+	example plugin running (#9266).
+
+2011-07-11  Christian Kauhaus <kc@gocept.com>
+
+	* Add skeleton Plugin and Controller classes #9266.
+	* Clean up tests #9266.
+	* Improve MANIFEST.in to include doc and examples (#8555).
+
+2011-07-04  Christian Kauhaus <kc@gocept.com>
+
+	* Replace unicode strings through ASCII strings on all optparse
+	invocations (#8755).
+
+2010-12-17  Christian Kauhaus <kc@gocept.com>
+
+	* Fix output of large decimal numbers #8440.
+	* Doctest for check_users #7915.
+
+2010-10-11  Christian Kauhaus  <kc@gocept.com>
+
+	* Fix missing HISTORY.txt in sdist.
+
+2010-09-21  Christian Kauhaus <kc@gocept.com>
+
+	* Fix missing version.txt in sdist #7925.
+	* Write multiple measures guide #7914.
+	* Write cookies guide #7914.
+	* Clean up documentation.
+
+2010-08-17  Christian Kauhaus <kc@gocept.com>
+
+	* Initial public release.
+	* Clean up code.
+	* Improve README.txt.
