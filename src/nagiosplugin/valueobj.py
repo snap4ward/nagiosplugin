@@ -8,6 +8,22 @@ immutable value objects like State, Range, and others.
 """
 
 
+def s_vars(self):
+    """Return key, value dict for local attributes.
+
+    This function resembles the built-in vars() function, but works also
+    for objects with __slots__.
+    """
+    unknown = object()
+    keyval = dict((attr, getattr(self, attr))
+                  for attr in self.__slots__
+                  if getattr(self, attr, unknown) is not unknown and
+                    not attr.startswith('_'))
+    if hasattr(self, '__dict__'):
+        keyval.update(self.__dict__)
+    return keyval
+
+
 class ValueObject(object):
     """Immutable object which acts mainly as container for it's values.
 
@@ -40,14 +56,14 @@ class ValueObject(object):
     def __repr__(self):
         """Return parseable string representation."""
         attrs = ', '.join(('{0}={1!r}'.format(key, value)
-                           for key, value in self.publicitems()))
+                           for key, value in s_vars(self).iteritems()))
         return '{0}({1})'.format(self.__class__.__name__, attrs)
 
     def __eq__(self, other):
         """Return True if other has the same type and dict."""
         if not type(self) == type(other):
             return False
-        return dict(self.publicitems()) == dict(other.publicitems())
+        return s_vars(self) == s_vars(other)
 
     def __ne__(self, other):
         """Return True if other is not equal to self."""
@@ -64,15 +80,8 @@ class ValueObject(object):
             # use slower string representation
             return hash(repr(self))
 
-    def publicitems(self):
-        """Iterate over (key, value) pairs of public attributes."""
-        unknown = object()
-        return ((attr, getattr(self, attr)) for attr in self.__slots__
-                if getattr(self, attr, unknown) is not unknown
-                and not attr.startswith('_'))
-
     def replace(self, **kwargs):
         """Return new instance with selectively overridden attributes."""
-        newdict = dict(self.publicitems())
+        newdict = s_vars(self)
         newdict.update(kwargs)
         return self.__class__(**newdict)

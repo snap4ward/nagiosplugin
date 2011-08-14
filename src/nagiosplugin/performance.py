@@ -29,7 +29,7 @@ class Performance(nagiosplugin.valueobj.ValueObject):
         `critical`.
         """
         if isinstance(value, Performance):
-            kwargs = dict(value.publicitems())
+            kwargs = nagiosplugin.valueobj.s_vars(value)
             super(Performance, self).__init__(**kwargs)
             return
         if threshold and (warning or critical):
