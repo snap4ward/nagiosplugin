@@ -26,9 +26,9 @@ class LoadProbe(object):
 
     def __call__(self):
         """Determine load averages and save them as 3-tuple in self.load."""
-        load = open(self.loadavg).readline().split(u' ')
-        LOG.debug('read from %s: %r', self.loadavg, load)
-        self.load = tuple(float(l) for l in load[0:3])
+        line = open(self.loadavg).readline()
+        LOG.debug('read from %s: %r', self.loadavg, line)
+        self.load = tuple(float(l) for l in line.split(u' ')[0:3])
         LOG.info('probed load values: %r', self.load)
 
 
@@ -38,24 +38,38 @@ class LoadEvaluator(object):
 
     def __init__(self, warning, critical):
         """Create evaluator object with up to 3 ranges."""
+        self.name = [u'load1', u'load5', u'load15']
         self.threshold = []
+        self.load = []
         if len(warning) < len(critical):
             warning += [None] * (len(critical) - len(warning))
-        if len(critical) < len(warning):
+        elif len(critical) < len(warning):
             critical += [None] * (len(warning) - len(critical))
         for warn, crit in zip(warning, critical):
             self.threshold.append(nagiosplugin.Threshold(warn, crit))
 
     def evaluate(self, probe):
         LOG.info('thresholds set: %r', self.threshold)
+        self.load = probe.load
 
     def state(self):
         """Return list of states for all load averages."""
-        return []
-
+        states = [t.match(l, messages={
+            'OK': None,
+            'DEFAULT': '{0} %val is outside %range'.format(n),
+        }) for n, l, t in zip(self.name, self.load, self.threshold)]
+        return (states +
+                [nagiosplugin.Ok(' '.join([str(l) for l in self.load]))])
     def performance(self):
         """Return dict of performance values for all load averages."""
-        return {}
+        perf = []
+        for i in range(3):
+            try:
+                perf.append(nagiosplugin.Performance(
+                    self.load[i], minimum=0, threshold=self.threshold[i]))
+            except IndexError:
+                perf.append(nagiosplugin.Performance(self.load[i], minimum=0))
+        return dict((n, p) for n, p in zip(self.name, perf))
 
 
 def main():
@@ -81,11 +95,19 @@ def main():
                     default=0, help=u'increase verbosity')
     opts, args = optp.parse_args()
     warning = opts.warning.split(',')
-    if len(warning) > 3:
+    if not len(warning):
+        warning = [None, None, None]
+    elif len(warning) > 3:
         optp.error('use at most three warning ranges')
+    else:
+        warning += [warning[-1]] * (3 - len(warning))
     critical = opts.critical.split(',')
-    if len(critical) > 3:
+    if not len(critical):
+        critical = [None, None, None]
+    elif len(critical) > 3:
         optp.error('use at most three critical ranges')
+    else:
+        critical += [critical[-1]] * (3 - len(critical))
     nagiosplugin.run('LOAD', LoadProbe(opts.percpu),
                      LoadEvaluator(warning, critical), verbosity=opts.verbose,
                      timeout=opts.timeout)

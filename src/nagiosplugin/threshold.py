@@ -39,13 +39,13 @@ class Threshold(nagiosplugin.valueobj.ValueObject):
                 present.
         If there is no matching key, the returned state has no message.
         """
-        def message(word):
+        def msg(word):
             return messages.get(word, messages.get('DEFAULT', None))
         try:
             if self.critical and not value in self.critical:
-                return nagiosplugin.Critical(message('CRITICAL'))
+                return nagiosplugin.Critical(msg('CRITICAL'))
             if self.warning and not value in self.warning:
-                return nagiosplugin.Warning(message('WARNING'))
+                return nagiosplugin.Warning(msg('WARNING'))
         except ValueError:
-            return nagiosplugin.Unknown(message('UNKNOWN'))
-        return nagiosplugin.Ok(message('OK'))
+            return nagiosplugin.Unknown(msg('UNKNOWN'))
+        return nagiosplugin.Ok(msg('OK'))
