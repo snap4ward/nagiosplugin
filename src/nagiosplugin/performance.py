@@ -1,7 +1,12 @@
 # Copyright (c) 2011 gocept gmbh & co. kg
 # See also LICENSE.txt
 
-"""Define Performance class"""
+"""Define Performance class.
+
+Performance objects are used to communicate performance data from the
+Evaluator to the nagiosplugin Controller. They will be rendered into the
+performance value sections of the plugin's output.
+"""
 
 import nagiosplugin
 import nagiosplugin.valueobj
@@ -10,7 +15,7 @@ import nagiosplugin.valueobj
 class Performance(nagiosplugin.valueobj.ValueObject):
     """Value object for performance data records.
 
-    A Performance object contains a scalar values and a unit of measure.
+    Performance objects contain a scalar value and a unit of measure.
     This value is augmented with contextual information like thresholds
     and value range.
     """
@@ -29,7 +34,7 @@ class Performance(nagiosplugin.valueobj.ValueObject):
         `critical`.
         """
         if isinstance(value, Performance):
-            kwargs = dict(value.iteritems())
+            kwargs = nagiosplugin.valueobj.s_vars(value)
             super(Performance, self).__init__(**kwargs)
             return
         if threshold and (warning or critical):

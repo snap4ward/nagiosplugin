@@ -45,6 +45,7 @@ setup(
     entry_points={
         'console_scripts': [
             'check_http = nagiosplugin.examples.check_http:main',
+            'check_load = nagiosplugin.examples.check_load:main',
         ],
     },
 )

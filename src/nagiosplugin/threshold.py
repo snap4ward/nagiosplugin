@@ -1,7 +1,11 @@
 # Copyright (c) 2011 gocept gmbh & co. kg
 # See also LICENSE.txt
 
-"""Define Threshold class."""
+"""Define Threshold class.
+
+Thresholds bundle a pair of warning and critical ranges for convenient
+use in Evaluator methods.
+"""
 
 import nagiosplugin
 import nagiosplugin.valueobj

@@ -2,7 +2,7 @@
 # See also LICENSE.txt
 
 from nagiosplugin.valueobj import ValueObject
-
+import nagiosplugin.valueobj
 try:
     import unittest2 as unittest
 except ImportError:
@@ -73,11 +73,7 @@ class ValueObjectTest(unittest.TestCase):
         v2 = v1.replace(l=[1, 2, 3])
         self.assertEqual(v2, MyVal(integer=1, string='foo', l=[1, 2, 3]))
 
-    def test_iteritems(self):
-        self.assertDictEqual(dict(MyVal(integer=1, string=None,
-                                        _private=2).iteritems()),
-                             {'integer': 1, 'string': None})
-
-    def test_items(self):
-        self.assertListEqual(sorted(MyVal(l=[1, 2], string=None).items()),
-                             [('l', [1, 2]), ('string', None)])
+    def test_s_vars(self):
+        self.assertDictEqual(nagiosplugin.valueobj.s_vars(
+            MyVal(integer=1, string=None, _private=2)),
+            {'integer': 1, 'string': None})

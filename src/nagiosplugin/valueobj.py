@@ -8,6 +8,22 @@ immutable value objects like State, Range, and others.
 """
 
 
+def s_vars(obj):
+    """Return dict of slots-based instance variables.
+
+    This function resembles the built-in vars() function, but works also
+    for objects with __slots__.
+    """
+    unknown = object()
+    keyval = dict((attr, getattr(obj, attr))
+                  for attr in obj.__slots__
+                  if getattr(obj, attr, unknown) is not unknown and
+                    not attr.startswith('_'))
+    if hasattr(obj, '__dict__'):
+        keyval.update(obj.__dict__)
+    return keyval
+
+
 class ValueObject(object):
     """Immutable object which acts mainly as container for it's values.
 
@@ -21,6 +37,12 @@ class ValueObject(object):
     # pylint: disable-msg=E1101
 
     def __init__(self, **kwargs):
+        """Create ValueObject instance.
+
+        Concrete classes may overwrite this method, but must make sure
+        that the constructor still accepts keyword arguments for all
+        __slots__.
+        """
         assert hasattr(self, '__slots__'), '__slots__ must be defined'
         for name, value in kwargs.iteritems():
             object.__setattr__(self, name, value)
@@ -40,14 +62,14 @@ class ValueObject(object):
     def __repr__(self):
         """Return parseable string representation."""
         attrs = ', '.join(('{0}={1!r}'.format(key, value)
-                           for key, value in self.iteritems()))
+                           for key, value in s_vars(self).iteritems()))
         return '{0}({1})'.format(self.__class__.__name__, attrs)
 
     def __eq__(self, other):
         """Return True if other has the same type and dict."""
         if not type(self) == type(other):
             return False
-        return dict(self.iteritems()) == dict(other.iteritems())
+        return s_vars(self) == s_vars(other)
 
     def __ne__(self, other):
         """Return True if other is not equal to self."""
@@ -64,19 +86,8 @@ class ValueObject(object):
             # use slower string representation
             return hash(repr(self))
 
-    def iteritems(self):
-        """Iterate over (key, value) pairs of public attributes."""
-        unknown = object()
-        return ((attr, getattr(self, attr)) for attr in self.__slots__
-                if getattr(self, attr, unknown) is not unknown
-                and not attr.startswith('_'))
-
-    def items(self):
-        """Return a list of (key, value) pairs of public attributes."""
-        return list(self.iteritems())
-
     def replace(self, **kwargs):
         """Return new instance with selectively overridden attributes."""
-        newdict = dict(self.iteritems())
+        newdict = s_vars(self)
         newdict.update(kwargs)
         return self.__class__(**newdict)
