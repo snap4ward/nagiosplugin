@@ -1,7 +1,7 @@
 # Copyright (c) 2011 gocept gmbh & co. kg
 # See also LICENSE.txt
 
-"""Class library to help writing Nagios/Icinga plugins
+"""Class library to help writing Nagios/Icinga plugins.
 
 nagiosplugin helps writing plugins that comply to the Nagios 3.0 API
 specification. To do this, it defines various helper classes and a
@@ -23,21 +23,6 @@ examples.
 from nagiosplugin.controller import Controller
 from nagiosplugin.performance import Performance
 from nagiosplugin.range import Range
+from nagiosplugin.script import run, standard_options
 from nagiosplugin.state import State, Ok, Warning, Critical, Unknown
 from nagiosplugin.threshold import Threshold
-
-import sys
-
-
-def run(checkname, probe, evaluator, verbosity=0, timeout=None):
-    """Convenience method for common plugin execution steps.
-
-    A Controller object is created with `checkname`, `probe`, and
-    `evaluator`. The check is run with `timeout`. After that, the output
-    is written to stdout and the program exits with the correct exit
-    code.
-    """
-    controller = Controller(checkname, probe, evaluator, verbosity)
-    controller(timeout)
-    controller.output(sys.stdout)
-    sys.exit(controller.exitcode)

@@ -16,7 +16,7 @@ class Evaluator(object):
     class as long as they define the same interface.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
         """Configure the evaluator with criteria to evaluate the probe."""
         self._state = []
         self._performance = {}

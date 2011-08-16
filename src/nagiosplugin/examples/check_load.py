@@ -23,6 +23,7 @@ class LoadProbe(object):
         self.percpu = percpu
         self.loadavg = '/proc/loadavg'
         self.cpuinfo = '/proc/cpuinfo'
+        self.load = (None, None, None)
 
     def __call__(self):
         """Determine load averages and save them as 3-tuple in self.load."""
@@ -49,6 +50,7 @@ class LoadEvaluator(object):
             self.threshold.append(nagiosplugin.Threshold(warn, crit))
 
     def evaluate(self, probe):
+        """Retrieve load information from probe."""
         LOG.info('thresholds set: %r', self.threshold)
         self.load = probe.load
 
@@ -60,6 +62,7 @@ class LoadEvaluator(object):
         }) for n, l, t in zip(self.name, self.load, self.threshold)]
         return (states +
                 [nagiosplugin.Ok(' '.join([str(l) for l in self.load]))])
+
     def performance(self):
         """Return dict of performance values for all load averages."""
         perf = []
@@ -73,27 +76,21 @@ class LoadEvaluator(object):
 
 
 def main():
+    """Console script for load check."""
     optp = optparse.OptionParser(
         description=u'Check system load against thresholds.',
         usage=u'%prog [-r] [-w WARN1[,WARN5[,WARN15]]] '
               u'[-c CRIT1[,CRIT5[,CRIT15]]]',
         version=u'0.1')
-    optp.add_option('-t', '--timeout', metavar='SECONDS', dest='timeout',
-                    type='int', default=15,
-                    help=u'abort execution after SECONDS (default: %default)')
-    optp.add_option('-w', '--warning', metavar='LOADAVG', dest='warning',
-                    default='',
-                    help=u'Warning if load average is outside the range. Up '
-                         u'to three comma separated ranges may be given')
-    optp.add_option('-c', '--critical', metavar='LOADAVG', dest='critical',
-                    default='',
-                    help=u'Critical if load average is outside the range. Up '
-                         u'to three comma separated ranges may be given')
+    nagiosplugin.standard_options(
+        optp, timeout=True, verbose=True,
+        warning=u'load average outside RANGE results in warning',
+        critical=u'load average outside RANGE results in critical')
     optp.add_option('-r', '--percpu', action='store_true', default=False,
                     help=u'Base thresholds on per-CPU load averages')
-    optp.add_option('-v', '--verbose', dest='verbose', action='count',
-                    default=0, help=u'increase verbosity')
     opts, args = optp.parse_args()
+    if len(args):
+        optp.error(u'superfluous arguments')
     warning = opts.warning.split(',')
     if not len(warning):
         warning = [None, None, None]

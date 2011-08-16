@@ -1,8 +1,9 @@
 # Copyright (c) 2011 gocept gmbh & co. kg
 # See also LICENSE.txt
 
-"""Overall plugin execution logic"""
+"""Overall plugin execution logic."""
 
+# pylint: disable-msg=W0404
 import functools
 import logging
 import nagiosplugin

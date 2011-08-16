@@ -8,6 +8,7 @@ Evaluator to the nagiosplugin Controller. They will be rendered into the
 performance value sections of the plugin's output.
 """
 
+# pylint: disable-msg=W0404
 import nagiosplugin
 import nagiosplugin.valueobj
 

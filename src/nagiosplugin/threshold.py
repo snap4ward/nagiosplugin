@@ -7,6 +7,7 @@ Thresholds bundle a pair of warning and critical ranges for convenient
 use in Evaluator methods.
 """
 
+# pylint: disable-msg=W0404
 import nagiosplugin
 import nagiosplugin.valueobj
 
@@ -26,7 +27,7 @@ class Threshold(nagiosplugin.valueobj.ValueObject):
         super(Threshold, self).__init__(warning=nagiosplugin.Range(warning),
                                         critical=nagiosplugin.Range(critical))
 
-    def match(self, value, messages={}):
+    def match(self, value, messages=None):
         """Return State object depending on value and ranges.
 
         Return State object (Ok, Warning, Critical) that depends on `value`
@@ -39,8 +40,11 @@ class Threshold(nagiosplugin.valueobj.ValueObject):
                 present.
         If there is no matching key, the returned state has no message.
         """
+
         def msg(word):
             return messages.get(word, messages.get('DEFAULT', None))
+
+        messages = messages or {}
         try:
             if self.critical and not value in self.critical:
                 return nagiosplugin.Critical(msg('CRITICAL'))
