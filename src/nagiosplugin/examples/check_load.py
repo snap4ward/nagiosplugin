@@ -51,8 +51,8 @@ class LoadEvaluator(object):
     def state(self):
         """Return list of states for all load averages."""
         states = [t.match(l, messages={
-            'OK': None,
-            'DEFAULT': '{0} %val is outside %range'.format(n),
+            'OK': None
+            'DEFAULT': '{0} $value is outside $range'.format(n),
         }) for n, l, t in zip(self.name, self.load, self.thresholds)]
         return (states +
                 [nagiosplugin.Ok(' '.join([str(l) for l in self.load]))])

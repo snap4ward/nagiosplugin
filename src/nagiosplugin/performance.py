@@ -35,8 +35,10 @@ class Performance(nagiosplugin.valueobj.ValueObject):
         `critical`.
         """
         if isinstance(value, Performance):
-            kwargs = nagiosplugin.valueobj.s_vars(value)
-            super(Performance, self).__init__(**kwargs)
+            super(Performance, self).__init__(
+                value=value.value, uom=value.uom, minimum=value.minimum,
+                maximum=value.maximum, warning=value.warning,
+                critical=value.critical)
             return
         if threshold and (warning or critical):
             raise ValueError(u'cannot initialize with both warning/'

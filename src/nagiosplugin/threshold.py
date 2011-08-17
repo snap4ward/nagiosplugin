@@ -7,20 +7,22 @@ Thresholds bundle a pair of warning and critical ranges for convenient
 use in Evaluator methods.
 """
 
+# pylint: disable-msg=W0402
 # pylint: disable-msg=W0404
 import nagiosplugin
 import nagiosplugin.valueobj
+import string
 
 
-def fill_list(l, min_len):
-    """Replicate last item until `l` it has at least `min_len` elements."""
-    if len(l) >= min_len:
-        return l
+def fill_list(lst, min_len):
+    """Replicate last item until `lst` it has at least `min_len` elements."""
+    if len(lst) >= min_len:
+        return lst
     try:
-        filler = l[-1]
+        filler = lst[-1]
     except IndexError:
         filler = None
-    return l + [filler] * (min_len - len(l))
+    return lst + [filler] * (min_len - len(lst))
 
 
 class Threshold(nagiosplugin.valueobj.ValueObject):
@@ -63,26 +65,41 @@ class Threshold(nagiosplugin.valueobj.ValueObject):
     def match(self, value, messages=None):
         """Return State object depending on value and ranges.
 
-        Return State object (Ok, Warning, Critical) that depends on `value`
-        matching the ranges associated with this Threshold object. The
-        dict `messages` is used to pass optional messages strings for
-        the resulting State object. Valid keys are:
+        Return State object (Ok, Warning, Critical) that depends on
+        `value` matching the ranges associated with this Threshold
+        object. The dict `messages` is used to pass optional messages
+        strings for the resulting State object. Valid keys are:
+
             OK, WARNING, CRITICAL, UNKNOWN: message for the
                 corresponding return state
             DEFAULT: fall-back message if one of the above keys is not
                 present.
+
         If there is no matching key, the returned state has no message.
+
+        Message strings may contain special tokens which are substituted
+        with their corresponding values:
+
+            $value - measured value (`value` parameter)
+            $range - range which caused the returned state (warning or
+                critical)
         """
 
-        def msg(word):
-            return messages.get(word, messages.get('DEFAULT', None))
+        def msg(word, active_range=None):
+            """Helper to pick the right message from `messages`."""
+            try:
+                template = string.Template(messages.get(word, messages.get(
+                    'DEFAULT', '')))
+                return template.substitute(
+                    value=value, range=active_range)
+            except (TypeError, AttributeError):
+                return None
 
-        messages = messages or {}
         try:
             if self.critical and not value in self.critical:
-                return nagiosplugin.Critical(msg('CRITICAL'))
+                return nagiosplugin.Critical(msg('CRITICAL', self.critical))
             if self.warning and not value in self.warning:
-                return nagiosplugin.Warning(msg('WARNING'))
+                return nagiosplugin.Warning(msg('WARNING', self.warning))
         except ValueError:
             return nagiosplugin.Unknown(msg('UNKNOWN'))
         return nagiosplugin.Ok(msg('OK'))

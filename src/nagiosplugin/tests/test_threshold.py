@@ -68,3 +68,18 @@ class ThresholdTests(unittest.TestCase):
     def test_create_multi_should_fill_with_none_on_empty_list(self):
         self.assertListEqual([Threshold('1'), Threshold('2'), Threshold()],
                              Threshold.create_multi(['1', '2'], [], 3))
+
+    def test_match_should_replace_value(self):
+        self.assertEqual(Threshold().match(
+            4.5, {'DEFAULT': 'value is $value'}).headline,
+            'value is 4.5')
+
+    def test_match_should_replace_range(self):
+        self.assertEqual(Threshold('2:3', '1:4').match(
+            4.5, {'DEFAULT': 'range is $range'}).headline,
+            'range is 1:4')
+
+    def test_match_should_tolerate_none(self):
+        self.assertEqual(Threshold().match(
+            4.5, {'DEFAULT': None}).headline,
+            None)

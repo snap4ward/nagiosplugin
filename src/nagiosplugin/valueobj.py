@@ -89,6 +89,7 @@ class ValueObject(object):
 
     def replace(self, **kwargs):
         """Return new instance with selectively overridden attributes."""
+        # pylint: disable-msg=W0142
         newdict = s_vars(self)
         newdict.update(kwargs)
         return self.__class__(**newdict)
