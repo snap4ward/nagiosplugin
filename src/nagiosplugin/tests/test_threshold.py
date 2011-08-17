@@ -52,3 +52,19 @@ class ThresholdTests(unittest.TestCase):
         t = Threshold(critical='3')
         state = t.match(-1, {'DEFAULT': 'default message'})
         self.assertEqual(['default message'], state.messages)
+
+    def test_create_multi_should_create_min_empty_thresholds(self):
+        self.assertListEqual([Threshold(), Threshold(), Threshold()],
+                             Threshold.create_multi([], [], min_len=3))
+
+    def test_create_multi_should_zip_ranges(self):
+        self.assertListEqual([Threshold('2', '4'), Threshold('3', '5')],
+                             Threshold.create_multi(['2', '3'], ['4', '5']))
+
+    def test_create_multi_should_fill_missing_elements(self):
+        self.assertListEqual([Threshold('1', '3'), Threshold('2', '3')],
+                             Threshold.create_multi(['1', '2'], ['3']))
+
+    def test_create_multi_should_fill_with_none_on_empty_list(self):
+        self.assertListEqual([Threshold('1'), Threshold('2'), Threshold()],
+                             Threshold.create_multi(['1', '2'], [], 3))

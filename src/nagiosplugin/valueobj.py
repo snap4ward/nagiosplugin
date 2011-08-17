@@ -43,7 +43,8 @@ class ValueObject(object):
         that the constructor still accepts keyword arguments for all
         __slots__.
         """
-        assert hasattr(self, '__slots__'), '__slots__ must be defined'
+        if not hasattr(self, '__slots__'):
+            raise RuntimeError('__slots__ must be defined')
         for name, value in kwargs.iteritems():
             object.__setattr__(self, name, value)
 

@@ -37,21 +37,15 @@ class LoadEvaluator(object):
 
     """Determine if probed load averages fall into ranges."""
 
-    def __init__(self, warning, critical):
+    def __init__(self, thresholds):
         """Create evaluator object with up to 3 ranges."""
         self.name = [u'load1', u'load5', u'load15']
-        self.threshold = []
+        self.thresholds = thresholds
         self.load = []
-        if len(warning) < len(critical):
-            warning += [None] * (len(critical) - len(warning))
-        elif len(critical) < len(warning):
-            critical += [None] * (len(warning) - len(critical))
-        for warn, crit in zip(warning, critical):
-            self.threshold.append(nagiosplugin.Threshold(warn, crit))
 
     def evaluate(self, probe):
         """Retrieve load information from probe."""
-        LOG.info('thresholds set: %r', self.threshold)
+        LOG.info('thresholds set: %r', self.thresholds)
         self.load = probe.load
 
     def state(self):
@@ -59,7 +53,7 @@ class LoadEvaluator(object):
         states = [t.match(l, messages={
             'OK': None,
             'DEFAULT': '{0} %val is outside %range'.format(n),
-        }) for n, l, t in zip(self.name, self.load, self.threshold)]
+        }) for n, l, t in zip(self.name, self.load, self.thresholds)]
         return (states +
                 [nagiosplugin.Ok(' '.join([str(l) for l in self.load]))])
 
@@ -69,7 +63,7 @@ class LoadEvaluator(object):
         for i in range(3):
             try:
                 perf.append(nagiosplugin.Performance(
-                    self.load[i], minimum=0, threshold=self.threshold[i]))
+                    self.load[i], minimum=0, threshold=self.thresholds[i]))
             except IndexError:
                 perf.append(nagiosplugin.Performance(self.load[i], minimum=0))
         return dict((n, p) for n, p in zip(self.name, perf))
@@ -91,20 +85,10 @@ def main():
     opts, args = optp.parse_args()
     if len(args):
         optp.error(u'superfluous arguments')
-    warning = opts.warning.split(',')
-    if not len(warning):
-        warning = [None, None, None]
-    elif len(warning) > 3:
-        optp.error('use at most three warning ranges')
-    else:
-        warning += [warning[-1]] * (3 - len(warning))
-    critical = opts.critical.split(',')
-    if not len(critical):
-        critical = [None, None, None]
-    elif len(critical) > 3:
-        optp.error('use at most three critical ranges')
-    else:
-        critical += [critical[-1]] * (3 - len(critical))
+    if len(opts.warning) > 3 or len(opts.critical) > 3:
+        optp.error('use at most three ranges')
+    thresholds = nagiosplugin.Threshold.create_multi(
+        opts.warning.split(','), opts.critical.split(','), 3)
     nagiosplugin.run('LOAD', LoadProbe(opts.percpu),
-                     LoadEvaluator(warning, critical), verbosity=opts.verbose,
+                     LoadEvaluator(thresholds), verbosity=opts.verbose,
                      timeout=opts.timeout)

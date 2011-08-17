@@ -78,13 +78,13 @@
     <note priority="medium" time="1312958148" done="1313040572">
         use vars() in ValueObject
     </note>
-    <note priority="low" time="1310662613" done="1310740690">
-        check_http should fail if there is no host given
-    </note>
     <note priority="medium" time="1313385422" done="1313506896">
         extract nagiosplugin functions into own module
     </note>
-    <note priority="medium" time="1313387175">
+    <note priority="low" time="1310662613" done="1310740690">
+        check_http should fail if there is no host given
+    </note>
+    <note priority="medium" time="1313387175" done="1313567057">
         convenience method to split multiple warning/critical ranges into list of threshold objects
     </note>
     <note priority="medium" time="1313387472">

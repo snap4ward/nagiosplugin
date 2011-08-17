@@ -12,11 +12,44 @@ import nagiosplugin
 import nagiosplugin.valueobj
 
 
+def fill_list(l, min_len):
+    """Replicate last item until `l` it has at least `min_len` elements."""
+    if len(l) >= min_len:
+        return l
+    try:
+        filler = l[-1]
+    except IndexError:
+        filler = None
+    return l + [filler] * (min_len - len(l))
+
+
 class Threshold(nagiosplugin.valueobj.ValueObject):
     """Convenience class to combine warning and critical ranges."""
     # pylint: disable-msg=E1101
 
     __slots__ = ['warning', 'critical']
+
+    @classmethod
+    def create_multi(cls, warnings, criticals, min_len=0):
+        """Create multiple Threshold objects from warning/critical lists.
+
+        This convenience method supports the creation of multiple Treshold
+        values. Parameters are the minimum number of items to be created, a
+        list of warning range specifications, and a list of critical range
+        specifications.
+
+        It returns a list of at least `min_len` Threshold objects. If one of
+        the `warnings` or `criticals` list contains more items, the resulting
+        list is made that long. Missing list items are filled up with the
+        last element from the respective list or None if the list has no
+        elements.
+        """
+        warnings = fill_list(warnings, max(len(warnings), len(criticals)))
+        criticals = fill_list(criticals, max(len(warnings), len(criticals)))
+        result = [Threshold(w, c) for w, c in zip(warnings, criticals)]
+        if len(result) < min_len:
+            result.extend([Threshold()] * (min_len - len(result)))
+        return result
 
     def __init__(self, warning=None, critical=None):
         """Create Threshold object with `warning` and `critical` ranges.

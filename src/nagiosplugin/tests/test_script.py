@@ -38,7 +38,9 @@ class ScriptTest(unittest.TestCase):
 
     @mock.patch('sys.exit')
     def test_standard_options(self, _exit):
-        optp = optparse.OptionParser(prog='test', version='1.0')
+        optp = optparse.OptionParser(
+            prog='test', version='1.0',
+            formatter=optparse.IndentedHelpFormatter(width=78))
         nagiosplugin.standard_options(
             optp, timeout=True, warning=True, critical=True, hostname=True,
             verbose=True, community=True, logname=True, port=True, url=True)

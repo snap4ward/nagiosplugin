@@ -22,7 +22,7 @@ class MyVal(ValueObject):
 class ValueObjectTest(unittest.TestCase):
 
     def test_init_without_slots_should_fail(self):
-        self.assertRaises(AssertionError, SlotlessValue)
+        self.assertRaises(RuntimeError, SlotlessValue)
 
     def test_disallow_attribute_modification(self):
         v = MyVal(attr=1)
