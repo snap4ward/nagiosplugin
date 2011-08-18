@@ -84,16 +84,16 @@
     <note priority="medium" time="1313387175" done="1313567057">
         convenience method to split multiple warning/critical ranges into list of threshold objects
     </note>
-    <note priority="low" time="1310662613" done="1310740690">
-        check_http should fail if there is no host given
-    </note>
     <note priority="medium" time="1313387472" done="1313592422">
         parameter substitution in Threshold.match
     </note>
-    <note priority="medium" time="1313389290">
+    <note priority="medium" time="1313389290" done="1313646060">
         ordereddict für performance
     </note>
-    <note priority="medium" time="1313389346">
+    <note priority="low" time="1310662613" done="1310740690">
+        check_http should fail if there is no host given
+    </note>
+    <note priority="medium" time="1313389346" done="1313646062">
         alternativ liste von tupeln in performance akzeptieren
     </note>
 </todo>

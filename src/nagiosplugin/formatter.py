@@ -8,9 +8,6 @@ from __future__ import print_function
 import collections
 import functools
 import operator
-import logging
-
-LOG = logging.getLogger(__name__)
 
 
 class Formatter(object):
@@ -40,7 +37,6 @@ class Formatter(object):
         Note that this method should be called only once. Subsequent
         invocations overwrite the state set in a previous invocation.
         """
-        LOG.debug('addstate({0!r})'.format(state))
         if state.headline:
             self.text = u'{0} - {1}'.format(
                 str(state), state.headline.strip(u'\n'))
@@ -55,7 +51,6 @@ class Formatter(object):
         `text` may be given either as single string or has list of
         strings in case of multi-line output to be added.
         """
-        LOG.debug('addlongoutput({0!r})'.format(text))
         if isinstance(text, list):
             self.longoutput.extend([line.strip('\n') for line in text])
         else:
@@ -64,12 +59,11 @@ class Formatter(object):
     def addperformance(self, performance):
         """Add performance values.
 
-        `performance` must be a dict of `{string: Performance}` items.
-        The key determines the performance value's name.
+        `performance` must be a list of (string, Performance) pairs.
+        The first item determines the performance value's name.
         """
-        LOG.debug('addperformance({0!r})'.format(performance))
-        for name, perf in sorted(performance.items()):
-            self.perfdata.append(u'{0}={1}'.format(name, perf))
+        self.perfdata.extend(
+            [u'{0}={1}'.format(name, perf) for name, perf in performance])
 
     def _perfdata_line(self, maxlength=80):
         """Pick performance data atoms for at most maxlength characters."""

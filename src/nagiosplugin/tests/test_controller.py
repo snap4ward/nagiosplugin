@@ -102,19 +102,19 @@ class ControllerTest(unittest.TestCase):
         self.assertTrue(u'log message' in c.output(),
                         u'log message not found in {0}'.format(c.output()))
 
-    def test_normalized_performance_should_convert_to_dict(self):
+    def test_normalized_performance_should_convert_to_list(self):
         self.evaluator._performance = nagiosplugin.Performance(1, u's')
         self.controller()
-        self.assertDictEqual(self.controller._normalized_performance(),
-                             {u'test': nagiosplugin.Performance(1, u's')})
+        self.assertListEqual(self.controller._normalized_performance(),
+                             [(u'test', nagiosplugin.Performance(1, u's'))])
 
     def test_normalized_performance_should_filter_none(self):
         self.evaluator._performance = {
             'time': nagiosplugin.Performance(1, u's'),
             'misc': None}
         self.controller()
-        self.assertDictEqual(self.controller._normalized_performance(),
-                             {'time': nagiosplugin.Performance(1, u's')})
+        self.assertListEqual(self.controller._normalized_performance(),
+                             [('time', nagiosplugin.Performance(1, u's'))])
 
     def test_process_should_add_performance(self):
         self.evaluator._performance = {'p1': nagiosplugin.Performance(1, u's')}

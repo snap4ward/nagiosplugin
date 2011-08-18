@@ -118,16 +118,21 @@ class Controller(object):
     def _normalized_performance(self):
         """The evaluator's performance property in normalized form.
 
-        The performance is forced to be a dict. If it is a single
-        Performance object, add a key with the check's name.
+        The performance is forced to be a list of `(key, performance)`
+        pairs. If it is a single Performance object, add a key with the
+        check's name. Null performance values are stripped.
         """
         performance = self.evaluator.performance()
         if not performance:
-            return {}
-        if isinstance(performance, nagiosplugin.Performance):
-            return {self.name.lower(): performance}
-        return dict(((key, performance[key])
-                     for key in performance if performance[key]))
+            return []
+        try:
+            normalized = list(performance.items())
+        except AttributeError:
+            if isinstance(performance, nagiosplugin.Performance):
+                normalized = [(self.name.lower(), performance)]
+            else:
+                normalized = performance
+        return [(key, perf) for key, perf in normalized if perf]
 
     def output(self, fileobj=None):
         """Create plugin output.

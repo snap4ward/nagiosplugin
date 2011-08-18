@@ -51,7 +51,7 @@ class LoadEvaluator(object):
     def state(self):
         """Return list of states for all load averages."""
         states = [t.match(l, messages={
-            'OK': None
+            'OK': None,
             'DEFAULT': '{0} $value is outside $range'.format(n),
         }) for n, l, t in zip(self.name, self.load, self.thresholds)]
         return (states +
@@ -66,7 +66,7 @@ class LoadEvaluator(object):
                     self.load[i], minimum=0, threshold=self.thresholds[i]))
             except IndexError:
                 perf.append(nagiosplugin.Performance(self.load[i], minimum=0))
-        return dict((n, p) for n, p in zip(self.name, perf))
+        return zip(self.name, perf)
 
 
 def main():

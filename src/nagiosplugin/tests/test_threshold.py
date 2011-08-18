@@ -4,6 +4,7 @@
 """Define tests for Threshold objects."""
 
 import nagiosplugin
+import nagiosplugin.threshold
 try:
     import unittest2 as unittest
 except ImportError:
@@ -61,12 +62,8 @@ class ThresholdTests(unittest.TestCase):
         self.assertListEqual([Threshold('2', '4'), Threshold('3', '5')],
                              Threshold.create_multi(['2', '3'], ['4', '5']))
 
-    def test_create_multi_should_fill_missing_elements(self):
-        self.assertListEqual([Threshold('1', '3'), Threshold('2', '3')],
-                             Threshold.create_multi(['1', '2'], ['3']))
-
-    def test_create_multi_should_fill_with_none_on_empty_list(self):
-        self.assertListEqual([Threshold('1'), Threshold('2'), Threshold()],
+    def test_create_multi_should_enlarge_list(self):
+        self.assertListEqual([Threshold('1'), Threshold('2'), Threshold('2')],
                              Threshold.create_multi(['1', '2'], [], 3))
 
     def test_match_should_replace_value(self):
@@ -83,3 +80,15 @@ class ThresholdTests(unittest.TestCase):
         self.assertEqual(Threshold().match(
             4.5, {'DEFAULT': None}).headline,
             None)
+
+    def test_fill_list_should_do_nothing_if_list_is_long_enough(self):
+        self.assertEqual(nagiosplugin.threshold.fill_list([1, 2, 3], 2),
+                         [1, 2, 3])
+
+    def test_fill_list_should_replicate_last_element(self):
+        self.assertEqual(nagiosplugin.threshold.fill_list([1, 2], 3),
+                         [1, 2, 2])
+
+    def test_fill_list_should_create_empty_list_with_filler(self):
+        self.assertEqual(nagiosplugin.threshold.fill_list([], 2, 'a'),
+                         ['a', 'a'])

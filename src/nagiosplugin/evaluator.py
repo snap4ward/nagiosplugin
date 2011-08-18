@@ -7,19 +7,19 @@
 class Evaluator(object):
     """Evalute measured facts into status and performance values.
 
-    An evalutor is called with the probe after the latter has been executed.
-    The evaluator should read interesting facts from the probe object and
-    decide if they are OK. It is responsible for generating Status and
-    Performance objects.
+    An evalutor is called with the probe after the latter has been
+    executed. The evaluator should read interesting facts from the probe
+    object and decide if they are OK. It is responsible for generating
+    Status and Performance objects.
 
-    Custom evaluator classes don't need to be necessarily descendands of this
-    class as long as they define the same interface.
+    Custom evaluator classes don't need to be necessarily descendands of
+    this class as long as they define the same interface.
     """
 
     def __init__(self):
         """Configure the evaluator with criteria to evaluate the probe."""
         self._state = []
-        self._performance = {}
+        self._performance = []
 
     def evaluate(self, probe):
         """Get interesting information out or `probe` for evaluation."""
@@ -30,5 +30,9 @@ class Evaluator(object):
         return self._state
 
     def performance(self):
-        """Return dict of performance values."""
+        """Return performance data as dict or list of (key, value) pairs.
+
+        When the performance data is returned as list of pairs, the
+        ordering is preserved.
+        """
         return self._performance
