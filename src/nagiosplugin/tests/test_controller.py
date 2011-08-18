@@ -4,7 +4,6 @@
 import logging
 import mock
 import nagiosplugin.evaluator
-import nagiosplugin.probe
 import os
 import signal
 try:
@@ -18,48 +17,40 @@ from nagiosplugin import Controller
 class ControllerTest(unittest.TestCase):
 
     def setUp(self):
-        self.probe = nagiosplugin.probe.Probe()
         self.evaluator = nagiosplugin.evaluator.Evaluator()
-        self.controller = Controller(u'TEST', self.probe, self.evaluator)
+        self.controller = Controller(u'TEST', self.evaluator)
 
     def test_str_before_invocation(self):
-        c = Controller(u'PLUGIN', self.probe, self.evaluator)
+        c = Controller(u'PLUGIN', self.evaluator)
         self.assertEqual(str(c), u'PLUGIN OK\n')
-
-    @mock.patch('nagiosplugin.probe.Probe')
-    def test_controller_calls_probe(self, probe_cls):
-        mock_probe = probe_cls.return_value
-        c = Controller(u'TEST', mock_probe, self.evaluator)
-        c()
-        mock_probe.assert_called_with()
 
     @mock.patch('nagiosplugin.evaluator.Evaluator.evaluate')
     def test_controller_calls_evaluator(self, evaluate):
-        c = Controller(u'TEST', self.probe, self.evaluator)
+        c = Controller(u'TEST', self.evaluator, self.evaluator)
         c()
-        evaluate.assert_called_with(self.probe)
+        evaluate.assert_called_with()
 
     def test_timeout_should_raise_exception(self):
-        class TimeoutProbe(nagiosplugin.probe.Probe):
-            def __call__(self):
+        class TimeoutEvaluator(nagiosplugin.evaluator.Evaluator):
+            def evaluate(self):
                 os.kill(os.getpid(), signal.SIGALRM)
-        c = Controller(u'TEST', TimeoutProbe(), self.evaluator)
+        c = Controller(u'TEST', TimeoutEvaluator(), self.evaluator)
         self.assertRaises(RuntimeError, c._process, 5)
 
     def test_call_should_catch_exceptions(self):
-        class FaultyProbe(nagiosplugin.probe.Probe):
-            def __call__(self):
+        class FaultyEvaluator(nagiosplugin.evaluator.Evaluator):
+            def evaluate(self):
                 raise RuntimeError(u'exception message')
-        c = Controller(u'TEST', FaultyProbe(), self.evaluator)
+        c = Controller(u'TEST', FaultyEvaluator())
         c()
         self.assertEqual(
             c.state, nagiosplugin.state.Unknown(u'exception message'))
 
     def test_call_should_log_catched_exceptions(self):
-        class FaultyProbe(nagiosplugin.probe.Probe):
-            def __call__(self):
+        class FaultyEvaluator(nagiosplugin.evaluator.Evaluator):
+            def evaluate(self):
                 raise RuntimeError(u'exception msg')
-        c = Controller(u'TEST', FaultyProbe(), self.evaluator)
+        c = Controller(u'TEST', FaultyEvaluator())
         c()
         self.assertRegexpMatches(c.output(), r'Traceback')
         self.assertRegexpMatches(c.output(), r'RuntimeError: exception msg')
@@ -94,10 +85,10 @@ class ControllerTest(unittest.TestCase):
 
     def test_add_logoutput(self):
         class LoggingEvaluator(nagiosplugin.evaluator.Evaluator):
-            def evaluate(self, probe):
+            def evaluate(self):
                 log = logging.getLogger('nagiosplugin')
                 log.info('log message')
-        c = Controller(u'TEST', self.probe, LoggingEvaluator(), 3)
+        c = Controller(u'TEST', LoggingEvaluator(), 3)
         c()
         self.assertTrue(u'log message' in c.output(),
                         u'log message not found in {0}'.format(c.output()))

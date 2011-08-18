@@ -7,22 +7,22 @@
 class Evaluator(object):
     """Evalute measured facts into status and performance values.
 
-    An evalutor is called with the probe after the latter has been
-    executed. The evaluator should read interesting facts from the probe
-    object and decide if they are OK. It is responsible for generating
-    Status and Performance objects.
+    The evaluate() method should gather interesting system information
+    decide if it lies within the thresholds. The state() and performance()
+    methods return State and Performance objects corresponding to the system
+    state.
 
     Custom evaluator classes don't need to be necessarily descendands of
     this class as long as they define the same interface.
     """
 
     def __init__(self):
-        """Configure the evaluator with criteria to evaluate the probe."""
+        """Create and configure the Evaluator."""
         self._state = []
         self._performance = []
 
-    def evaluate(self, probe):
-        """Get interesting information out or `probe` for evaluation."""
+    def evaluate(self):
+        """Get interesting information."""
         pass
 
     def state(self):

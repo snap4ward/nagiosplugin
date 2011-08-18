@@ -11,16 +11,14 @@ import nagiosplugin.controller
 import sys
 
 
-def run(checkname, probe, evaluator, verbosity=0, timeout=None):
+def run(checkname, evaluator, verbosity=0, timeout=None):
     """Convenience method for common plugin execution steps.
 
-    A Controller object is created with `checkname`, `probe`, and
-    `evaluator`. The check is run with `timeout`. After that, the output
-    is written to stdout and the program exits with the correct exit
-    code.
+    A Controller object is created with `checkname` and `evaluator`. The
+    check is run with `timeout`. After that, the output is written to
+    stdout and the program exits with the correct exit code.
     """
-    controller = nagiosplugin.Controller(checkname, probe, evaluator,
-                                         verbosity)
+    controller = nagiosplugin.Controller(checkname, evaluator, verbosity)
     controller(timeout)
     controller.output(sys.stdout)
     sys.exit(controller.exitcode)

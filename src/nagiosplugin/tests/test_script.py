@@ -4,7 +4,6 @@
 import mock
 import nagiosplugin
 import nagiosplugin.evaluator
-import nagiosplugin.probe
 import optparse
 import re
 import StringIO
@@ -29,11 +28,10 @@ class ScriptTest(unittest.TestCase):
     def test_run(self, exit, controller_cls):
         controller = controller_cls.return_value
         controller.output = mock.Mock()
-        probe = nagiosplugin.probe.Probe()
         evaluator = nagiosplugin.evaluator.Evaluator()
-        nagiosplugin.run('FOO', probe, evaluator)
+        nagiosplugin.run('FOO', evaluator)
         controller.assert_called_once_with(None)
-        controller_cls.assert_called_once_with('FOO', probe, evaluator, 0)
+        controller_cls.assert_called_once_with('FOO', evaluator, 0)
         exit.assert_called_once_with(controller.exitcode)
 
     @mock.patch('sys.exit')

@@ -26,22 +26,19 @@ class Controller(object):
     together":
 
         - plugin name
-        - probe object
         - evaluator object
     """
 
-    def __init__(self, name, probe, evaluator, verbosity=0):
+    def __init__(self, name, evaluator, verbosity=0):
         """Create Controller object.
 
         `name` is the short plugin name that appears first in the
         output.
-        `probe` is an object which supports the Probe protocol.
         `evaluator` is an object which supports the Evaluator protocol.
         `verbosity` is an integer which controls the amount of logging
         output to be included in the plugin's long outout.
         """
         self.name = name
-        self.probe = probe
         self.evaluator = evaluator
         self.state = nagiosplugin.Ok()
         self.performance = None
@@ -55,10 +52,10 @@ class Controller(object):
     def __call__(self, timeout=None):
         """Perform plugin execution.
 
-        Call both probe and evaluator in a controlled environment.
-        After `timeout` seconds, abort execution and set an Unknown
-        state. If any exceptions occurs, set an Unknown state with the
-        exception message, too.
+        Call evaluator in a controlled environment. After `timeout`
+        seconds, abort execution and set an Unknown state. If any
+        exceptions occurs, set an Unknown state with the exception
+        message, too.
         """
         try:
             self._process(timeout)
@@ -86,7 +83,7 @@ class Controller(object):
         LOG.addHandler(handler)
 
     def _process(self, timeout=None):
-        """Perform probe and evaluator calls in controlled environment."""
+        """Perform evaluator calls in controlled environment."""
         def handle_timeout(_signum, _stackframe):
             """Abort plugin evaluation."""
             signal.alarm(0)
@@ -94,10 +91,9 @@ class Controller(object):
         signal.signal(signal.SIGALRM, handle_timeout)
         if timeout:
             signal.alarm(timeout)
-        self.probe()
+        self.evaluator.evaluate()
         signal.signal(signal.SIGALRM, signal.SIG_DFL)
         signal.alarm(0)
-        self.evaluator.evaluate(self.probe)
         self.state = self._normalized_state()
         self.performance = self._normalized_performance()
 
