@@ -25,29 +25,30 @@ class HTTPProbe(object):
         """Create HTTPProbe that connects to `hostname`."""
         self.hostname = hostname
         self.start = None
-        self.stop = None
-        self.response = None
+        self.end = None
         self.url = 'http://{0}/'.format(self.hostname)
 
-    def __call__(self):
-        """Trigger probe execution."""
-        LOG.info('opening URL %s', self.url)
-        self.fetch_url()
-        LOG.debug(u'start: %s, stop: %s', self.start, self.stop)
-        LOG.debug(self.response)
-
-    def fetch_url(self):
+    def fetch(self):
         """Retrieve HTTP object and measure time."""
         self.start = time.time()
+        LOG.info('start at %s', self.start)
         req = urllib2.urlopen(self.url)
-        self.response = req.read()
+        response = req.read()
         try:
             charset = [param for param in req.headers.getplist()
                        if param.startswith('charset=')][0]
             charset = charset.lstrip('charset=')
         except IndexError:
             charset = 'UTF-8'
-        self.stop = time.time()
+            LOG.warning('no charset declared in response, assuming UTF-8')
+        self.end = time.time()
+        LOG.debug('HTTP response is:\n%s', response)
+        LOG.info('end at %s', self.end)
+        return response
+
+    def duration(self):
+        """Compute time to fetch URL."""
+        return self.end - self.start
 
 
 class HTTPEvaluator(object):
@@ -66,13 +67,11 @@ class HTTPEvaluator(object):
                                                 options.critical)
         self.stringmatch = options.stringmatch
         self.response = None
-        self.responsetime = None
 
     def evaluate(self):
         """Retrieve measured values from `probe`."""
-        self.probe()
-        self.response = self.probe.response
-        self.responsetime = self.probe.stop - self.probe.start
+        self.response = self.probe.fetch()
+        self.duration = self.probe.duration()
 
     def state(self):
         """Return check states for time and content."""
@@ -93,14 +92,14 @@ class HTTPEvaluator(object):
     def check_time(self):
         """Decide if the answer time is inside the given range."""
         return self.threshold.match(
-            self.responsetime, {
+            self.duration, {
                 'DEFAULT': u'{0} Bytes in {1:.3g} s'.format(
-                    len(self.response), self.responsetime)})
+                    len(self.response), self.duration)})
 
     def performance(self):
         """Return response time as Performance object."""
         return {'time': nagiosplugin.Performance(
-            self.responsetime, 's', 0, threshold=self.threshold)}
+            self.duration, 's', 0, threshold=self.threshold)}
 
 
 def main():
