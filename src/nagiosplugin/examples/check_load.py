@@ -109,10 +109,10 @@ def main():
     opts, args = optp.parse_args()
     if len(args):
         optp.error(u'superfluous arguments')
-    if len(opts.warning) > 3 or len(opts.critical) > 3:
-        optp.error('use at most three ranges')
     thresholds = nagiosplugin.Threshold.create_multi(
         opts.warning.split(','), opts.critical.split(','), 3)
+    if len(thresholds) > 3:
+        optp.error('use at most three ranges')
     probe = LoadProbe()
     evaluator = LoadEvaluator(probe, thresholds, opts.percpu)
     nagiosplugin.run('LOAD', evaluator, verbosity=opts.verbose,

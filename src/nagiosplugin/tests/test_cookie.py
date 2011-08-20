@@ -80,3 +80,33 @@ class CookieTest(unittest.TestCase):
         c.set('content\n')
         c.close()
         self.assertNotAlmostEqual(os.stat(self.fname).st_mtime, mtime)
+
+    def test_getstruct_should_return_none_if_cookie_missing(self):
+        c = Cookie(self.fname)
+        self.assertIsNone(c.getstruct())
+
+    def test_getstruct_deserialize_json(self):
+        c = Cookie(self.fname)
+        c.old_content = '{"key1":2, "key2": [1, 2, 3]}\n'
+        self.assertDictEqual(c.getstruct(), {"key1": 2, "key2": [1, 2, 3]})
+
+    def test_getstruct_should_raise_on_invalid_content(self):
+        c = Cookie(self.fname)
+        c.old_content = '["array started"\n'
+        self.assertRaises(ValueError, c.getstruct)
+
+    def test_setstruct_should_serialize(self):
+        c = Cookie(self.fname)
+        c.setstruct({'key2': 'value', 'key1': 'value', 'key3': 'value'})
+        self.assertMultiLineEqual(c.new_content, """\
+{
+  "key1": "value",\x20
+  "key2": "value",\x20
+  "key3": "value"
+}
+""")
+
+    def test_contextmanager(self):
+        with Cookie(self.fname) as cookie:
+            cookie.set('content')
+        self.assertEqual(open(self.fname).read(), 'content')

@@ -67,6 +67,7 @@ class HTTPEvaluator(object):
                                                 options.critical)
         self.stringmatch = options.stringmatch
         self.response = None
+        self.duration = 0.0
 
     def evaluate(self):
         """Retrieve measured values from `probe`."""
