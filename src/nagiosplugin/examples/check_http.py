@@ -53,7 +53,7 @@ class HTTPProbe(object):
 class HTTPEvaluator(object):
     """Evalute if HTTP matches given criteria."""
 
-    def __init__(self, warn, crit, stringmatch=None):
+    def __init__(self, probe, options):
         """Create HTTPEvaluator object with match criteria.
 
         `warn` is the warning time range
@@ -61,15 +61,18 @@ class HTTPEvaluator(object):
         `stringmatch` is a string which must be present in the HTTP
             response body
         """
-        self.threshold = nagiosplugin.Threshold(warn, crit)
-        self.stringmatch = stringmatch
+        self.probe = probe
+        self.threshold = nagiosplugin.Threshold(options.warning,
+                                                options.critical)
+        self.stringmatch = options.stringmatch
         self.response = None
         self.responsetime = None
 
-    def evaluate(self, probe):
+    def evaluate(self):
         """Retrieve measured values from `probe`."""
-        self.response = probe.response
-        self.responsetime = probe.stop - probe.start
+        self.probe()
+        self.response = self.probe.response
+        self.responsetime = self.probe.stop - self.probe.start
 
     def state(self):
         """Return check states for time and content."""
@@ -118,7 +121,6 @@ def main():
         optp.error(u'need at least a hostname')
     if args:
         optp.error(u'superfluous arguments: {0!r}'.format(args))
-    probe = HTTPProbe(opts.hostname)
-    evaluator = HTTPEvaluator(opts.warning, opts.critical, opts.stringmatch)
-    nagiosplugin.run('HTTP', probe, evaluator, verbosity=opts.verbose,
+    evaluator = HTTPEvaluator(HTTPProbe(opts.hostname), opts)
+    nagiosplugin.run('HTTP', evaluator, verbosity=opts.verbose,
                      timeout=opts.timeout)
