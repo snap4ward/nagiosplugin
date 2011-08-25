@@ -4,7 +4,7 @@
 """Partial re-implementation of check_http.
 
 This examples illustrates basic nagiosplugin API features via a partial
-re-implemetation of the original check_http plugin.
+re-implementation of the original check_http plugin.
 """
 
 from __future__ import print_function
