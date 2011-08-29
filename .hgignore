@@ -5,6 +5,7 @@ develop-eggs
 dist
 doc/_build
 *.egg-info
+eggs
 include/python*
 .installed.cfg
 lib64

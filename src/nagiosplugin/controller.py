@@ -36,7 +36,6 @@ class Controller(object):
             import nagiosplugin.old.controller
             inst = object.__new__(nagiosplugin.old.controller.OldController,
                                     identifier, *args, **kwargs)
-            inst.__init__(identifier, *args, **kwargs)
             return inst
 
     def __init__(self, name, evaluator=None, verbosity=0):

@@ -31,7 +31,7 @@ class AdapterEvaluator(object):
         self.performances = []
         self.dominant_state = nagiosplugin.state.Unknown()
         (self.opts, self.args) = self.optparser.parse_args(argv)
-        self.loglevel = max((40 - self.opts.verbose * 10, 10))
+        self.loglevel = self.opts.verbose
 
     def evaluate(self):
         """Run, but interrupt check if it takes longer than the timeout."""
