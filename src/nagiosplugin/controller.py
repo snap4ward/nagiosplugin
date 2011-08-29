@@ -29,7 +29,17 @@ class Controller(object):
         - evaluator object
     """
 
-    def __init__(self, name, evaluator, verbosity=0):
+    def __new__(cls, identifier, *args, **kwargs):
+        if isinstance(identifier, basestring):
+            return object.__new__(Controller, identifier, *args, **kwargs)
+        else:
+            import nagiosplugin.old.controller
+            inst = object.__new__(nagiosplugin.old.controller.OldController,
+                                    identifier, *args, **kwargs)
+            inst.__init__(identifier, *args, **kwargs)
+            return inst
+
+    def __init__(self, name, evaluator=None, verbosity=0):
         """Create Controller object.
 
         `name` is the short plugin name that appears first in the
@@ -40,10 +50,10 @@ class Controller(object):
         """
         self.name = name
         self.evaluator = evaluator
-        self.state = nagiosplugin.Ok()
-        self.performance = None
         self.logoutput = StringIO.StringIO()
         self._setup_logger(verbosity)
+        self.state = nagiosplugin.Ok()
+        self.performance = None
 
     def __str__(self):
         """Complete plugin output as string."""

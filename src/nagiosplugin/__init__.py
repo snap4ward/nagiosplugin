@@ -25,3 +25,7 @@ from nagiosplugin.range import Range
 from nagiosplugin.script import run, standard_options
 from nagiosplugin.state import State, Ok, Warning, Critical, Unknown
 from nagiosplugin.threshold import Threshold
+
+# deprecated modules
+from nagiosplugin.old.check import Check
+from nagiosplugin.old.measure import Measure
