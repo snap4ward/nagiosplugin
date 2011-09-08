@@ -42,8 +42,8 @@ class Measure(object):
                       u'Port your check to the new API.', DeprecationWarning)
         if (minimum is not None and (value < minimum) or
                 maximum is not None and (value > maximum)):
-            raise ValueError(u'value %r is outside min/max interval [%r,%r]' % (
-                value, minimum, maximum))
+            raise ValueError(u'value %r is outside min/max interval [%r,%r]'
+                             % ( value, minimum, maximum))
         (self.name, self.value, self.uom) = (name, value, uom)
         (self.warning, self.critical) = map(nagiosplugin.range.Range,
                                             (warning, critical))

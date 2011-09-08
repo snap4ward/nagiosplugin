@@ -12,6 +12,7 @@ position seen.
 import fcntl
 import json
 import os.path
+import warnings
 
 
 class Cookie(object):
@@ -106,3 +107,10 @@ class Cookie(object):
         if not self.old_content:
             return None
         return json.loads(self.old_content)
+
+
+def store(filename, defaultdir=None):
+    """Compatibility function to use Cookie as context manager."""
+    warnings.warn('cookie.store is deprecated - use Cookie instance instead',
+                  DeprecationWarning)
+    return Cookie(filename, defaultdir)

@@ -31,11 +31,10 @@ class Controller(object):
 
     def __new__(cls, identifier, *args, **kwargs):
         if isinstance(identifier, basestring):
-            return object.__new__(Controller, identifier, *args, **kwargs)
+            return object.__new__(Controller)
         else:
             import nagiosplugin.old.controller
-            inst = object.__new__(nagiosplugin.old.controller.OldController,
-                                    identifier, *args, **kwargs)
+            inst = object.__new__(nagiosplugin.old.controller.OldController)
             return inst
 
     def __init__(self, name, evaluator=None, verbosity=0):

@@ -66,7 +66,7 @@ def standard_options(optionparser, default_timeout=15, **kw):
         else:
             helptext = kw[option]
         optionparser.add_option(
-            shortopt, '--'+option, help=helptext, default=default_val,
+            shortopt, '--' + option, help=helptext, default=default_val,
             **add_option_kw)
 
     _add('timeout', '-t', u'seconds before plugin execution times out '

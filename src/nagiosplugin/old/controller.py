@@ -5,6 +5,7 @@ import nagiosplugin.controller
 import nagiosplugin.old.evaluator
 import sys
 
+
 class OldController(nagiosplugin.controller.Controller):
 
     def __init__(self, check_cls, argv=None):
