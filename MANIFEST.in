@@ -1,0 +1,7 @@
+include ChangeLog
+include HISTORY.txt
+include LICENSE.txt
+include README.txt
+include version.txt
+recursive-include doc Makefile *.py *.rst
+recursive-include examples *.py
