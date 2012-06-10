@@ -1,10 +1,11 @@
 # Copyright (c) 2012 gocept gmbh & co. kg
 # See also LICENSE.txt
 
-import cStringIO
+import StringIO
 import logging
 import nagiosplugin.state
 import nagiosplugin.pluginoptparse
+import signal
 import os
 import sys
 import traceback
@@ -80,7 +81,7 @@ class Controller(object):
                      u'(default: %default)')
         self.logger = logging.getLogger('nagiosplugin')
         self.logger.setLevel(logging.DEBUG)
-        self.logstream = cStringIO.StringIO()
+        self.logstream = StringIO.StringIO()
         handler = logging.StreamHandler(self.logstream)
         handler.setLevel(logging.DEBUG)
         self.logger.addHandler(handler)
