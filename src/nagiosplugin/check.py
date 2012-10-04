@@ -1,63 +1,83 @@
-# Copyright (c) 2010 gocept gmbh & co. kg
-# See also LICENSE.txt
+from .context import Context
+from .resource import Resource
+from .result import ResultSet, FrameworkWarning, FrameworkError
+from .state import Ok
+from .summary import Summary
+import functools
+import io
+import logging
+import numbers
+import operator
+import sys
+import traceback
 
 
 class Check(object):
 
-    def __init__(self, optparser, logger):
-        u"""Create new check plugin instance.
+    def __init__(self, *objects, name=None):
+        self.resources = []
+        self.contexts = []
+        self.context_by_metric = {}
+        self.metrics = []
+        self.summaries = []
+        self.performance_data = []
+        self.results = ResultSet()
+        self.add(*objects)
+        self.name = name or self.resources[0].__class__.__name__
 
-        Call the usual optparse methods (like `add_option`) on `optparser` to
-        define custom options. `logger` is a logging object.
-        """
-        pass
+    def add(self, *objects):
+        for obj in objects:
+            if isinstance(obj, Resource):
+                self.resources.append(obj)
+            elif isinstance(obj, Context):
+                self.contexts.append(obj)
+                self.context_by_metric.update({(m, obj) for m in obj.metrics})
+            elif isinstance(obj, Summary):
+                self.summaries.append(obj)
+            else:
+                raise RuntimeError('%r has not an allowed type' % obj)
 
-    @property
-    def name(self):
-        """Full name of this check."""
-        return u'check'
+    def evaluate(self):
+        self.metrics = functools.reduce(operator.add, (
+            res() for res in self.resources))
+        for metric in self.metrics:
+            try:
+                metric.context = self.context_by_metric[metric.name]
+            except KeyError:
+                pass
+            self.results.add(metric.evaluate())
+        if not self.results:
+            self.results.add(FrameworkWarning(
+                'check did not produce any results'))
 
-    @property
-    def shortname(self):
-        """Short check name for the headline. Override if necessary."""
-        return self.name.split()[0].upper()
-
-    @property
-    def version(self):
-        """Program version (if any) - shows up when calling with `-V`."""
-        pass
-
-    def process_args(self, opts, args):
-        """Parse options and arguments for plugin use.
-
-        Return error message if `opts` or `args` have errors or are
-        inconsistent. Return None if everything is ok.
-        """
-        if args:
-            return u'invalid trailing arguments: %s' % (u' '.join(args))
-
-    def obtain_data(self):
-        """Do whatever is necessary to measure data points from the system."""
-        pass
-
-    def states(self):
-        """Return list of State objects from measured data."""
+    def __call__(self):
         try:
-            return [m.state() for m in self.measures]
-        except AttributeError:
-            return []
+            self.evaluate()
+            self.performance_data = sorted([str(m.performance() or '')
+                                            for m in self.metrics])
+        except Exception:
+            exc_type, value, tb = sys.exc_info()
+            filename, lineno = traceback.extract_tb(tb)[-1][0:2]
+            self.results.add(FrameworkError('%s (%s:%d)' % (
+                traceback.format_exception_only(exc_type, value)[0].strip(),
+                filename, lineno)))
+            logging.warning(''.join(traceback.format_tb(tb)))
 
-    def performances(self):
-        """Return list of performance data strings from measured data."""
-        try:
-            return [m.performance() for m in self.measures]
-        except AttributeError:
-            return []
+    @property
+    def summary(self):
+        if not self.summaries:
+            self.summaries = [Summary()]
+        if self.results.worst_state == Ok:
+            return '; '.join(s.ok(self.results) for s in self.summaries)
+        return '; '.join(s.problem(self.results) for s in self.summaries)
 
-    def default_message(self):
-        """Fallback OK message string if nothing special happened.
+    def __str__(self):
+        out = ['%s %s: %s' % (
+            self.name.upper(), str(self.results.worst_state).upper(),
+            self.summary)]
+        out += ['| ' + ' '.join(self.performance_data)]
+        return '\n'.join(elem for elem in out if elem)
 
-        default_message() is called after obtain_data() so it is ok to report
-        measured values here.
-        """
-        return None
+    @property
+    def exitcode(self):
+        return int(self.results.worst_state)
