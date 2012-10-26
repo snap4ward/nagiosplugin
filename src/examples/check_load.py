@@ -8,9 +8,10 @@ import argparse
 import itertools
 import logging
 import nagiosplugin
-import re
 import subprocess
 
+
+# data acquisition
 
 class Load(nagiosplugin.Resource):
     """Domain model: system load.
@@ -41,6 +42,8 @@ class Load(nagiosplugin.Resource):
                 for period, i in zip([1, 5, 15], itertools.count())]
 
 
+# data presentation
+
 class LoadSummary(nagiosplugin.Summary):
     """Status line conveying load information.
 
@@ -57,6 +60,8 @@ class LoadSummary(nagiosplugin.Summary):
         return 'loadavg %sis %s' % (qualifier, ', '.join(
             str(results[r].metric) for r in ['load1', 'load5', 'load15']))
 
+
+# runtime environment and data evaluation
 
 @nagiosplugin.guarded
 def main():
