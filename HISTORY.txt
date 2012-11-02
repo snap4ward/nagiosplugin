@@ -5,6 +5,7 @@ Release History
 1.0.0b2 (unreleased)
 --------------------
 
+- Made compatible with Python 2.7.
 - Made compatible with Python 3.3.
 
 
