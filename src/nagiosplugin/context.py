@@ -132,12 +132,14 @@ class ScalarContext(Context):
         :param resource: not used
         :returns: :class:`~nagiosplugin.result.Result` object
         """
+        hint = None
         if not self.critical.match(metric.value):
-            return self.result_cls(Critical, self.critical.violation, metric)
+            state = Critical
         elif not self.warning.match(metric.value):
-            return self.result_cls(Warn, self.warning.violation, metric)
+            state = Warn
         else:
-            return self.result_cls(Ok, None, metric)
+            state = Ok
+        return self.result_cls(state, hint, metric)
 
     def performance(self, metric, resource):
         """Derives performance data.
