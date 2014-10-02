@@ -31,8 +31,7 @@ nagiosplugin is primarily written and maintained by Christian Kauhaus
 patches.
 
 A public issue tracker can be found at
-http://projects.gocept.com/projects/nagiosplugin/issues. There is also a forum
-available at https://projects.gocept.com/projects/nagiosplugin/boards.
+http://projects.gocept.com/projects/nagiosplugin/issues.
 
 
 License
