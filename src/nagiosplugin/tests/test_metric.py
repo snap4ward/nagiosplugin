@@ -2,7 +2,7 @@
 # See also LICENSE.txt
 
 from nagiosplugin.metric import Metric
-import nagiosplugin
+import warnings
 
 try:
     import unittest2 as unittest
@@ -31,3 +31,10 @@ class MetricTest(unittest.TestCase):
     def test_performance_fails_if_no_context(self):
         with self.assertRaises(RuntimeError):
             Metric('time', 1, 's').performance()
+
+    def test_description_should_issue_warning(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter('always')
+            Metric('time', 12800, 's').description
+            self.assertEqual(1, len(w))
+            self.assertIs(w[0].category, DeprecationWarning)

@@ -12,6 +12,7 @@ slightly incompatible to the 1.2 series.
 - If Result.hint is set, it overrides any output from the originating metric.
   Metric.__str__ is consulted for output generation only when Result.hint is
   None (#13299).
+- Deprecate Metric.description() (#13299).
 
 
 1.2.2 (2014-05-27)

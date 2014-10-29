@@ -11,6 +11,7 @@ as result of their :meth:`~.resource.Resource.probe` methods.
 
 import numbers
 import collections
+import warnings
 
 
 class Metric(collections.namedtuple(
@@ -62,11 +63,12 @@ class Metric(collections.namedtuple(
             :attr:`valueunit` if no context has been associated yet
 
         .. deprecated:: 1.3
-           Use/override :meth:`~.context.Context.describe` and
+           Don't use :meth:`description` anymore; instead use/override
+           :meth:`~.context.Context.describe` and
            :meth:`~.context.Context.evaluate` directly.
         """
-        if self.contextobj:
-            return self.contextobj.describe(self)
+        warnings.warn('Metric.description is deprecated; use '
+                      'Context.describe() instead', DeprecationWarning)
         return str(self)
 
     @property
