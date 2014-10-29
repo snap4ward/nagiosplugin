@@ -45,4 +45,5 @@ users: .*
 """)
 
     def test_check_world(self):
-        self._run_example('check_world.py', '^WORLD OK$')
+        self.maxDiff = 9000
+        self._run_example('check_world.py', '^WORLD OK - True$')

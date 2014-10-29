@@ -12,11 +12,6 @@ except ImportError:  # pragma: no cover
 
 class MetricTest(unittest.TestCase):
 
-    def test_description(self):
-        self.assertEqual('time is 1s', Metric(
-            'time', 1, 's', contextobj=nagiosplugin.ScalarContext('ctx')
-        ).description)
-
     def test_valueunit_float(self):
         self.assertEqual('1.302s', Metric('time', 1.30234876, 's').valueunit)
 

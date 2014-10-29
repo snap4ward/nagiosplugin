@@ -60,6 +60,10 @@ class Metric(collections.namedtuple(
 
         :returns: :meth:`~.context.Context.describe` output or
             :attr:`valueunit` if no context has been associated yet
+
+        .. deprecated:: 1.3
+           Use/override :meth:`~.context.Context.describe` and
+           :meth:`~.context.Context.evaluate` directly.
         """
         if self.contextobj:
             return self.contextobj.describe(self)
@@ -84,7 +88,8 @@ class Metric(collections.namedtuple(
         return str(self.value)
 
     def evaluate(self):
-        """Evaluates this instance according to the context.
+        """Evaluates this instance according to the context with the
+        matching name.
 
         :return: :class:`~nagiosplugin.result.Result` object
         :raise RuntimeError: if no context has been associated yet

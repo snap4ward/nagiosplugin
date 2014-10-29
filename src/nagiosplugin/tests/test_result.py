@@ -30,7 +30,7 @@ class ResultTest(unittest.TestCase):
         self.assertEqual(Result(Ok, metric=m).context, ctx)
 
     def test_str_metric_with_hint(self):
-        self.assertEqual('2 (unexpected)',
+        self.assertEqual('unexpected',
                          str(Result(Warn, 'unexpected',
                                     nagiosplugin.Metric('foo', 2))))
 
@@ -40,6 +40,10 @@ class ResultTest(unittest.TestCase):
 
     def test_str_hint_only(self):
         self.assertEqual('how come?', str(Result(Warn, 'how come?')))
+
+    def test_str_empty_hint(self):
+        self.assertEqual(
+            '', str(Result(Warn, '', nagiosplugin.Metric('foo', 4))))
 
     def test_str_empty(self):
         self.assertEqual('', str(Result(Warn)))

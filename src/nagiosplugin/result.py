@@ -41,26 +41,23 @@ class Result(collections.namedtuple('Result', 'state hint metric')):
     def __str__(self):
         """Textual result explanation.
 
-        The result explanation is taken from :attr:`metric.description`
-        (if a metric has been passed to the constructur), followed
-        optionally by the value of :attr:`hint`. This method's output
-        should consist only of a text for the reason but not for the
-        result's state. The latter is rendered independently.
+        The result explanation is usually the stringified :attr:`hint`
+        parameter. If no hint is set, render the :attr:`metric` as
+        string.
 
         :returns: result explanation or empty string
+
+        .. versionchanged:: 1.3
+           Stopped to evaluate :attr:`metric.description`. This has
+           turned out to be too complicated. :class:`~.context.Context`
+           instances should pass an explanation explicitely in the
+           :attr:`hint` parameter.
         """
-        if self.metric and self.metric.description:
-            desc = self.metric.description
-        else:
-            desc = None
-        if self.hint and desc:
-            return '{0} ({1})'.format(desc, self.hint)
-        elif self.hint:
-            return self.hint
-        elif desc:
-            return desc
-        else:
-            return ''
+        if self.hint is not None:
+            return str(self.hint)
+        elif self.metric is not None:
+            return str(self.metric)
+        return ''
 
     @property
     def resource(self):

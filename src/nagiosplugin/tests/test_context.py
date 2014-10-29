@@ -41,8 +41,9 @@ class ScalarContextTest(unittest.TestCase):
         c = ScalarContext('ctx', '1:2', '0:4')
         for value, exp_state in test_cases:
             m = nagiosplugin.Metric('time', value)
-            self.assertEqual(nagiosplugin.Result(exp_state, None, m),
-                             c.evaluate(m, None))
+            self.assertEqual(nagiosplugin.Result(
+                exp_state, 'time is {0}'.format(value), m),
+                c.evaluate(m, None))
 
     def test_accept_none_warning_critical(self):
         c = ScalarContext('ctx')

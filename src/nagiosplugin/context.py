@@ -56,7 +56,7 @@ class Context(object):
             (may optionally be consulted)
         :returns: :class:`~.result.Result` object
         """
-        return self.result_cls(Ok, metric=metric)
+        return self.result_cls(Ok, self.describe(metric), metric)
 
     def performance(self, metric, resource):
         """Derives performance data from a given metric.
@@ -132,7 +132,7 @@ class ScalarContext(Context):
         :param resource: not used
         :returns: :class:`~nagiosplugin.result.Result` object
         """
-        hint = None
+        hint = self.describe(metric)
         if not self.critical.match(metric.value):
             state = Critical
         elif not self.warning.match(metric.value):
