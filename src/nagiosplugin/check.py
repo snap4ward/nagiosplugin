@@ -100,7 +100,7 @@ class Check(object):
             self._evaluate_resource(resource)
         self.perfdata = sorted([p for p in self.perfdata if p])
 
-    def main(self, verbose=1, timeout=10):
+    def main(self, verbose=1, timeout=10, exit=True):
         """All-in-one control delegation to the runtime environment.
 
         Get a :class:`~nagiosplugin.runtime.Runtime` instance and
@@ -110,9 +110,11 @@ class Check(object):
         :param verbose: output verbosity level between 0 and 3
         :param timeout: abort check execution with a :exc:`Timeout`
             exception after so many seconds (use 0 for no timeout)
+        :param exit: if set to False, don't exit after completion but
+            return the exitcode to the calling context instead.
         """
         runtime = Runtime()
-        runtime.execute(self, verbose, timeout)
+        return runtime.execute(self, verbose, timeout, exit)
 
     @property
     def state(self):

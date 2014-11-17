@@ -22,7 +22,6 @@ from .platform import flock_exclusive
 import codecs
 import json
 import os
-import tempfile
 
 
 class Cookie(UserDict, object):

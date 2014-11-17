@@ -139,7 +139,7 @@ class CheckTest(unittest.TestCase):
         self.assertEqual('Houston, we have a problem', c.summary_str)
 
     def test_execute(self):
-        def fake_execute(_runtime_obj, verbose, timeout):
+        def fake_execute(_runtime_obj, verbose, timeout, exit=True):
             self.assertEqual(2, verbose)
             self.assertEqual(20, timeout)
         r = nagiosplugin.Runtime()

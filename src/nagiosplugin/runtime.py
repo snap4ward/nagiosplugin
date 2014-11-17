@@ -66,8 +66,7 @@ class Runtime(object):
         rootlogger.setLevel(logging.DEBUG)
         if not self.logchan:
             self.logchan = logging.StreamHandler(io.StringIO())
-            self.logchan.setFormatter(logging.Formatter(
-                '%(message)s (%(filename)s:%(lineno)d)'))
+            self.logchan.setFormatter(logging.Formatter('%(message)s'))
             rootlogger.addHandler(self.logchan)
         if not self.output:
             self.output = Output(self.logchan)
@@ -108,7 +107,7 @@ class Runtime(object):
         self.output.add(check)
         self.exitcode = check.exitcode
 
-    def execute(self, check, verbose=None, timeout=None):
+    def execute(self, check, verbose=None, timeout=None, exit=True):
         self.check = check
         if verbose is not None:
             self.verbose = verbose
@@ -119,7 +118,10 @@ class Runtime(object):
         else:
             self.run(check)
         print('{0}'.format(self.output), end='', file=self.stdout)
-        self.sysexit()
+        if exit:
+            self.sysexit()
+        else:
+            return self.exitcode
 
     def sysexit(self):
         sys.exit(self.exitcode)
