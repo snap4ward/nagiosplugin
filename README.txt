@@ -4,9 +4,9 @@ The nagiosplugin library
 About
 -----
 
-**nagiosplugin** is a Python class library which helps writing Nagios (or Icinga)
-compatible plugins easily in Python. It cares for much of the boilerplate code
-and default logic commonly found in Nagios checks, including:
+**nagiosplugin** is a Python class library which helps writing Nagios (or
+Icinga) compatible plugins easily in Python. It cares for much of the
+boilerplate code and default logic commonly found in Nagios checks, including:
 
 - Nagios 3 Plugin API compliant parameters and output formatting
 - Full Nagios range syntax support
@@ -27,11 +27,11 @@ Feedback and Suggestions
 ------------------------
 
 nagiosplugin is primarily written and maintained by Christian Kauhaus
-<kc@gocept.com>. Feel free to contact the author for bugs, suggestions and
+<kc@flyingcircus.io>. Feel free to contact the author for bugs, suggestions and
 patches.
 
 A public issue tracker can be found at
-http://projects.gocept.com/projects/nagiosplugin/issues.
+http://plan.flyingcircus.io/projects/nagiosplugin/issues.
 
 
 License

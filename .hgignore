@@ -20,6 +20,7 @@ lib/python*
 local/
 parts/
 *.py[co]
+.ropeproject
 setuptools_hg*
 *.sw[po]
 tags

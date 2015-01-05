@@ -17,8 +17,8 @@ thresholds.
 Data acquisition
 ----------------
 
-First, we will subclass :class:`~nagiosplugin.resource.Resource` to generate metrics for the 1,
-5, and 15 minute load averages.
+First, we will subclass :class:`~nagiosplugin.resource.Resource` to generate
+metrics for the 1, 5, and 15 minute load averages.
 
 .. literalinclude:: /../src/nagiosplugin/examples/check_load.py
    :start-after: # data acquisition
@@ -30,10 +30,11 @@ be takes as read from the kernel or normalized by cpu. Accordingly, the
 
 In the :meth:`Load.probe` method the check reads the load averages from the
 :file:`/proc` filesystem and extracts the interesting values. For each value, a
-:class:`~nagiosplugin.metric.Metric` object is returned. Each metric has a generated name
-("load1", "load5", "load15") and a value. We don't declare a unit of measure
-since load averages come without unit. All metrics will share the same context
-"load" which means that the thresholds for all three values will be the same.
+:class:`~nagiosplugin.metric.Metric` object is returned. Each metric has a
+generated name ("load1", "load5", "load15") and a value. We don't declare a unit
+of measure since load averages come without unit. All metrics will share the
+same context "load" which means that the thresholds for all three values will be
+the same.
 
 .. note::
 
@@ -115,9 +116,9 @@ We want the first line to display:
 * which load value violates a threshold, if applicable
 * which threshold is being violated, if applicable.
 
-The last two points are already covered by the :class:`~nagiosplugin.result.Result` default
-implementation, but we need to tweak the summary to display a load overview
-as stated in the first point:
+The last two points are already covered by the
+:class:`~nagiosplugin.result.Result` default implementation, but we need to
+tweak the summary to display a load overview as stated in the first point:
 
 .. literalinclude:: /../src/nagiosplugin/examples/check_load.py
    :start-after: # data presentation
@@ -135,13 +136,14 @@ the result objects to build an overview like "loadavg is 0.19, 0.16, 0.14".
 Check setup
 -----------
 
-The last step in this tutorial is to put the pieces together:
+The last step in this tutorial is to put the pieces together. The full
+:func:`main` functions looks now as follows:
 
 .. literalinclude:: /../src/nagiosplugin/examples/check_load.py
    :start-after: # runtime environment and data evaluation
 
-In the :py:func:`main` function we parse the command line parameters using the
-standard :class:`argparse.ArgumentParser` class. Watch the
+We parse command line parameters using the standard
+:class:`argparse.ArgumentParser` class. Watch the
 :class:`~nagiosplugin.check.Check` object creation: its constructor can be fed
 with a variable number of :class:`~nagiosplugin.resource.Resource`,
 :class:`~nagiosplugin.context.Context`, and
@@ -161,12 +163,18 @@ The check's :meth:`~nagiosplugin.check.Check.main` method runs the check, prints
 the check's output including summary, log messages and :term:`performance data`
 to *stdout* and exits the plugin with the appropriate exit code.
 
-Note the :func:`~nagiosplugin.runtime.guarded` decorator in front of the main
-function. It helps the code part outside :class:`~nagiosplugin.check.Check` to
-behave: in case of uncaught exceptions, it ensures that the exit code is **3**
-(unknown) and that the exception string is properly formatted. Additionally,
-logging is set up at an early stage so that even messages logged from
-constructors are captured and printed at the right place in the output (between
-status line and performance data).
+.. note::
+
+   There is a :func:`~nagiosplugin.runtime.guarded` decorator in front of the
+   main function. It helps the code part outside
+   :class:`~nagiosplugin.check.Check` to behave: in case of uncaught exceptions,
+   it ensures that the exit code is **3** (unknown) and that the exception
+   string is properly formatted.  Additionally, logging is set up at an early
+   stage so that even messages logged from constructors are captured and printed
+   at the right place in the output (between status line and performance data).
+
+You may wish to review the :download:`complete code example
+</../src/nagiosplugin/examples/check_load.py>` before proceeding to the next
+tutorial section.
 
 .. vim: set spell spelllang=en:
