@@ -1,6 +1,3 @@
-# Copyright (c) gocept gmbh & co. kg
-# See also LICENSE.txt
-
 """Functions and classes to interface with the system.
 
 This module contains the :class:`Runtime` class that handles exceptions,

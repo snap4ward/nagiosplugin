@@ -1,6 +1,3 @@
-# Copyright (c) gocept gmbh & co. kg
-# See also LICENSE.txt
-
 """Metadata about metrics to perform data :term:`evaluation`.
 
 This module contains the :class:`Context` class, which is the base for

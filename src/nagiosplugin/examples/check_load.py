@@ -1,7 +1,4 @@
 #!python
-# Copyright (c) gocept gmbh & co. kg
-# See also LICENSE.txt
-
 """Nagios/Icinga plugin to check system load."""
 
 import argparse

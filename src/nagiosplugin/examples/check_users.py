@@ -1,7 +1,4 @@
 #!python
-# Copyright (c) gocept gmbh & co. kg
-# See also LICENSE.txt
-
 """Nagios plugin to check number of logged in users."""
 
 import argparse

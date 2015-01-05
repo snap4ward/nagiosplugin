@@ -1,7 +1,4 @@
 #!python
-# Copyright (c) gocept gmbh & co. kg
-# See also LICENSE.txt
-
 """haproxy log check for request time and error rate.
 
 This check shows an advanced programming technique: we allow the user to

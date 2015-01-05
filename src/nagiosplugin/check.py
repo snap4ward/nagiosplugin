@@ -1,6 +1,3 @@
-# Copyright (c) gocept gmbh & co. kg
-# See also LICENSE.txt
-
 """Controller logic for check execution.
 
 This module contains the :class:`Check` class which orchestrates the

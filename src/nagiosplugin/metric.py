@@ -1,6 +1,3 @@
-# Copyright (c) gocept gmbh & co. kg
-# See also LICENSE.txt
-
 """Structured representation for data points.
 
 This module contains the :class:`Metric` class whose instances are

@@ -1,6 +1,3 @@
-# Copyright (c) gocept gmbh & co. kg
-# See also LICENSE.txt
-
 from nagiosplugin.runtime import Runtime, guarded
 from nagiosplugin.compat import StringIO
 import nagiosplugin

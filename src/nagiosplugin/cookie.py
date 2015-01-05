@@ -1,6 +1,3 @@
-# Copyright (c) gocept gmbh & co. kg
-# See also LICENSE.txt
-
 """Persistent dict to remember state between invocations.
 
 Cookies are used to remember file positions, counters and the like
