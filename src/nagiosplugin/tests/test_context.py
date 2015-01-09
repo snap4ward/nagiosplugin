@@ -19,12 +19,18 @@ class ContextTest(unittest.TestCase):
         self.assertEqual('foo is 1s (min 0)', c.describe(m1))
 
     def test_fmt_callable(self):
-        def format_metric(metric, context):
+        def format_metric(metric, context, state):
             return '{0} formatted by {1}'.format(metric.name, context.name)
 
         m1 = nagiosplugin.Metric('foo', 1, 's', min=0)
         c = Context('describe_callable', fmt_metric=format_metric)
         self.assertEqual('foo formatted by describe_callable', c.describe(m1))
+
+    def test_fmt_accepts_context_keyword(self):
+        m1 = nagiosplugin.Metric('foo', 1, 's')
+        c = Context('describe_template', '{name} range {context.range}')
+        c.range = nagiosplugin.Range('3')
+        self.assertEqual('foo range 3', c.describe(m1))
 
 
 class ScalarContextTest(unittest.TestCase):

@@ -13,6 +13,8 @@ slightly incompatible to the 1.2 series.
   Metric.__str__ is consulted for output generation only when Result.hint is
   None (#13299).
 - Deprecate Metric.description() (#13299).
+- If Context.fmt_metric is a callable, it is now called with three parameters
+  (metric, context, state) (#12659).
 - Update docs to reflect the new project tracker URLs and changed author's
   email address.
 

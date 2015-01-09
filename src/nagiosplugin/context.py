@@ -69,30 +69,37 @@ class Context(object):
         """
         return None
 
-    def describe(self, metric):
+    def describe(self, metric, state=None):
         """Provides human-readable metric description.
 
         Formats the metric according to the :attr:`fmt_metric`
         attribute. If :attr:`fmt_metric` is a string, it is evaluated as
-        format string with all metric attributes in the root namespace.
-        If :attr:`fmt_metric` is callable, it is called with the metric
-        and this context as arguments. If :attr:`fmt_metric` is not set,
-        this default implementation does not return a description.
+        format string (see below).  If :attr:`fmt_metric` is callable,
+        it should return the formatted string and is called as follows::
 
-        Plugin authors may override this method in subclasses to control
-        text output more tightly.
+            fmt_metric(metric, context, state)
+
+        If :attr:`fmt_metric` is not set, this default implementation
+        does not return a description.
+
+        Available fmt_metric keywords:
+           * all metric attributes in the root namespace (like `name`,
+             `value`, ...)
+           * all context attributes in the `context` namespace (like
+             `context.myattribute`).
 
         :param metric: associated metric
         :returns: description string or None
         """
         if not self.fmt_metric:
             return
-        try:
-            return self.fmt_metric(metric, self)
-        except TypeError:
+        if hasattr(self.fmt_metric, '__call__'):
+            return self.fmt_metric(metric, self, state)
+        else:
             return self.fmt_metric.format(
                 name=metric.name, value=metric.value, uom=metric.uom,
-                valueunit=metric.valueunit, min=metric.min, max=metric.max)
+                valueunit=metric.valueunit, min=metric.min, max=metric.max,
+                context=self)
 
 
 class ScalarContext(Context):
@@ -129,13 +136,13 @@ class ScalarContext(Context):
         :param resource: not used
         :returns: :class:`~nagiosplugin.result.Result` object
         """
-        hint = self.describe(metric)
         if not self.critical.match(metric.value):
             state = Critical
         elif not self.warning.match(metric.value):
             state = Warn
         else:
             state = Ok
+        hint = self.describe(metric, state)
         return self.result_cls(state, hint, metric)
 
     def performance(self, metric, resource):
