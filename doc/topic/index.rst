@@ -9,6 +9,8 @@ the library. Expect more to come here.
 
 .. toctree::
 
+   output_formatting
    debugging
+   tips_and_tricks
 
 .. vim: set spell spelllang=en:

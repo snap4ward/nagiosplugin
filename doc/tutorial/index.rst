@@ -23,42 +23,45 @@ Classes overview
 
 Here is a diagram with the most important classes and their relationships::
 
-                +----------+                \
-                | Resource |                 |
-                +----------+                 |
-          _____/      |     \_____           | Acquisition
-         v            v           v          |
-   +---------+   +---------+   +---------+   |
-   | Metric  |...| Metric  |...| Metric  |  <
-   +---------+   +---------+   +---------+   |
-        |             |             |        |
-        v             v             v        |
-   +---------+   +---------+   +---------+   |
-   | Context |...| Context |...| Context |   | Evaluation
-   +---------+   +---------+   +---------+   |
-        |             |             |        |
-        v             v             v        |
-   +---------+   +---------+   +---------+   |
-   | Result  |...| Result  |...| Result  |  <
-   +---------+   +---------+   +---------+   |
-              \___    |    ___/              |
-                  v   v   v                  | Presentation
-                 +---------+                 |
-                 | Summary |                 |
-                 +---------+                /
+                  +----------+                 \
+                  | Resource |                  |
+                  +----------+                  |
+         _________/    |     \________          | Acquisition
+        v              v              v         |
+   +----------+   +----------+   +----------+   |
+   | Metric 1 |   | Metric 2 |   | Metric 3 |  <
+   +----------+   +----------+   +----------+   |
+        |              |     ________/          |
+        v              v    v                   |
+   +----------+   +----------+                  |
+   | ContextA |   | ContextB |                  | Evaluation
+   +----------+   +----------+                  |
+        |              |    \_________          |
+        v              v              v         |
+   +----------+   +----------+   +----------+   |
+   | Result 1 |   | Result 2 |   | Result 3 |  <
+   +----------+   +----------+   +----------+   |
+         \_________    |     ________/          |
+                   v   v    v                   | Presentation
+                  +----------+                  |
+                  | Summary  |                  |
+                  +----------+                 /
 
 Resource
-   A model of the thing being monitored. It should usually have the same name
-   as the whole plugin. Generates one or more metrics.
+   A model of a thing being monitored. Can be probed for metrics. Note that a
+   check can contain several resources depending on its scope. Each resource
+   emits one or more metrics.
 
    *Example: system load*
 
 Metric
    A single measured data point. A metric consists of a name, a value, a unit,
-   and optional minimum and maximum bounds. Most metrics are scalar (the value
-   can be represented as single number).
+   and optional minimum and maximum bounds. Many metrics are scalar (the value
+   can be represented as single number). Each metric has a context associated to
+   it. Multiple metrics can share a context if they are interpreted in the same
+   way.
 
-   *Example: load1=0.75*
+   *Example: load1=0.75 (min=0,ctx=load)*
 
 Context
    Additional information to evaluate a metric. A context has usually a warning
