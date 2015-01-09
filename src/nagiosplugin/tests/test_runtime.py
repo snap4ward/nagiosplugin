@@ -29,8 +29,10 @@ class RuntimeTestBase(unittest.TestCase):
     def setUp(self):
         Runtime.instance = None
         self.r = Runtime()
-        self.r.sysexit = lambda: None
         self.r.stdout = StringIO()
+
+        def stub_exit(): pass
+        self.r.sysexit = stub_exit
 
 
 class RuntimeTest(RuntimeTestBase):
@@ -41,6 +43,9 @@ class RuntimeTest(RuntimeTestBase):
     def test_run_sets_exitcode(self):
         self.r.run(make_check())
         self.assertEqual(0, self.r.exitcode)
+
+    def test_run_returns_exitcode(self):
+        self.assertEqual(0, self.r.execute(make_check(), exit=False))
 
     def test_verbose(self):
         testcases = [(None, logging.WARNING, 0),
