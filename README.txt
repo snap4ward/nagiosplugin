@@ -31,7 +31,7 @@ nagiosplugin is primarily written and maintained by Christian Kauhaus
 patches.
 
 A public issue tracker can be found at
-http://plan.flyingcircus.io/projects/nagiosplugin/issues.
+https://bitbucket.org/flyingcircus/nagiosplugin/issues.
 
 
 License

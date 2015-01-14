@@ -18,5 +18,6 @@ make `nagiosplugin` better:
   packaging.
 * Andrey Panfilov <andrew@panfilov.tel> for a perfdata fix.
 * Mihai Limbășan <mihai@limbasan.ro> for various output formatting fixes.
+* Joseph L. Casale <jcasale@activenetwerx.com> for architectural suggestions.
 
 .. vim: set ft=rst sw=3 sts=3 et:
