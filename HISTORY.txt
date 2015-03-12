@@ -17,6 +17,7 @@ slightly incompatible to the 1.2 series.
   (metric, context, state) (#12659).
 - Update docs to reflect the new project tracker URLs and changed author's
   email address.
+- Include Debian packaging stuff (#10).
 
 
 1.2.2 (2014-05-27)
