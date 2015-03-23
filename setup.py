@@ -4,7 +4,7 @@ import os
 
 here = os.path.abspath(os.path.dirname(__file__))
 longdesc = []
-for readme in ['README.txt', 'HACKING.txt', 'CONTRIBUTORS.txt', 'HISTORY.txt']:
+for readme in ['README.txt', 'HACKING.txt', 'CONTRIBUTORS.txt', 'CHANGES.txt']:
     with codecs.open(readme, encoding='utf-8') as f:
         longdesc.append(f.read())
 with codecs.open('version.txt', encoding='ascii') as f:

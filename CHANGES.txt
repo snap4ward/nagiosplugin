@@ -2,6 +2,14 @@ Release History
 ===============
 
 
+2.0b1 (unreleased)
+------------------
+
+- Rework packaging. We now rely on pip and the standard `PyPUG`_ procedures.
+
+.. _PyPUG: https://packaging.python.org/en/latest/
+
+
 1.3 (unreleased)
 ----------------
 

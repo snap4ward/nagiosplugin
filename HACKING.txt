@@ -74,7 +74,8 @@ How to release
 --------------
 
 * Ensure that all relevant changes are mentioned in `HISTORY.txt`.
-* Use `bin/bumpversion major|minor|patch` to update and tag the new version.
+* Invoke the `release` utility from `zest.releaser`_.
+* CD into the tag checkout directory created by zest.releaser.
 * Follow the instructions in the official `packaging guide`_ to upload a
   package.
 * Upload docs using `bin/python setup.py upload_docs`.
@@ -85,5 +86,6 @@ published on SemVer_ but adapts it a little bit to be `PEP 386`_ compliant.
 .. _packaging guide: https://packaging.python.org/en/latest/distributing.html#packaging-your-project
 .. _SemVer: http://semver.org/
 .. _PEP 386: http://www.python.org/dev/peps/pep-0386/
+.. _zest.releaser: https://pypi.python.org/pypi/zest.releaser/
 
 .. vim: set ft=rst spell spelllang=en:

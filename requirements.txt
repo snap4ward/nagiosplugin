@@ -1,7 +1,7 @@
 -e .
 argparse
-bumpversion
 pytest>=2.6,<3
 pytest-cov
 twine>=1.5
 wheel>=0.24
+Sphinx>=1.3
