@@ -1,7 +1,6 @@
 from setuptools import setup, find_packages
 import codecs
 import os
-import sys
 
 here = os.path.abspath(os.path.dirname(__file__))
 longdesc = []
@@ -10,11 +9,6 @@ for readme in ['README.txt', 'HACKING.txt', 'CONTRIBUTORS.txt', 'HISTORY.txt']:
         longdesc.append(f.read())
 with codecs.open('version.txt', encoding='ascii') as f:
     version = f.read().strip()
-
-if sys.version_info < (2, 7):
-    extras_require = {'test': ['setuptools', 'unittest2', 'argparse']}
-else:
-    extras_require = {'test': ['setuptools']}
 
 
 setup(
@@ -49,5 +43,5 @@ setup(
     include_package_data=True,
     zip_safe=False,
     test_suite='nagiosplugin.tests',
-    extras_require=extras_require,
+    extras_require={'test': ['setuptools', 'pytest']},
 )
