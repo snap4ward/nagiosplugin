@@ -38,7 +38,7 @@ class Summary(object):
     def problem(self, results):
         """Formats status line when overall state is not ok.
 
-        The default implementation returns a string representation of te
+        The default implementation returns a string representation of the
         first significant result, i.e. the result with the "worst"
         state.
 
