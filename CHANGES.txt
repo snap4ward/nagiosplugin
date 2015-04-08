@@ -6,6 +6,7 @@ Release History
 ------------------
 
 - Rework packaging. We now rely on pip and the standard `PyPUG`_ procedures.
+- Remove namedtuples and use plain objects instead (#8).
 
 .. _PyPUG: https://packaging.python.org/en/latest/
 

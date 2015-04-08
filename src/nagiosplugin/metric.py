@@ -6,21 +6,20 @@ Typically, :class:`~.resource.Resource` objects emit a list of metrics
 as result of their :meth:`~.resource.Resource.probe` methods.
 """
 
+import copy
 import numbers
-import collections
 import warnings
 
 
-class Metric(collections.namedtuple(
-        'Metric', 'name value uom min max context contextobj resource')):
+class Metric(object):
     """Single measured value.
 
     The value should be expressed in terms of base units, so
     Metric('swap', 10240, 'B') is better than Metric('swap', 10, 'kiB').
     """
 
-    def __new__(cls, name, value, uom=None, min=None, max=None, context=None,
-                contextobj=None, resource=None):
+    def __init__(self, name, value, uom=None, min=None, max=None, context=None,
+                 contextobj=None, resource=None):
         """Creates new Metric instance.
 
         :param name: short internal identifier for the value -- appears
@@ -39,8 +38,14 @@ class Metric(collections.namedtuple(
             :class:`~nagiosplugin.resource.Resource` (set automatically
             by :class:`~nagiosplugin.check.Check`)
         """
-        return tuple. __new__(cls, (
-            name, value, uom, min, max, context or name, contextobj, resource))
+        self.name = name
+        self.value = value
+        self.uom = uom
+        self.min = min
+        self.max = max
+        self.context = context or name
+        self.contextobj = contextobj
+        self.resource = resource
 
     def __str__(self):
         """Same as :attr:`valueunit`."""
@@ -48,7 +53,9 @@ class Metric(collections.namedtuple(
 
     def replace(self, **attr):
         """Creates new instance with updated attributes."""
-        return self._replace(**attr)
+        new = copy.copy(self)
+        new.__dict__.update(attr)
+        return new
 
     @property
     def description(self):
@@ -82,7 +89,7 @@ class Metric(collections.namedtuple(
     def _human_readable_value(self):
         """Limit number of digits for floats."""
         if (isinstance(self.value, numbers.Real) and
-            not isinstance(self.value, numbers.Integral)):
+                not isinstance(self.value, numbers.Integral)):
             return '%.4g' % self.value
         return str(self.value)
 
