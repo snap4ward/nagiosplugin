@@ -10,7 +10,6 @@ in their respective base unit, so `Performance('size', 10000, 'B')` is
 better than `Performance('size', 10, 'kB')`.
 """
 
-import collections
 import itertools
 import re
 
@@ -27,10 +26,9 @@ def quote(label):
     return "'%s'" % label
 
 
-class Performance(collections.namedtuple('Performance', [
-        'label', 'value', 'uom', 'warn', 'crit', 'min', 'max'])):
+class Performance(object):
 
-    def __new__(cls, label, value, uom='', warn='', crit='', min='', max=''):
+    def __init__(self, label, value, uom='', warn='', crit='', min='', max=''):
         """Create new performance data object.
 
         :param label: short identifier, results in graph
@@ -44,9 +42,13 @@ class Performance(collections.namedtuple('Performance', [
         """
         if "'" in label or "=" in label:
             raise RuntimeError('label contains illegal characters', label)
-        return super(cls, Performance).__new__(
-            cls, label, value, zap_none(uom), zap_none(warn), zap_none(crit),
-            zap_none(min), zap_none(max))
+        self.label = label
+        self.value = value
+        self.uom = zap_none(uom)
+        self.warn = zap_none(warn)
+        self.crit = zap_none(crit)
+        self.min = zap_none(min)
+        self.max = zap_none(max)
 
     def __str__(self):
         """String representation conforming to the plugin API.

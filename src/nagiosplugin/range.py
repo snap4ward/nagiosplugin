@@ -1,7 +1,4 @@
-import collections
-
-
-class Range(collections.namedtuple('Range', 'invert start end')):
+class Range(object):
     """Represents a threshold range.
 
     The general format is "[@][start:][end]". "start:" may be omitted if
@@ -14,7 +11,7 @@ class Range(collections.namedtuple('Range', 'invert start end')):
     for details.
     """
 
-    def __new__(cls, spec=''):
+    def __init__(self, spec=''):
         """Creates a Range object according to `spec`.
 
         :param spec: may be either a string, an int, or another
@@ -22,16 +19,18 @@ class Range(collections.namedtuple('Range', 'invert start end')):
         """
         spec = spec or ''
         if isinstance(spec, Range):
-            return super(cls, Range).__new__(
-                cls, spec.invert, spec.start, spec.end)
+            self.start = spec.start
+            self.end = spec.end
+            self.invert = spec.invert
         elif isinstance(spec, str):
-            start, end, invert = cls._parse(spec)
+            self.start, self.end, self.invert = self._parse(spec)
         elif (isinstance(spec, int) or isinstance(spec, float)):
-            start, end, invert = 0, spec, False
+            self.start = 0
+            self.end = spec
+            self.invert = False
         else:
             raise TypeError('cannot recognize type of Range', spec)
-        cls._verify(start, end)
-        return super(cls, Range).__new__(cls, invert, start, end)
+        self._verify()
 
     @classmethod
     def _parse(cls, spec):
@@ -58,12 +57,11 @@ class Range(collections.namedtuple('Range', 'invert start end')):
             return float(atom)
         return int(atom)
 
-    @staticmethod
-    def _verify(start, end):
+    def _verify(self):
         """Throws ValueError if the range is not consistent."""
-        if start > end:
+        if self.start > self.end:
             raise ValueError('start %s must not be greater than end %s' % (
-                             start, end))
+                             self.start, self.end))
 
     def match(self, value):
         """Decides if `value` is inside/outside the threshold.
@@ -101,3 +99,11 @@ class Range(collections.namedtuple('Range', 'invert start end')):
     def __repr__(self):
         """Parseable range specification."""
         return 'Range(%r)' % str(self)
+
+    def __eq__(self, other):
+        return (self.start == other.start and self.end == other.end and
+                self.invert == other.invert)
+
+    def __ne__(self, other):
+        return (self.start != other.start or self.end != other.end or
+                self.invert != other.invert)
