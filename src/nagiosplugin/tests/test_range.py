@@ -87,6 +87,12 @@ def test_contains():
     assert 2.6 not in r
 
 
+def test_ne():
+    assert Range("2:3") != Range("2:4")
+    assert Range("2:3") != Range("1:3")
+    assert Range("2:3") != Range("@2:3")
+
+
 def test_repr():
     assert "Range('2:3')" == repr(Range('2:3'))
 
