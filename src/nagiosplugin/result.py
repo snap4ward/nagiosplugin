@@ -14,7 +14,7 @@ import numbers
 import warnings
 
 
-class Result(collections.namedtuple('Result', 'state hint metric')):
+class Result(object):
     """Evaluation outcome consisting of state and explanation.
 
     A Result object is typically emitted by a
@@ -24,7 +24,7 @@ class Result(collections.namedtuple('Result', 'state hint metric')):
     Plugin authors may subclass Result to implement specific features.
     """
 
-    def __new__(cls, state, hint=None, metric=None):
+    def __init__(self, state, hint=None, metric=None):
         """Creates a Result object.
 
         :param state: state object
@@ -33,7 +33,9 @@ class Result(collections.namedtuple('Result', 'state hint metric')):
             :class:`~nagiosplugin.metric.Metric` from which this result
             was derived
         """
-        return tuple.__new__(cls, (state, hint, metric))
+        self.state = state
+        self.hint = hint
+        self.metric = metric
 
     def __str__(self):
         """Textual result explanation.
@@ -56,6 +58,12 @@ class Result(collections.namedtuple('Result', 'state hint metric')):
             return str(self.metric)
         return ''
 
+    def __eq__(self, other):
+        return (self.__class__ == other.__class__ and
+                self.state == other.state and
+                self.hint == other.hint and
+                self.metric == other.metric)
+
     @property
     def resource(self):
         """Reference to the resource used to generate this result."""
@@ -72,16 +80,17 @@ class Result(collections.namedtuple('Result', 'state hint metric')):
 class ScalarResult(Result):  # pragma: no cover
     """Special-case result for evaluation in a ScalarContext.
 
-    DEPRECATED: use Result instead.
+    .. deprecated:: 2.0
+       use :class:`Result` instead.
     """
 
-    def __new__(cls, state, hint, metric):
+    def __init__(self, state, hint, metric):
         warnings.warn('ScalarResult is deprecated, use Result instead!',
                       DeprecationWarning)
-        return tuple.__new__(cls, (state, hint, metric))
+        return super(ScalarResult, self).__init__(self, state, hint, metric)
 
 
-class Results:
+class Results(object):
     """Container for result sets.
 
     Basically, this class manages a set of results and provides

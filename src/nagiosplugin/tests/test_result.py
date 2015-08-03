@@ -14,6 +14,21 @@ def test_metric_resorce():
     assert Result(Ok, metric=m).resource == res
 
 
+def test_eq():
+    m = nagiosplugin.Metric('foo', 1)
+    assert Result(Ok, 'hint', m) == Result(Ok, 'hint', m)
+
+
+def test_ne():
+    m1 = nagiosplugin.Metric('foo', 1)
+    m2 = nagiosplugin.Metric('foo', 2)
+    for left, right in (
+            (Result(Ok, 'hint', m1), Result(Critical, 'hint', m1)),
+            (Result(Ok, 'hint 1', m1), Result(Ok, 'hint 2', m1)),
+            (Result(Ok, 'hint', m1), Result(Ok, 'hint', m2))):
+        assert left != right
+
+
 def test_context_should_be_none_for_contextless_metric():
     assert Result(Ok).context is None
 
