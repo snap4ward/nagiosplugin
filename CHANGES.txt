@@ -10,6 +10,7 @@ Release History
 - Rework packaging. We now rely on pip and the standard `PyPUG`_ procedures.
 - Remove `namedtuple` and use plain objects instead (#8).
 - Use `tox` for matrix testing.
+- Simplify Check--Runtime interaction.
 
 .. _PyPUG: https://packaging.python.org/en/latest/
 

@@ -40,7 +40,7 @@ def guarded(func):
 
 
 class Runtime(object):
-    """Singleton that handles output, logging and exceptions."""
+    """Singleton which handles output, logging and exceptions."""
 
     instance = None
     check = None
@@ -98,7 +98,7 @@ class Runtime(object):
         """
         self.check = check
         self._configure_verbosity(check.verbose)
-        if check.timeout:
+        if check.timeout > 0:
             with_timeout(check.timeout, self.run)
         else:
             self.run()

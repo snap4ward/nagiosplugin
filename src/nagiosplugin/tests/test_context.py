@@ -1,10 +1,6 @@
 from nagiosplugin.context import Context, ScalarContext, Contexts
 import nagiosplugin
-
-try:
-    import unittest2 as unittest
-except ImportError:  # pragma: no cover
-    import unittest
+import unittest
 
 
 class ContextTest(unittest.TestCase):

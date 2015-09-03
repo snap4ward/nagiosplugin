@@ -103,6 +103,8 @@ class Check(object):
 
         `verbose` can be an integer between 0 and 3 or a string like
         "v", "vv", or "vvv".
+
+        .. versionadded:: 2.0
         """
         if verbose is None:
             return
@@ -114,8 +116,8 @@ class Check(object):
     def run(self, verbose=None, timeout=None):
         """Alternative main entry point that doesn't print output and exit.
 
-        Obtains a :class:`~nagiosplugin.runtime.Runtime` instance and
-        runs the check under control of this runtime environment.
+        Initializes the runtime environment and runs the check under control of
+        this runtime environment.
 
         This method does neither print the output to stdout nor exit the
         process. To get it all in one method, use :meth:`main` instead.
@@ -124,6 +126,8 @@ class Check(object):
         :param timeout: abort check execution with a :exc:`Timeout`
             exception after so many seconds (use 0 for no timeout)
         :return: (output, exitcode) tuple
+
+        .. versionadded:: 2.0
         """
 
         self.set_verbose(verbose)
@@ -132,7 +136,7 @@ class Check(object):
         runtime = Runtime()
         return runtime.execute(self)
 
-    def main(self, verbose=None, timeout=None):
+    def main(self, verbose=None, timeout=None):  # pragma: no cover
         """Main entry point: execute check, print output, exit.
 
         Alternatively, use :meth:`run` if you want control output and

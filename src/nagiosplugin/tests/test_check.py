@@ -1,10 +1,6 @@
 from nagiosplugin.check import Check
 import nagiosplugin
-
-try:
-    import unittest2 as unittest
-except ImportError:  # pragma: no cover
-    import unittest
+import unittest
 
 
 class FakeSummary(nagiosplugin.Summary):
@@ -98,6 +94,7 @@ class CheckTest(unittest.TestCase):
         self.assertEqual(['foo=1'], c.perfdata)
 
     def test_first_resource_sets_name(self):
+
         class MyResource(nagiosplugin.Resource):
             pass
 
@@ -137,3 +134,28 @@ class CheckTest(unittest.TestCase):
 
     def test_verbose_str(self):
         self.assertEqual('', Check().verbose_str)
+
+
+def test_set_verbose():
+    c = Check()
+    for param, exp in [(None, 1), (3, 3), ('vv', 2)]:
+        c.set_verbose(param)
+        assert exp == c.verbose
+
+
+def test_run():
+    c = Check()
+    output, exitcode = c.run(2, 20)
+    assert 2 == c.verbose
+    assert 20 == c.timeout
+    assert 'UNKNOWN - no check results\n' == output
+    assert 3 == exitcode
+
+
+def test_default_verbose_and_timeout():
+    Check.verbose = 0
+    Check.timeout = 5
+    c = Check()
+    c.run()
+    assert 0 == c.verbose
+    assert 5 == c.timeout

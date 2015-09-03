@@ -1,11 +1,7 @@
 from nagiosplugin.platform import with_timeout
 import nagiosplugin
 import time
-
-try:
-    import unittest2 as unittest
-except ImportError:  # pragma: no cover
-    import unittest
+import unittest
 
 
 class PlatformTest(unittest.TestCase):

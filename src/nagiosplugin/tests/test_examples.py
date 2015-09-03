@@ -3,11 +3,7 @@ import re
 import subprocess
 import sys
 import os.path as p
-
-try:
-    import unittest2 as unittest
-except ImportError:  # pragma: no cover
-    import unittest
+import unittest
 
 
 class ExamplesTest(unittest.TestCase):

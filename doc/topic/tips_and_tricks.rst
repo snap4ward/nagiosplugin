@@ -25,11 +25,9 @@ How to create contexts dynamically during probe execution
 Sometimes there is no point in separating resource discovery and metrics
 acquisition as everything comes from a single system operation. The
 problem here is that nagiosplugin expects the resources and contexts being
-.. XXX reference classes correctly?
-created before probing starts---:class:`~nagiosplugin.Resource` and
-:class:`~context.Context` must be added in the outer scope. If this is not
-possible, create a single
-super-resource and pass the check object to it::
+created before probing starts --- `~nagiosplugin.resource.Resource` and
+`~nagiosplugin.context.Context` must be added in the outer scope. If this is not
+possible, create a single super-resource and pass the check object to it::
 
    class MyResource(nagiosplugin.Resource):
 
@@ -39,5 +37,28 @@ super-resource and pass the check object to it::
 Now you are able to inject contexts dynamically during probe execution. Note
 that this is somewhat hacky. Separate resource discovery and metrics acquisition
 if possible.
+
+
+Stop Check.main() from calling `sys.exit`
+-----------------------------------------
+
+By default, `~nagiosplugin.check.Check.main` runs the check, prints its output
+and exits the process. If you want to control process termination from the
+outer scope, use `~nagiosplugin.check.Check.run` instead.
+
+An invocation like this::
+
+   def main():
+      ...
+      check.main(verbose, timeout)
+
+can be replaced with the following code::
+
+   def main():
+      ...
+      output, exitcode = check.run(verbose, timeout)
+      sys.stdout.write(output)
+      sys.exit(exitcode)
+
 
 .. vim: set spell spelllang=en:

@@ -87,3 +87,9 @@ def test_handle_timeout_exception(capsys):
     _run_guarded_with_exception(nagiosplugin.Timeout('1s'))
     assert ('UNKNOWN: Timeout: check execution aborted after 1s' in
             '\n'.join(capsys.readouterr()))
+
+
+def test_dont_call_timeout_if_unset(monkeypatch, runtime_instance, fake_check):
+    monkeypatch.setattr(nagiosplugin.runtime, 'with_timeout', pytest.fail)
+    fake_check.timeout = 0
+    runtime_instance.execute(fake_check)
