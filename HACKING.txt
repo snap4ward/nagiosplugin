@@ -17,11 +17,6 @@ First, create a virtualenv if not already present::
 
    virtualenv -p python3.4 .
 
-If you want to use Python 2.7, specify this Python version while creating the
-virtualenv::
-
-   virtualenv -p python2.7 .
-
 Then create a developer build::
 
    bin/pip install -r requirements.txt
@@ -40,14 +35,13 @@ Our `build server`_ runs test against the trunk on a regular basis.
    :target: https://builds.gocept.com/job/nagiosplugin/
 .. _build server: https://builds.gocept.com/job/nagiosplugin/
 
-nagiosplugin also includes support for coverage reports. It aims at 100% test
+Test all supported Python versions::
+
+  bin/tox
+
+`nagiosplugin` also includes support for coverage reports. It aims at 100% test
 coverage where possible. Coverage reports are automatically created on each test
 run and can be found in the `htmlcov` directory.
-
-You may run the supplied examples with the local interpreter::
-
-   export PYTHONPATH=$PWD/src
-   bin/python src/nagiosplugin/examples/check_load.py
 
 
 Documentation
@@ -56,6 +50,10 @@ Documentation
 The documentation uses Sphinx. Build the documentation::
 
    make -C doc html
+
+You may run the supplied examples with the local interpreter::
+
+   bin/python src/nagiosplugin/examples/check_load.py
 
 
 Release builds

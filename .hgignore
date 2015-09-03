@@ -27,3 +27,4 @@ tags
 tests.xml
 tmp
 .todo
+.tox/

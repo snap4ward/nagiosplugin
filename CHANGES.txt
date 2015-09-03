@@ -5,8 +5,11 @@ Release History
 2.0b1 (unreleased)
 ------------------
 
+- Drop Python 2 support. It's time to go for Python 3. Python 2 users should
+  stick with the last released 1.x version.
 - Rework packaging. We now rely on pip and the standard `PyPUG`_ procedures.
-- Remove namedtuples and use plain objects instead (#8).
+- Remove `namedtuple` and use plain objects instead (#8).
+- Use `tox` for matrix testing.
 
 .. _PyPUG: https://packaging.python.org/en/latest/
 
