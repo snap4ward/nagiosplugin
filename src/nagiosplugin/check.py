@@ -1,14 +1,4 @@
 """Controller logic for check execution.
-
-This module contains the :class:`Check` class which orchestrates the
-the various stages of check execution. Interfacing with the
-outside system is done via a separate :class:`Runtime` object.
-
-When a check is called (using :meth:`Check.main` or
-:meth:`Check.__call__`), it probes all resources and evaluates the
-returned metrics to results and performance data. A typical usage
-pattern would be to populate a check with domain objects and then
-delegate control to it.
 """
 
 from .context import Context, Contexts
@@ -25,13 +15,21 @@ _log = logging.getLogger(__name__)
 
 
 class Check(object):
+    """Orchestrates the the various stages of check execution.
+
+    When a check is called, it probes all resources and evaluates the
+    returned metrics to results and performance data. A typical usage
+    pattern would be to populate a check with domain objects and then
+    delegate control to it. Interfacing with the outside system is done
+    via a separate :class:`Runtime` object.
+    """
 
     def __init__(self, *objects):
-        """Creates and configures a check.
+        """Initializes a :class:`Check` right away with `objects`. See
+        :meth:`add` for a list of allowed object types.
 
-        Specialized *objects* representing resources, contexts,
-        summary, or results are passed to the the :meth:`add` method.
-        Alternatively, objects can be added later manually.
+        Alternatively, objects can be added later using the :meth:`add`
+        method.
         """
         self.resources = []
         self.contexts = Contexts()
@@ -44,11 +42,12 @@ class Check(object):
     def add(self, *objects):
         """Adds domain objects to a check.
 
-        :param objects: one or more objects that are descendants from
+        :param objects: one or more objects that are instances of
             :class:`~nagiosplugin.resource.Resource`,
             :class:`~nagiosplugin.context.Context`,
             :class:`~nagiosplugin.summary.Summary`, or
-            :class:`~nagiosplugin.result.Results`.
+            :class:`~nagiosplugin.result.Results` or subclasses of one
+            of these classes.
         """
         for obj in objects:
             if isinstance(obj, Resource):
@@ -85,13 +84,11 @@ class Check(object):
             self.results.add(Result(Unknown, str(e), metric))
 
     def __call__(self):
-        """Actually run the check.
+        """Executes and populates :attr:`results` and :attr:`perfdata`.
 
-        After a check has been called, the :attr:`results` and
-        :attr:`perfdata` attributes are populated with the outcomes. In
-        most cases, you should not use __call__ directly but invoke
-        :meth:`main`, which delegates check execution to the
-        :class:`Runtime` environment.
+        Don't call this method directly.  Instead invoke :meth:`main`,
+        which delegates check execution to the :class:`Runtime`
+        environment.
         """
         for resource in self.resources:
             self._evaluate_resource(resource)
