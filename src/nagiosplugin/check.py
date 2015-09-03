@@ -1,5 +1,4 @@
-"""Controller logic for check execution.
-"""
+"""Controller logic for check execution"""
 
 from .context import Context, Contexts
 from .error import CheckError
@@ -10,6 +9,8 @@ from .runtime import Runtime
 from .state import Ok, Unknown
 from .summary import Summary
 import logging
+import numbers
+import sys
 
 _log = logging.getLogger(__name__)
 
@@ -24,6 +25,10 @@ class Check(object):
     via a separate :class:`Runtime` object.
     """
 
+    name = ''
+    verbose = 1
+    timeout = 10
+
     def __init__(self, *objects):
         """Initializes a :class:`Check` right away with `objects`. See
         :meth:`add` for a list of allowed object types.
@@ -36,7 +41,6 @@ class Check(object):
         self.summary = Summary()
         self.results = Results()
         self.perfdata = []
-        self.name = ''
         self.add(*objects)
 
     def add(self, *objects):
@@ -94,21 +98,53 @@ class Check(object):
             self._evaluate_resource(resource)
         self.perfdata = sorted([p for p in self.perfdata if p])
 
-    def main(self, verbose=1, timeout=10, exit=True):
-        """All-in-one control delegation to the runtime environment.
+    def set_verbose(self, verbose):
+        """Parses either numerical or alphabetical verbosity specification.
 
-        Get a :class:`~nagiosplugin.runtime.Runtime` instance and
-        perform all phases: run the check (via :meth:`__call__`), print
-        results and exit the program with an appropriate status code.
+        `verbose` can be an integer between 0 and 3 or a string like
+        "v", "vv", or "vvv".
+        """
+        if verbose is None:
+            return
+        if isinstance(verbose, numbers.Number):
+            self.verbose = int(verbose)
+        else:
+            self.verbose = len(verbose or [])
+
+    def run(self, verbose=None, timeout=None):
+        """Alternative main entry point that doesn't print output and exit.
+
+        Obtains a :class:`~nagiosplugin.runtime.Runtime` instance and
+        runs the check under control of this runtime environment.
+
+        This method does neither print the output to stdout nor exit the
+        process. To get it all in one method, use :meth:`main` instead.
 
         :param verbose: output verbosity level between 0 and 3
         :param timeout: abort check execution with a :exc:`Timeout`
             exception after so many seconds (use 0 for no timeout)
-        :param exit: if set to False, don't exit after completion but
-            return the exitcode to the calling context instead.
+        :return: (output, exitcode) tuple
         """
+
+        self.set_verbose(verbose)
+        if timeout is not None:
+            self.timeout = int(timeout)
         runtime = Runtime()
-        return runtime.execute(self, verbose, timeout, exit)
+        return runtime.execute(self)
+
+    def main(self, verbose=None, timeout=None):
+        """Main entry point: execute check, print output, exit.
+
+        Alternatively, use :meth:`run` if you want control output and
+        exit actions from the calling function.
+
+        :param verbose: output verbosity level between 0 and 3
+        :param timeout: abort check execution with a :exc:`Timeout`
+            exception after so many seconds (use 0 for no timeout)
+        """
+        output, exitcode = self.run(verbose, timeout)
+        print(output, end='')
+        sys.exit(exitcode)
 
     @property
     def state(self):

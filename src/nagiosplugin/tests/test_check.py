@@ -135,13 +135,5 @@ class CheckTest(unittest.TestCase):
         c.results.add(nagiosplugin.Result(nagiosplugin.Critical))
         self.assertEqual('Houston, we have a problem', c.summary_str)
 
-    def test_execute(self):
-        def fake_execute(_runtime_obj, verbose, timeout, exit=True):
-            self.assertEqual(2, verbose)
-            self.assertEqual(20, timeout)
-        r = nagiosplugin.Runtime()
-        r.execute = fake_execute
-        Check().main(2, 20)
-
     def test_verbose_str(self):
         self.assertEqual('', Check().verbose_str)
